@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.worksituation.mapper.BusDepReviewDataMapper">
+
+    <resultMap type="BusDepReviewData" id="BusDepReviewDataResult">
+        <result property="id"    column="ID"    />
+        <result property="busDepReviewId"    column="BUS_DEP_REVIEW_ID"    />
+        <result property="evaluatTarget"    column="EVALUAT_TARGET"    />
+        <result property="rolePosit"    column="ROLE_POSIT"    />
+        <result property="dataJson"    column="DATA_JSON"    />
+        <result property="reviewScore"    column="REVIEW_SCORE"    />
+        <result property="dataStatus"    column="DATA_STATUS"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+    </resultMap>
+
+    <sql id="selectBusDepReviewDataVo">
+        select ID, BUS_DEP_REVIEW_ID, EVALUAT_TARGET, ROLE_POSIT, DATA_JSON, REVIEW_SCORE, DATA_STATUS, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from BUS_DEP_REVIEW_DATA
+    </sql>
+
+    <select id="selectBusDepReviewDataList" parameterType="BusDepReviewData" resultMap="BusDepReviewDataResult">
+        <include refid="selectBusDepReviewDataVo"/>
+        <where>
+            <if test="busDepReviewId != null  and busDepReviewId != ''"> and BUS_DEP_REVIEW_ID = #{busDepReviewId}</if>
+            <if test="evaluatTarget != null  and evaluatTarget != ''"> and EVALUAT_TARGET = #{evaluatTarget}</if>
+            <if test="rolePosit != null  and rolePosit != ''"> and ROLE_POSIT = #{rolePosit}</if>
+            <if test="dataJson != null  and dataJson != ''"> and DATA_JSON = #{dataJson}</if>
+            <if test="reviewScore != null  and reviewScore != ''"> and REVIEW_SCORE = #{reviewScore}</if>
+            <if test="dataStatus != null  and dataStatus != ''"> and DATA_STATUS = #{dataStatus}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+        </where>
+    order by REVIEW_SCORE
+    </select>
+
+    <select id="selectBusDepReviewDataById" parameterType="String" resultMap="BusDepReviewDataResult">
+        <include refid="selectBusDepReviewDataVo"/>
+        where ID = #{id}
+    </select>
+
+    <select id="selectBusDepReviewMemberUnits" parameterType="String" resultMap="BusDepReviewDataResult">
+        SELECT ID,EVALUAT_TARGET, REVIEW_SCORE,DATA_JSON FROM BUS_DEP_REVIEW_DATA
+        WHERE BUS_DEP_REVIEW_ID=#{busDepReviewId} AND EVALUAT_TARGET in
+        <foreach item="evaluatTarget" collection="evaluatTargets" open="(" separator="," close=")">
+            #{evaluatTarget}
+        </foreach>
+
+    </select>
+
+    <insert id="insertBusDepReviewData" parameterType="BusDepReviewData">
+        insert into BUS_DEP_REVIEW_DATA
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">ID,</if>
+            <if test="busDepReviewId != null">BUS_DEP_REVIEW_ID,</if>
+            <if test="evaluatTarget != null">EVALUAT_TARGET,</if>
+            <if test="rolePosit != null">ROLE_POSIT,</if>
+            <if test="dataJson != null">DATA_JSON,</if>
+            <if test="reviewScore != null">REVIEW_SCORE,</if>
+            <if test="dataStatus != null">DATA_STATUS,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="busDepReviewId != null">#{busDepReviewId},</if>
+            <if test="evaluatTarget != null">#{evaluatTarget},</if>
+            <if test="rolePosit != null">#{rolePosit},</if>
+            <if test="dataJson != null">#{dataJson},</if>
+            <if test="reviewScore != null">#{reviewScore},</if>
+            <if test="dataStatus != null">#{dataStatus},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into BUS_DEP_REVIEW_DATA
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                            ID,
+                            BUS_DEP_REVIEW_ID,
+                            EVALUAT_TARGET,
+                            ROLE_POSIT,
+                            DATA_JSON,
+                            REVIEW_SCORE,
+                            DATA_STATUS,
+                            CREATE_BY,
+                            CREATE_TIME,
+                            UPDATE_BY,
+                            UPDATE_TIME,
+                    </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                                    #{entity.id},
+                                    #{entity.busDepReviewId},
+                                    #{entity.evaluatTarget},
+                                    #{entity.rolePosit},
+                                    #{entity.dataJson},
+                                    #{entity.reviewScore},
+                                    #{entity.dataStatus},
+                                    #{entity.createBy},
+                                    #{entity.createTime},
+                                    #{entity.updateBy},
+                                    #{entity.updateTime},
+                            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBusDepReviewData" parameterType="BusDepReviewData">
+        update BUS_DEP_REVIEW_DATA
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="busDepReviewId != null">BUS_DEP_REVIEW_ID = #{busDepReviewId},</if>
+            <if test="evaluatTarget != null">EVALUAT_TARGET = #{evaluatTarget},</if>
+            <if test="rolePosit != null">ROLE_POSIT = #{rolePosit},</if>
+            <if test="dataJson != null">DATA_JSON = #{dataJson},</if>
+            <if test="reviewScore != null">REVIEW_SCORE = #{reviewScore},</if>
+            <if test="dataStatus != null">DATA_STATUS = #{dataStatus},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteBusDepReviewDataById" parameterType="String">
+        delete from BUS_DEP_REVIEW_DATA where ID = #{id}
+    </delete>
+
+    <delete id="deleteBusDepReviewDataByIds" parameterType="String">
+        delete from BUS_DEP_REVIEW_DATA where ID in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.worksituation.mapper.BusDepReviewMapper">
+
+    <resultMap type="BusDepReview" id="BusDepReviewResult">
+        <result property="id" column="ID"/>
+        <result property="busYear" column="BUS_YEAR"/>
+        <result property="busName" column="BUS_NAME"/>
+        <result property="divisionDept" column="DIVISION_DEPT"/>
+        <result property="evaluationTarget" column="EVALUATION_TARGET"/>
+        <result property="remarks" column="REMARKS"/>
+        <result property="createBy" column="CREATE_BY"/>
+        <result property="createTime" column="CREATE_TIME"/>
+        <result property="updateBy" column="UPDATE_BY"/>
+        <result property="updateTime" column="UPDATE_TIME"/>
+    </resultMap>
+
+    <resultMap id="DisplayHeaderList" type="BusDepReview" extends="BusDepReviewResult">
+        <result property="id" column="bdrID"/>
+        <result property="busYear" column="bdrBUS_YEAR"/>
+        <result property="busName" column="bdrBUS_NAME"/>
+        <result property="divisionDept" column="bdrDIVISION_DEPT"/>
+        <result property="evaluationTarget" column="bdrEVALUATION_TARGET"/>
+        <result property="remarks" column="bdrREMARKS"/>
+        <collection property="busDepReviewHeaderList" ofType="com.cb.worksituation.domain.BusDepReviewHeader">
+            <id column="bdrhID" property="id"/>
+            <result property="headCode" column="bdrhHEAD_CODE"/>
+            <result property="headName" column="bdrhHEAD_NAME"/>
+            <result property="headType" column="bdrhHEAD_TYPE"/>
+            <result property="headScore" column="bdrhHEAD_SCORE"/>
+            <result property="busDepReviewId" column="bdrhBUS_DEP_REVIEW_ID"/>
+            <result property="createBy" column="bdrhCREATE_BY"/>
+            <result property="createTime" column="bdrhCREATE_TIME"/>
+            <result property="updateBy" column="bdrhUPDATE_BY"/>
+            <result property="updateTime" column="bdrhUPDATE_TIME"/>
+            <result property="instructions" column="bdrhINSTRUCTIONS"/>
+            <result property="headOrder" column="bdrhHEAD_ORDER"/>
+            <result property="busDepExplId" column="bdrhBUS_DEP_EXPL_ID"/>
+            <result property="multDeptScore"    column="bdrhMULT_DEPT_SCORE"    />
+            <association property="busDepExpl" javaType="com.cb.worksituation.domain.BusDepExpl">
+                <!-- 关联对象主键列 -->
+                <id property="id" column="bdeID"></id>
+                <result property="divisionDept" column="bdeDIVISION_DEPT"/>
+                <result property="firstLevel" column="bdeFIRST_LEVEL"/>
+                <result property="twoLevel" column="bdeTWO_LEVEL"/>
+                <result property="score" column="bdeSCORE"/>
+                <result property="evaluationDept" column="bdeEVALUATION_DEPT"/>
+            </association>
+        </collection>
+    </resultMap>
+
+    <sql id="selectBusDepReviewVo">
+        select ID,
+               BUS_YEAR,
+               BUS_NAME,
+               DIVISION_DEPT,
+               EVALUATION_TARGET,
+               REMARKS,
+               CREATE_BY,
+               CREATE_TIME,
+               UPDATE_BY,
+               UPDATE_TIME
+        from BUS_DEP_REVIEW
+    </sql>
+
+    <select id="selectBusDepReviewList" parameterType="BusDepReview" resultMap="BusDepReviewResult">
+        <include refid="selectBusDepReviewVo"/>
+        <where>
+            <if test="busYear != null  and busYear != ''">and BUS_YEAR = #{busYear}</if>
+            <if test="busName != null  and busName != ''">and BUS_NAME like concat('%', #{busName}, '%')</if>
+            <if test="divisionDept != null  and divisionDept != ''">and DIVISION_DEPT = #{divisionDept}</if>
+            <if test="evaluationTarget != null  and evaluationTarget != ''">and EVALUATION_TARGET =
+                #{evaluationTarget}
+            </if>
+            <if test="remarks != null  and remarks != ''">and REMARKS = #{remarks}</if>
+            <if test="createBy != null  and createBy != ''">and CREATE_BY = #{createBy}</if>
+            <if test="createTime != null ">and CREATE_TIME = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''">and UPDATE_BY = #{updateBy}</if>
+            <if test="updateTime != null ">and UPDATE_TIME = #{updateTime}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="getDisplayHeaderList" parameterType="String" resultMap="DisplayHeaderList">
+        SELECT bdr.ID                 bdrID,
+               bdr.BUS_YEAR           bdrBUS_YEAR,
+               bdr.BUS_NAME           bdrBUS_NAME,
+               bdr.DIVISION_DEPT      bdrDIVISION_DEPT,
+               bdr.EVALUATION_TARGET  bdrEVALUATION_TARGET,
+               bdr.REMARKS            bdrREMARKS,
+               bdrh.ID                bdrhID,
+               bdrh.HEAD_CODE         bdrhHEAD_CODE,
+               bdrh.HEAD_NAME         bdrhHEAD_NAME,
+               bdrh.HEAD_TYPE         bdrhHEAD_TYPE,
+               bdrh.HEAD_SCORE        bdrhHEAD_SCORE,
+               bdrh.BUS_DEP_REVIEW_ID bdrhBUS_DEP_REVIEW_ID,
+               bdrh.INSTRUCTIONS      bdrhINSTRUCTIONS,
+               bdrh.HEAD_ORDER        bdrhHEAD_ORDER,
+               bdrh.BUS_DEP_EXPL_ID   bdrhBUS_DEP_EXPL_ID,
+               bdrh.MULT_DEPT_SCORE   bdrhMULT_DEPT_SCORE,
+               bde.ID                 bdeID,
+               bde.DIVISION_DEPT      bdeDIVISION_DEPT,
+               bde.FIRST_LEVEL        bdeFIRST_LEVEL,
+               bde.TWO_LEVEL          bdeTWO_LEVEL,
+               bde.SCORE              bdeSCORE,
+               bde.EVALUATION_DEPT    bdeEVALUATION_DEPT
+        FROM BUS_DEP_REVIEW bdr
+                 LEFT JOIN BUS_DEP_REVIEW_HEADER bdrh ON bdrh.BUS_DEP_REVIEW_ID = bdr.ID
+                 LEFT JOIN BUS_DEP_EXPL bde ON bde.ID = bdrh.BUS_DEP_EXPL_ID
+        where bdr.ID = #{id}
+        order by bdrh.HEAD_ORDER
+    </select>
+
+    <select id="selectBusDepReviewById" parameterType="String" resultMap="BusDepReviewResult">
+        <include refid="selectBusDepReviewVo"/>
+        where ID = #{id}
+    </select>
+
+    <insert id="insertBusDepReview" parameterType="BusDepReview">
+        insert into BUS_DEP_REVIEW
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">ID,</if>
+            <if test="busYear != null">BUS_YEAR,</if>
+            <if test="busName != null">BUS_NAME,</if>
+            <if test="divisionDept != null">DIVISION_DEPT,</if>
+            <if test="evaluationTarget != null">EVALUATION_TARGET,</if>
+            <if test="remarks != null">REMARKS,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="busYear != null">#{busYear},</if>
+            <if test="busName != null">#{busName},</if>
+            <if test="divisionDept != null">#{divisionDept},</if>
+            <if test="evaluationTarget != null">#{evaluationTarget},</if>
+            <if test="remarks != null">#{remarks},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into BUS_DEP_REVIEW
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            ID,
+            BUS_YEAR,
+            BUS_NAME,
+            DIVISION_DEPT,
+            EVALUATION_TARGET,
+            REMARKS,
+            CREATE_BY,
+            CREATE_TIME,
+            UPDATE_BY,
+            UPDATE_TIME,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.busYear},
+                #{entity.busName},
+                #{entity.divisionDept},
+                #{entity.evaluationTarget},
+                #{entity.remarks},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBusDepReview" parameterType="BusDepReview">
+        update BUS_DEP_REVIEW
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="busYear != null">BUS_YEAR = #{busYear},</if>
+            <if test="busName != null">BUS_NAME = #{busName},</if>
+            <if test="divisionDept != null">DIVISION_DEPT = #{divisionDept},</if>
+            <if test="evaluationTarget != null">EVALUATION_TARGET = #{evaluationTarget},</if>
+            <if test="remarks != null">REMARKS = #{remarks},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteBusDepReviewById" parameterType="String">
+        delete
+        from BUS_DEP_REVIEW
+        where ID = #{id}
+    </delete>
+
+    <delete id="deleteBusDepReviewByIds" parameterType="String">
+        delete from BUS_DEP_REVIEW where ID in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

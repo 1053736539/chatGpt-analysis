@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.worksituation.mapper.BusDepReviewHeaderMapper">
+
+    <resultMap type="BusDepReviewHeader" id="BusDepReviewHeaderResult">
+        <result property="id"    column="ID"    />
+        <result property="headCode"    column="HEAD_CODE"    />
+        <result property="headName"    column="HEAD_NAME"    />
+        <result property="headType"    column="HEAD_TYPE"    />
+        <result property="headScore"    column="HEAD_SCORE"    />
+        <result property="busDepReviewId"    column="BUS_DEP_REVIEW_ID"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+        <result property="instructions"    column="INSTRUCTIONS"    />
+        <result property="headOrder"    column="HEAD_ORDER"    />
+        <result property="busDepExplId"    column="BUS_DEP_EXPL_ID"    />
+        <result property="multDeptScore"    column="MULT_DEPT_SCORE"    />
+    </resultMap>
+
+    <sql id="selectBusDepReviewHeaderVo">
+        select ID, HEAD_CODE, HEAD_NAME, HEAD_TYPE, HEAD_SCORE,MULT_DEPT_SCORE, BUS_DEP_REVIEW_ID, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME, INSTRUCTIONS, HEAD_ORDER, BUS_DEP_EXPL_ID from BUS_DEP_REVIEW_HEADER
+    </sql>
+
+    <select id="selectBusDepReviewHeaderList" parameterType="BusDepReviewHeader" resultMap="BusDepReviewHeaderResult">
+        <include refid="selectBusDepReviewHeaderVo"/>
+        <where>
+            <if test="headCode != null  and headCode != ''"> and HEAD_CODE = #{headCode}</if>
+            <if test="headName != null  and headName != ''"> and HEAD_NAME like concat('%', #{headName}, '%')</if>
+            <if test="headType != null  and headType != ''"> and HEAD_TYPE = #{headType}</if>
+            <if test="headScore != null "> and HEAD_SCORE = #{headScore}</if>
+            <if test="busDepReviewId != null  and busDepReviewId != ''"> and BUS_DEP_REVIEW_ID = #{busDepReviewId}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+            <if test="instructions != null  and instructions != ''"> and INSTRUCTIONS = #{instructions}</if>
+            <if test="headOrder != null  and headOrder != ''"> and HEAD_ORDER = #{headOrder}</if>
+            <if test="busDepExplId != null  and busDepExplId != ''"> and BUS_DEP_EXPL_ID = #{busDepExplId}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBusDepReviewHeaderById" parameterType="String" resultMap="BusDepReviewHeaderResult">
+        <include refid="selectBusDepReviewHeaderVo"/>
+        where ID = #{id}
+    </select>
+
+    <insert id="insertBusDepReviewHeader" parameterType="BusDepReviewHeader">
+        insert into BUS_DEP_REVIEW_HEADER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">ID,</if>
+            <if test="headCode != null">HEAD_CODE,</if>
+            <if test="headName != null">HEAD_NAME,</if>
+            <if test="headType != null">HEAD_TYPE,</if>
+            <if test="headScore != null">HEAD_SCORE,</if>
+            <if test="busDepReviewId != null">BUS_DEP_REVIEW_ID,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="instructions != null">INSTRUCTIONS,</if>
+            <if test="headOrder != null">HEAD_ORDER,</if>
+            <if test="busDepExplId != null">BUS_DEP_EXPL_ID,</if>
+            <if test="multDeptScore != null">MULT_DEPT_SCORE,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="headCode != null">#{headCode},</if>
+            <if test="headName != null">#{headName},</if>
+            <if test="headType != null">#{headType},</if>
+            <if test="headScore != null">#{headScore},</if>
+            <if test="busDepReviewId != null">#{busDepReviewId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="instructions != null">#{instructions},</if>
+            <if test="headOrder != null">#{headOrder},</if>
+            <if test="busDepExplId != null">#{busDepExplId},</if>
+            <if test="multDeptScore != null">MULT_DEPT_SCORE,</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into BUS_DEP_REVIEW_HEADER
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            ID,
+            HEAD_CODE,
+            HEAD_NAME,
+            HEAD_TYPE,
+            HEAD_SCORE,
+            BUS_DEP_REVIEW_ID,
+            CREATE_BY,
+            CREATE_TIME,
+            UPDATE_BY,
+            UPDATE_TIME,
+            INSTRUCTIONS,
+            HEAD_ORDER,
+            BUS_DEP_EXPL_ID,
+            MULT_DEPT_SCORE,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.headCode},
+                #{entity.headName},
+                #{entity.headType},
+                #{entity.headScore},
+                #{entity.busDepReviewId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.instructions},
+                #{entity.headOrder},
+                #{entity.busDepExplId},
+                #{entity.multDeptScore},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBusDepReviewHeader" parameterType="BusDepReviewHeader">
+        update BUS_DEP_REVIEW_HEADER
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="headCode != null">HEAD_CODE = #{headCode},</if>
+            <if test="headName != null">HEAD_NAME = #{headName},</if>
+            <if test="headType != null">HEAD_TYPE = #{headType},</if>
+            <if test="headScore != null">HEAD_SCORE = #{headScore},</if>
+            <if test="busDepReviewId != null">BUS_DEP_REVIEW_ID = #{busDepReviewId},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="instructions != null">INSTRUCTIONS = #{instructions},</if>
+            <if test="headOrder != null">HEAD_ORDER = #{headOrder},</if>
+            <if test="busDepExplId != null">BUS_DEP_EXPL_ID = #{busDepExplId},</if>
+            <if test="multDeptScore != null">MULT_DEPT_SCORE = #{multDeptScore},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteBusDepReviewHeaderById" parameterType="String">
+        delete from BUS_DEP_REVIEW_HEADER where ID = #{id}
+    </delete>
+
+    <delete id="deleteBusDepReviewHeaderByIds" parameterType="String">
+        delete from BUS_DEP_REVIEW_HEADER where ID in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

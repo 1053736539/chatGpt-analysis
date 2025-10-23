@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.worksituation.mapper.WorkSituationMapper">
+
+    <resultMap type="com.cb.worksituation.domain.WorkSituation" id="WorkSituationResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="workDay"    column="work_day"    />
+        <result property="attendanceDay"    column="attendance_day"    />
+        <result property="leaveDay"    column="leave_day"    />
+        <result property="normal"    column="normal"    />
+        <result property="cardReplacement"    column="card_replacement"    />
+        <result property="vacancyDay"    column="vacancy_day"    />
+        <result property="arriveLate"    column="arrive_late"    />
+        <result property="leaveEarly"    column="leave_early"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="situationYear"    column="situation_year"    />
+        <result property="situationMonth"    column="situation_month"    />
+        <result property="sort"    column="sort"    />
+        <result property="outUserId"    column="out_user_id"    />
+        <result property="isPublicity"    column="is_publicity"    />
+        <result property="realityStartTime"    column="reality_start_time"    />
+        <result property="realityEndTime"    column="reality_end_time"    />
+
+        <result property="leaveName" column="leaveName" /> <!-- 映射查询的假期类型名称 -->
+    </resultMap>
+    <resultMap type="com.cb.worksituation.vo.WorkSituationVo" id="WorkSituationResultVo" extends="WorkSituationResult">
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+
+    <sql id="selectWorkSituationVo">
+        select ws.id, ws.user_id, ws.work_day, ws.attendance_day, ws.leave_day, ws.normal, ws.card_replacement,
+               ws.vacancy_day, ws.arrive_late, ws.leave_early, ws.create_time, ws.update_time, ws.create_by,ws.out_user_id,ws.reality_start_time,ws.reality_end_time,
+               ws.update_by, ws.del_flag,ws.situation_year,ws.situation_month,ws.is_publicity,u.name,lt.leave_name leaveName
+        from work_situation ws
+                 inner join sys_user u on ws.user_id=u.user_id
+                JOIN leave_types lt ON ws.leave_type_id = lt.id
+    </sql>
+
+    <select id="selectWorkSituationList"  resultMap="WorkSituationResultVo">
+        <include refid="selectWorkSituationVo"/>
+        <where>
+            <if test="userId != null  and userId != ''"> and ws.user_id = #{userId}</if>
+            <if test="workDay != null "> and ws.work_day = #{workDay}</if>
+            <if test="attendanceDay != null "> and ws.attendance_day = #{attendanceDay}</if>
+            <if test="leaveDay != null "> and ws.leave_day = #{leaveDay}</if>
+            <if test="normal != null "> and ws.normal = #{normal}</if>
+            <if test="cardReplacement != null "> and ws.card_replacement = #{cardReplacement}</if>
+            <if test="vacancyDay != null "> and ws.vacancy_day = #{vacancyDay}</if>
+            <if test="arriveLate != null "> and ws.arrive_late = #{arriveLate}</if>
+            <if test="leaveEarly != null "> and ws.leave_early = #{leaveEarly}</if>
+            <if test="situationYear != null "> and ws.situation_year = #{situationYear}</if>
+            <if test="situationMonth != null "> and ws.situation_month = #{situationMonth}</if>
+            <if test="sort != null "> and ws.sort = #{sort}</if>
+            <if test="outUserId != null "> and ws.out_user_id = #{outUserId}</if>
+            <if test="name != null "> and u.name like concat('%', #{name},'%')</if>
+            <if test="isPublicity != null "> and ws.is_publicity =#{isPublicity}</if>
+            <if test="deptId != null and deptId != 0">
+                AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+            </if>
+        </where>
+        order by ws.situation_year desc ,ws.situation_month desc
+    </select>
+    <select id="selectListByPublicity"  resultMap="WorkSituationResultVo">
+        <include refid="selectWorkSituationVo"/>
+        <where>
+            <if test="userId != null  and userId != ''"> and ws.user_id = #{userId}</if>
+            <if test="workDay != null "> and ws.work_day = #{workDay}</if>
+            <if test="attendanceDay != null "> and ws.attendance_day = #{attendanceDay}</if>
+            <if test="leaveDay != null "> and ws.leave_day = #{leaveDay}</if>
+            <if test="normal != null "> and ws.normal = #{normal}</if>
+            <if test="cardReplacement != null "> and ws.card_replacement = #{cardReplacement}</if>
+            <if test="vacancyDay != null "> and ws.vacancy_day = #{vacancyDay}</if>
+            <if test="arriveLate != null "> and ws.arrive_late = #{arriveLate}</if>
+            <if test="leaveEarly != null "> and ws.leave_early = #{leaveEarly}</if>
+            <if test="situationYear != null "> and ws.situation_year = #{situationYear}</if>
+            <if test="situationMonth != null "> and ws.situation_month = #{situationMonth}</if>
+            <if test="sort != null "> and ws.sort = #{sort}</if>
+            <if test="outUserId != null "> and ws.out_user_id = #{outUserId}</if>
+            <if test="name != null "> and u.name like concat('%', #{name},'%')</if>
+            <if test="isPublicity != null "> and ws.is_publicity =#{isPublicity}</if>
+            <if test="situationYears != null ">
+                and ws.situation_year in
+                <foreach collection="situationYears" item="year" separator="," open="(" close=")">
+                    #{year}
+                </foreach>
+            </if>
+            <if test="situationMonths != null ">
+                and ws.situation_month in
+                <foreach collection="situationMonths" item="month" separator="," open="(" close=")">
+                    #{month}
+                </foreach>
+            </if>
+            <if test="deptId != null and deptId != 0">
+                AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+            </if>
+        </where>
+        order by ws.situation_year desc ,ws.situation_month desc
+    </select>
+
+    <select id="selectWorkSituationListLeft"  resultMap="WorkSituationResultVo">
+        select ws.id, ws.user_id, ws.work_day, ws.attendance_day, ws.leave_day, ws.normal, ws.card_replacement,
+        ws.vacancy_day, ws.arrive_late, ws.leave_early, ws.create_time, ws.update_time, ws.create_by,ws.out_user_id,
+        ws.update_by, ws.del_flag,ws.situation_year,ws.situation_month,u.name,ws.is_publicity
+        from work_situation ws
+        left join sys_user u on ws.user_id=u.user_id
+        <where>
+            <if test="userId != null  and userId != ''"> and ws.user_id = #{userId}</if>
+            <if test="workDay != null "> and ws.work_day = #{workDay}</if>
+            <if test="attendanceDay != null "> and ws.attendance_day = #{attendanceDay}</if>
+            <if test="leaveDay != null "> and ws.leave_day = #{leaveDay}</if>
+            <if test="normal != null "> and ws.normal = #{normal}</if>
+            <if test="cardReplacement != null "> and ws.card_replacement = #{cardReplacement}</if>
+            <if test="vacancyDay != null "> and ws.vacancy_day = #{vacancyDay}</if>
+            <if test="arriveLate != null "> and ws.arrive_late = #{arriveLate}</if>
+            <if test="leaveEarly != null "> and ws.leave_early = #{leaveEarly}</if>
+            <if test="situationYear != null "> and ws.situation_year = #{situationYear}</if>
+            <if test="situationMonth != null "> and ws.situation_month = #{situationMonth}</if>
+            <if test="sort != null "> and ws.sort = #{sort}</if>
+            <if test="outUserId != null "> and ws.out_user_id = #{outUserId}</if>
+            <if test="name != null "> and u.name like concat('%', #{name},'%')</if>
+            <if test="isPublicity != null "> and ws.is_publicity =#{isPublicity}</if>
+            <if test="deptId != null and deptId != 0">
+                AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+            </if>
+        </where>
+    </select>
+    <!--根据条件进行统计数据-->
+    <select id="selectPieVo"  resultMap="WorkSituationResult">
+        select sum(ws.work_day) as work_day,
+               sum(ws.attendance_day) as attendance_day,
+               sum(ws.leave_day) as leave_day,
+               sum(ws.normal) as normal,
+               sum(ws.card_replacement) as card_replacement,
+               sum(ws.vacancy_day) as vacancy_day,
+               sum(ws.arrive_late) as arrive_late,
+               sum(ws.leave_early) as leave_early
+        from work_situation ws
+        left join sys_user u on ws.user_id=u.user_id
+        <where>
+            <if test="userId != null  and userId != ''"> and ws.user_id = #{userId}</if>
+            <if test="situationYear != null "> and ws.situation_year = #{situationYear}</if>
+            <if test="situationMonth != null "> and ws.situation_month = #{situationMonth}</if>
+            <if test="name != null "> and u.name like concat('%', #{name},'%')</if>
+            <if test="deptId != null and deptId != 0">
+                AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+            </if>
+        </where>
+    </select>
+    <select id="selectWorkSituationById" parameterType="String" resultMap="WorkSituationResult">
+        <include refid="selectWorkSituationVo"/>
+        where ws.id = #{id}
+    </select>
+    <select id="selectAssessWorkSituation" resultMap="WorkSituationResult">
+        select user_id,
+            SUM(COALESCE(work_day, 0)) as work_day,
+            SUM(COALESCE(attendance_day, 0)) as attendance_day,
+            SUM(COALESCE(leave_day, 0)) as leave_day,
+            SUM(COALESCE(normal, 0)) as normal,
+            SUM(COALESCE(card_replacement, 0)) as card_replacement,
+            SUM(COALESCE(vacancy_day, 0)) as vacancy_day,
+            SUM(COALESCE(arrive_late, 0)) as arrive_late,
+            SUM(COALESCE(leave_early, 0)) as leave_early
+        from work_situation
+        <where>
+            user_id = #{userId}
+            <choose>
+                <!--月度考核-->
+                <when test="cycle == '1'.toString()">
+                    and situation_year = #{year}
+                    and convert(situation_month ,SIGNED) = #{start}
+                </when>
+                <!--季度考核-->
+                <when test="cycle == '2'.toString()">
+                    and situation_year = #{year}
+                    and #{start} &lt;= convert(situation_month ,SIGNED)
+                    and convert(situation_month ,SIGNED) &lt;= #{end}
+                </when>
+                <!--年度考核-->
+                <when test="cycle == '3'.toString()">
+                    and situation_year = #{year}
+                </when>
+                <!--专项考核-->
+                <otherwise>
+                    and situation_year = #{year}
+                </otherwise>
+            </choose>
+        </where>
+        group by user_id
+    </select>
+
+    <select id="selectAssessWorkSituation" resultMap="WorkSituationResult" databaseId="dm">
+        select user_id,
+            SUM(COALESCE(work_day, 0)) as work_day,
+            SUM(COALESCE(attendance_day, 0)) as attendance_day,
+            SUM(COALESCE(leave_day, 0)) as leave_day,
+            SUM(COALESCE(normal, 0)) as normal,
+            SUM(COALESCE(card_replacement, 0)) as card_replacement,
+            SUM(COALESCE(vacancy_day, 0)) as vacancy_day,
+            SUM(COALESCE(arrive_late, 0)) as arrive_late,
+            SUM(COALESCE(leave_early, 0)) as leave_early
+        from work_situation
+        <where>
+            user_id = #{userId}
+            <choose>
+                <!--月度考核-->
+                <when test="cycle == '1'.toString()">
+                    and situation_year = #{year}
+                    and convert(int,situation_month) = #{start}
+                </when>
+                <!--季度考核-->
+                <when test="cycle == '2'.toString()">
+                    and situation_year = #{year}
+                    and #{start} &lt;= convert(int,situation_month)
+                    and convert(int,situation_month) &lt;= #{end}
+                </when>
+                <!--年度考核-->
+                <when test="cycle == '3'.toString()">
+                    and situation_year = #{year}
+                </when>
+                <!--专项考核-->
+                <otherwise>
+                    and situation_year = #{year}
+                </otherwise>
+            </choose>
+        </where>
+        group by user_id
+    </select>
+
+    <insert id="insertWorkSituation" >
+        insert into work_situation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="workDay != null">work_day,</if>
+            <if test="attendanceDay != null">attendance_day,</if>
+            <if test="leaveDay != null">leave_day,</if>
+            <if test="normal != null">normal,</if>
+            <if test="cardReplacement != null">card_replacement,</if>
+            <if test="vacancyDay != null">vacancy_day,</if>
+            <if test="arriveLate != null">arrive_late,</if>
+            <if test="leaveEarly != null">leave_early,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="situationYear != null ">  situation_year,</if>
+            <if test="situationMonth != null "> situation_month ,</if>
+            <if test="sort != null ">  sort,</if>
+            <if test="outUserId != null ">  out_user_id,</if>
+            <if test="isPublicity != null ">  is_publicity,</if>
+            <if test="leaveTypeId != null ">  leave_type_id,</if>
+            <if test="totalTime != null ">  total_time,</if>
+            <if test="realityStartTime != null ">  reality_start_time,</if>
+            <if test="realityEndTime != null ">  reality_end_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="workDay != null">#{workDay},</if>
+            <if test="attendanceDay != null">#{attendanceDay},</if>
+            <if test="leaveDay != null">#{leaveDay},</if>
+            <if test="normal != null">#{normal},</if>
+            <if test="cardReplacement != null">#{cardReplacement},</if>
+            <if test="vacancyDay != null">#{vacancyDay},</if>
+            <if test="arriveLate != null">#{arriveLate},</if>
+            <if test="leaveEarly != null">#{leaveEarly},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="situationYear != null "> #{situationYear},</if>
+            <if test="situationMonth != null ">#{situationMonth},</if>
+            <if test="sort != null ">   #{sort},</if>
+            <if test="outUserId != null "> #{outUserId},</if>
+            <if test="isPublicity != null "> #{isPublicity},</if>
+            <if test="leaveTypeId != null "> #{leaveTypeId},</if>
+            <if test="totalTime != null "> #{totalTime},</if>
+            <if test="realityStartTime != null "> #{realityStartTime},</if>
+            <if test="realityEndTime != null "> #{realityEndTime},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertWorkSituationBatch" >
+        insert into work_situation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            user_id,
+            work_day,
+            attendance_day,
+            leave_day,
+            normal,
+            card_replacement,
+            vacancy_day,
+            arrive_late,
+            leave_early,
+            create_time,
+            update_time,
+            create_by,
+            update_by,
+            del_flag,
+            situation_year,
+            situation_month ,
+            sort,
+            out_user_id,
+            is_publicity
+        </trim>
+        values
+        <foreach collection="list" item="model" separator=",">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+                #{model.id},
+                #{model.userId},
+                #{model.workDay},
+                #{model.attendanceDay},
+                #{model.leaveDay},
+                #{model.normal},
+                #{model.cardReplacement},
+                #{model.vacancyDay},
+                #{model.arriveLate},
+                #{model.leaveEarly},
+                #{model.createTime},
+                #{model.updateTime},
+                #{model.createBy},
+                #{model.updateBy},
+                #{model.delFlag},
+                #{model.situationYear},
+                #{model.situationMonth},
+                #{model.sort},
+                #{model.outUserId},
+                #{model.isPublicity}
+            </trim>
+        </foreach>
+
+    </insert>
+    <update id="updateWorkSituation" >
+        update work_situation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="workDay != null">work_day = #{workDay},</if>
+            <if test="attendanceDay != null">attendance_day = #{attendanceDay},</if>
+            <if test="leaveDay != null">leave_day = #{leaveDay},</if>
+            <if test="normal != null">normal = #{normal},</if>
+            <if test="cardReplacement != null">card_replacement = #{cardReplacement},</if>
+            <if test="vacancyDay != null">vacancy_day = #{vacancyDay},</if>
+            <if test="arriveLate != null">arrive_late = #{arriveLate},</if>
+            <if test="leaveEarly != null">leave_early = #{leaveEarly},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="situationYear != null ">  situation_year = #{situationYear},</if>
+            <if test="situationMonth != null ">  situation_month = #{situationMonth},</if>
+            <if test="sort != null ">  sort = #{sort},</if>
+            <if test="outUserId != null "> out_user_id = #{outUserId},</if>
+            <if test="isPublicity != null "> is_publicity = #{isPublicity}</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateToPublicity" >
+        update work_situation
+          set  is_publicity = #{isPublicity}
+        where
+            situation_year in
+            <foreach collection="situationYears" item="year" separator="," open="(" close=")">
+                #{year}
+            </foreach>
+            and situation_month in
+            <foreach collection="situationMonths" item="month" separator="," open="(" close=")">
+                #{month}
+            </foreach>
+    </update>
+
+    <delete id="deleteWorkSituationById" parameterType="String">
+        delete from work_situation where id = #{id}
+    </delete>
+
+    <delete id="deleteWorkSituationByIds" parameterType="String">
+        delete from work_situation where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

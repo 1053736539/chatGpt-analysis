@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.worksituation.mapper.BusDepReviewUnitNameMapper">
+
+    <resultMap type="BusDepReviewUnitName" id="BusDepReviewUnitNameResult">
+        <result property="id"    column="bdrunID"    />
+        <result property="unitName"    column="bdrunUNIT_NAME"    />
+        <collection property="" resultMap="" >
+            <result property="id"    column="bdrmuID"    />
+            <result property="memberUnit"    column="bdrmuMEMBER_UNIT"    />
+            <result property="busDepReviewUnitNameId"    column="bdrmuBUS_DEP_REVIEW_UNIT_NAME_ID"    />
+            <result property="memberOrder"    column="bdrmuMEMBER_ORDER"    />
+        </collection>
+    </resultMap>
+
+    <sql id="selectBusDepReviewUnitNameVo">
+        select ID, UNIT_NAME from BUS_DEP_REVIEW_UNIT_NAME
+    </sql>
+
+    <select id="getBusinessCollaborationUnit" parameterType="BusDepReviewUnitName" resultMap="BusDepReviewUnitNameResult">
+        SELECT bdrun.ID as bdrunID , bdrun.UNIT_NAME as bdrunUNIT_NAME,
+               bdrmu.ID as bdrmuID, bdrmu.MEMBER_UNIT as bdrmuMEMBER_UNIT , bdrmu.BUS_DEP_REVIEW_UNIT_NAME_ID as bdrmuBUS_DEP_REVIEW_UNIT_NAME_ID
+               , bdrmu.MEMBER_ORDER as bdrmuMEMBER_ORDER
+        FROM BUS_DEP_REVIEW_UNIT_NAME bdrun
+                 LEFT JOIN BUS_DEP_REVIEW_MEMBER_UNIT bdrmu ON bdrun.ID  =bdrmu.BUS_DEP_REVIEW_UNIT_NAME_ID
+        order by bdrmu.MEMBER_ORDER
+    </select>
+
+    <select id="selectBusDepReviewUnitNameList" parameterType="BusDepReviewUnitName" resultMap="BusDepReviewUnitNameResult">
+        <include refid="selectBusDepReviewUnitNameVo"/>
+        <where>
+            <if test="unitName != null  and unitName != ''"> and UNIT_NAME like concat('%', #{unitName}, '%')</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBusDepReviewUnitNameById" parameterType="String" resultMap="BusDepReviewUnitNameResult">
+        <include refid="selectBusDepReviewUnitNameVo"/>
+        where ID = #{id}
+    </select>
+
+    <insert id="insertBusDepReviewUnitName" parameterType="BusDepReviewUnitName">
+        insert into BUS_DEP_REVIEW_UNIT_NAME
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">ID,</if>
+            <if test="unitName != null">UNIT_NAME,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="unitName != null">#{unitName},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into BUS_DEP_REVIEW_UNIT_NAME
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                            ID,
+                            UNIT_NAME,
+                    </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                                    #{entity.id},
+                                    #{entity.unitName},
+                            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBusDepReviewUnitName" parameterType="BusDepReviewUnitName">
+        update BUS_DEP_REVIEW_UNIT_NAME
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="unitName != null">UNIT_NAME = #{unitName},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteBusDepReviewUnitNameById" parameterType="String">
+        delete from BUS_DEP_REVIEW_UNIT_NAME where ID = #{id}
+    </delete>
+
+    <delete id="deleteBusDepReviewUnitNameByIds" parameterType="String">
+        delete from BUS_DEP_REVIEW_UNIT_NAME where ID in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
