@@ -155,4 +155,9 @@
             #{id}
         </foreach>
     </delete>
+
+    <delete id="deleteBusDepReviewHeaderByBusDepReviewId" parameterType="String">
+        delete from BUS_DEP_REVIEW_HEADER where BUS_DEP_REVIEW_ID = #{busDepReviewId}
+    </delete>
+
 </mapper>

@@ -16,6 +16,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -211,11 +212,9 @@ public class BusDepReviewDataController extends BaseController {
     // @PreAuthorize("@ss.hasPermi('system:DATA:add')")
     @Log(title = "评分数据", businessType = BusinessType.INSERT)
     @PostMapping
-    public AjaxResult add(@RequestBody BusDepReviewData busDepReviewData) {
-        if (StringUtils.isEmpty(busDepReviewData.getEvaluatTarget())) {
-            return AjaxResult.error("评价对象不能为空");
-        }
-        return toAjax(busDepReviewDataService.insertBusDepReviewData(busDepReviewData));
+    public AjaxResult add(@RequestBody List<BusDepReviewData> busDepReviewDatas) {
+        return null;
+//        return toAjax(busDepReviewDataService.insertBusDepReviewData(busDepReviewDatas));
     }
 
     /**

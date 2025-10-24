@@ -67,4 +67,11 @@ public interface IBusDepReviewHeaderService {
      * @return 结果
      */
     public int deleteBusDepReviewHeaderById(String id);
+
+    /**
+     * w
+     * @param busDepReviewId
+     * @return
+     */
+    public int deleteBusDepReviewHeaderByBusDepReviewId(String busDepReviewId);
 }

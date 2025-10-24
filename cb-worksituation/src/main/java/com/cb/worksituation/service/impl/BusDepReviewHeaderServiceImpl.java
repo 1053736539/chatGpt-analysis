@@ -143,4 +143,14 @@ public class BusDepReviewHeaderServiceImpl implements IBusDepReviewHeaderService
     {
         return busDepReviewHeaderMapper.deleteBusDepReviewHeaderById(id);
     }
+
+    /**
+     * 根据评分表id删除对应数据
+     * @param busDepReviewId
+     * @return
+     */
+    @Override
+    public int deleteBusDepReviewHeaderByBusDepReviewId(String busDepReviewId) {
+        return busDepReviewHeaderMapper.deleteBusDepReviewHeaderByBusDepReviewId(busDepReviewId);
+    }
 }

@@ -70,4 +70,11 @@ public interface BusDepReviewHeaderMapper
      * @return 结果
      */
     public int deleteBusDepReviewHeaderByIds(String[] ids);
+
+    /**
+     * 根据评分表ID删除数据ss
+     * @param busDepReviewId
+     * @return
+     */
+    int deleteBusDepReviewHeaderByBusDepReviewId(String busDepReviewId);
 }
