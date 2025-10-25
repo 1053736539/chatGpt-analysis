@@ -1,0 +1,11 @@
+CREATE OR REPLACE FUNCTION fun_str_format_date(p_date VARCHAR2) 
+RETURN DATE AS 
+BEGIN
+  RETURN CASE 
+    WHEN p_date IS NULL THEN NULL
+    WHEN LENGTH(p_date) = 7 THEN TO_DATE(p_date || '-01', 'YYYY-MM-DD')
+    WHEN LENGTH(p_date) = 10 THEN TO_DATE(p_date, 'YYYY-MM-DD')
+    WHEN LENGTH(p_date) = 19 THEN TO_DATE(p_date, 'YYYY-MM-DD HH24:MI:SS')
+    ELSE TO_DATE(p_date, 'YYYY-MM-DD')
+  END;
+END;

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.cadretrain.mapper.BizQualityProfileMapper">
+    
+    <resultMap type="BizQualityProfile" id="BizQualityProfileResult">
+        <result property="profileId"    column="profile_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="profileType"    column="profile_type"    />
+        <result property="subclass"    column="subclass"    />
+        <result property="filesName"    column="files_name"    />
+        <result property="files"    column="files"    />
+        <result property="username"    column="username"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="userId"    column="user_id"    />
+    </resultMap>
+
+    <sql id="selectBizQualityProfileVo">
+        select profile_id, create_time, create_by, profile_type, subclass, files_name, files, username, update_time, update_by, user_id from biz_quality_profile
+    </sql>
+
+    <select id="selectBizQualityProfileList" parameterType="BizQualityProfile" resultMap="BizQualityProfileResult">
+        <include refid="selectBizQualityProfileVo"/>
+        <where>  
+            <if test="profileType != null  and profileType != ''"> and profile_type = #{profileType}</if>
+            <if test="subclass != null  and subclass != ''"> and subclass = #{subclass}</if>
+            <if test="filesName != null  and filesName != ''"> and files_name like concat('%', #{filesName}, '%')</if>
+            <if test="files != null  and files != ''"> and files = #{files}</if>
+            <if test="username != null  and username != ''"> and username = #{username}</if>
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizQualityProfileById" parameterType="String" resultMap="BizQualityProfileResult">
+        <include refid="selectBizQualityProfileVo"/>
+        where profile_id = #{profileId}
+    </select>
+        
+    <insert id="insertBizQualityProfile" parameterType="BizQualityProfile">
+        insert into biz_quality_profile
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="profileId != null">profile_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="profileType != null">profile_type,</if>
+            <if test="subclass != null">subclass,</if>
+            <if test="filesName != null">files_name,</if>
+            <if test="files != null">files,</if>
+            <if test="username != null">username,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="userId != null">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="profileId != null">#{profileId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="profileType != null">#{profileType},</if>
+            <if test="subclass != null">#{subclass},</if>
+            <if test="filesName != null">#{filesName},</if>
+            <if test="files != null">#{files},</if>
+            <if test="username != null">#{username},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="userId != null">#{userId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizQualityProfile" parameterType="BizQualityProfile">
+        update biz_quality_profile
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="profileType != null">profile_type = #{profileType},</if>
+            <if test="subclass != null">subclass = #{subclass},</if>
+            <if test="filesName != null">files_name = #{filesName},</if>
+            <if test="files != null">files = #{files},</if>
+            <if test="username != null">username = #{username},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where profile_id = #{profileId}
+    </update>
+
+    <delete id="deleteBizQualityProfileById" parameterType="String">
+        delete from biz_quality_profile where profile_id = #{profileId}
+    </delete>
+
+    <delete id="deleteBizQualityProfileByIds" parameterType="String">
+        delete from biz_quality_profile where profile_id in 
+        <foreach item="profileId" collection="array" open="(" separator="," close=")">
+            #{profileId}
+        </foreach>
+    </delete>
+</mapper>

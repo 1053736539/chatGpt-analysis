@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.message.mapper.MessageMapper">
+
+    <resultMap type="com.cb.message.domain.MessageVo" id="MessageResult">
+        <result property="id" column="id"/>
+        <result property="title" column="title"/>
+        <result property="msgContent" column="msg_content"/>
+        <result property="sender" column="sender"/>
+        <result property="sendTime" column="send_time"/>
+        <result property="priority" column="priority"/>
+        <result property="msgCategory" column="msg_category"/>
+        <result property="msgType" column="msg_type"/>
+        <result property="msgAbstract" column="msg_abstract"/>
+        <result property="userId" column="user_id"/>
+        <result property="readFlag" column="read_flag"/>
+        <result property="readTime" column="read_time"/>
+        <association property="user" javaType="com.cb.common.core.domain.entity.SysUser">
+            <result property="nickName" column="nick_name"/>
+        </association>
+    </resultMap>
+    <sql id="selectMessageVo">
+        select a.id, a.title, a.msg_content, a.sender,a.send_time, a.priority, a.msg_category,a.msg_type, a.msg_abstract,
+        b.user_id,b.read_flag,b.read_time,
+        u.nick_name
+        from sys_announcement as a
+        join sys_announcement_send as b on b.annt_id =a.id
+        left join sys_user as u on u.user_name = a.sender
+    </sql>
+    <select id="selectList" parameterType="com.cb.message.domain.MessageVo" resultMap="MessageResult">
+        <include refid="selectMessageVo"/>
+        <where>
+            b.user_id = #{userId}
+            <if test="title != null  and title != ''">and a.title = #{title}</if>
+            <if test="sender != null  and sender != ''">and a.sender = #{sender}</if>
+            <if test="priority != null  and priority != ''">and a.priority = #{priority}</if>
+            <if test="msgCategory != null  and msgCategory != ''">and a.msg_category = #{msgCategory}</if>
+            <if test="msgType != null  and msgType != ''">and a.msg_type = #{msgType}</if>
+            <if test="msgAbstract != null  and msgAbstract != ''">and a.msg_abstract = #{msgAbstract}</if>
+            <if test="readFlag != null  and readFlag != ''">and b.read_flag = #{readFlag}</if>
+        </where>
+        order by a.send_time desc
+    </select>
+    <select id="getInfo" resultMap="MessageResult">
+        <include refid="selectMessageVo"/>
+        where a.id= #{id} and b.user_id = #{userId}
+    </select>
+
+    <select id="selectUnReadList" resultMap="MessageResult">
+        <include refid="selectMessageVo"/>
+        where b.user_id = #{userId} and b.read_flag ='0'
+        <if test="msgCategory !=null and msgCategory != ''"> and msg_category= #{msgCategory}</if>
+        ORDER BY a."send_time" DESC
+        limit 10
+    </select>
+    <select id="countUnRead" resultType="java.lang.Integer">
+        select count(0)
+        from sys_announcement as a
+        join sys_announcement_send as b on b.annt_id =a.id
+        where b.user_id = #{userId} and b.read_flag ='0'
+        <if test="msgCategory !=null and msgCategory!=''">and msg_category= #{msgCategory}</if>
+    </select>
+
+    <select id="systemMessageList" resultType="java.util.Map">
+        SELECT
+            a.title,
+            a.msg_content as text
+        FROM
+            sys_announcement AS a
+            JOIN sys_announcement_send AS b ON b.annt_id = a.id
+            LEFT JOIN sys_user AS u ON u.user_name = a.sender
+    </select>
+
+    <select id="systemMessage2List" resultType="java.util.Map">
+        SELECT
+            DATE_FORMAT(a.send_time,'%Y-%m-%d %H:%i:%S') AS title,
+            a.msg_content as text
+        FROM
+            sys_announcement AS a
+            JOIN sys_announcement_send AS b ON b.annt_id = a.id
+            LEFT JOIN sys_user AS u ON u.user_name = a.sender
+    </select>
+</mapper>

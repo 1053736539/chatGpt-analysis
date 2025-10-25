@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysLogininforMapper">
+
+	<resultMap type="SysLogininfor" id="SysLogininforResult">
+		<id     property="infoId"        column="info_id"           />
+		<result property="userName"      column="user_name"         />
+		<result property="status"        column="status"            />
+		<result property="ipaddr"        column="ipaddr"            />
+		<result property="loginLocation" column="login_location"    />
+		<result property="browser"       column="browser"           />
+		<result property="os"            column="os"                />
+		<result property="msg"           column="msg"               />
+		<result property="loginTime"     column="login_time"        />
+		<result property="hmac"     column="hmac"        />
+	</resultMap>
+
+	<insert id="insertLogininfor" parameterType="SysLogininfor">
+		insert into sys_logininfor (user_name, status, ipaddr, login_location, browser, os, msg, login_time,hmac)
+		values (#{userName}, #{status}, #{ipaddr}, #{loginLocation}, #{browser}, #{os}, #{msg}, sysdate(),#{hmac})
+	</insert>
+	<insert id="insertLogininfor" parameterType="SysLogininfor" databaseId="kingbase">
+		insert into sys_logininfor (user_name, status, ipaddr, login_location, browser, os, msg, login_time,hmac)
+		values (#{userName}, #{status}, #{ipaddr}, #{loginLocation}, #{browser}, #{os}, #{msg}, sysdate,#{hmac})
+	</insert>
+	
+	<select id="selectLogininforList" parameterType="SysLogininfor" resultMap="SysLogininforResult">
+		select l.info_id, l.user_name, l.ipaddr, l.login_location, l.browser, l.os, l.status,
+		l.msg, l.login_time ,l.hmac from sys_logininfor l
+		left join sys_user u on l.user_name = u.user_name
+		<where>
+			<if test="et.ipaddr != null and et.ipaddr != ''">
+				AND l.ipaddr like concat('%', #{et.ipaddr}, '%')
+			</if>
+			<if test="et.status != null and et.status != ''">
+				AND l.status = #{et.status}
+			</if>
+			<if test="et.userName != null and et.userName != ''">
+				AND l.user_name like concat('%', #{et.userName}, '%')
+			</if>
+			<if test="et.params.beginTime != null and et.params.beginTime != ''"><!-- 开始时间检索 -->
+				and date_format(l.login_time,'%y%m%d') &gt;= date_format(#{et.params.beginTime},'%y%m%d')
+			</if>
+			<if test="et.params.endTime != null and et.params.endTime != ''"><!-- 结束时间检索 -->
+				and date_format(l.login_time,'%y%m%d') &lt;= date_format(#{et.params.endTime},'%y%m%d')
+			</if>
+			<if test="userType != null and userType != ''">and find_in_set(u.user_type,#{userType})</if>
+		</where>
+		order by l.info_id desc
+	</select>
+	
+	<delete id="deleteLogininforByIds" parameterType="Long">
+ 		delete from sys_logininfor where info_id in
+ 		<foreach collection="array" item="infoId" open="(" separator="," close=")">
+ 			#{infoId}
+        </foreach> 
+ 	</delete>
+    
+    <update id="cleanLogininfor">
+        truncate table sys_logininfor
+    </update>
+    
+</mapper> 

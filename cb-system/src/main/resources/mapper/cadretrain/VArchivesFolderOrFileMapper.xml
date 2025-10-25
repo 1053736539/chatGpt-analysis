@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.cadretrain.mapper.VArchivesFolderOrFileMapper">
+    <resultMap type="VFolderOrFile" id="VArchivesFolderOrFileResult">
+        <result property="id"    column="id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="fileUrl"    column="file_url"    />
+        <result property="size"    column="size"    />
+        <result property="extName"    column="ext_name"    />
+        <result property="folderNum"    column="folder_num"    />
+        <result property="fileNum"    column="file_num"    />
+        <result property="secret"    column="secret"    />
+    </resultMap>
+    <sql id="selectVFolderOrFileVo">
+        select id, parent_id, name, type,create_by ,create_time,file_url,size,ext_name,folder_num,file_num,secret from v_archives_folder_or_file
+    </sql>
+
+    <select id="selectVArchivesFolderOrFileList1" parameterType="VFolderOrFile" resultMap="VArchivesFolderOrFileResult">
+        <include refid="selectVFolderOrFileVo"/>
+        <where>  
+            <if test="parentId != null  and parentId != ''"> and parent_id = #{parentId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="createBy != null and createBy != ''"> and create_by = #{createBy}</if>
+            and parent_id != '-1'
+        </where>
+        order by type, create_time desc
+    </select>
+    
+    <select id="selectVFolderOrFileById" parameterType="String" resultMap="VArchivesFolderOrFileResult">
+        <include refid="selectVFolderOrFileVo"/>
+        where id = #{id}
+    </select>
+
+
+    <select id="selectVArchivesFolderOrFileList" parameterType="VFolderOrFile" resultMap="VArchivesFolderOrFileResult">
+        <if test="name == null or name == ''">
+            SELECT
+                folder_id AS id,
+                folder_parent_id AS parent_id,
+                folder_name AS name,
+                create_by AS create_by,
+                create_time AS create_time,
+                NULL AS file_url,
+                0 AS size,
+
+                (SELECT count(0)
+                 FROM biz_archives_file_folder t
+                 WHERE t.folder_parent_id = folder_id AND t.del_flag = 1
+                ) AS folder_num,
+                (
+                    SELECT count(0)
+                    FROM biz_attach
+                    WHERE folder_id = folder_id AND del_flag = '1'
+                ) AS file_num,
+                '文件夹' AS ext_name,
+                0 AS type,
+                NULL AS secret
+            FROM biz_archives_file_folder
+            WHERE
+                del_flag = 1
+              AND folder_parent_id = #{parentId}
+
+            UNION ALL
+        </if>
+        SELECT
+            attach_id AS id,
+            folder_id AS parent_id,
+            old_name AS name,
+            create_by AS create_by,
+            create_time AS create_time,
+            path AS file_url,
+            file_size AS size,
+            0 AS folder_num,
+            0 AS file_num,
+            ext_name AS ext_name,
+            1 AS type,
+            secret AS secret
+        FROM biz_attach
+        WHERE
+            del_flag = 1
+          AND create_by = #{createBy} AND folder_id = #{parentId}
+          AND old_name like concat('%', #{name}, '%')
+    </select>
+
+    <select id="selectVArchivesFolderOrFileList" parameterType="VFolderOrFile" resultMap="VArchivesFolderOrFileResult" databaseId="dm">
+        -- 查询文件夹
+        <if test="name == null or name == ''">
+            SELECT
+                "biz_archives_file_folder"."folder_id" AS "id",
+                "biz_archives_file_folder"."folder_parent_id" AS "parent_id",
+                "biz_archives_file_folder"."folder_name" AS "name",
+                "biz_archives_file_folder"."create_by" AS "create_by",
+                "biz_archives_file_folder"."create_time" AS "create_time",
+                NULL AS "file_url",
+                0 AS "size",
+
+                (SELECT count(0)
+                 FROM "biz_archives_file_folder" "t"
+                 WHERE "t"."folder_parent_id" = "biz_archives_file_folder"."folder_id" AND "t"."del_flag" = 1
+                ) AS "folder_num",
+
+                (
+                    SELECT count(0)
+                    FROM "biz_attach"
+                    WHERE "biz_attach"."folder_id" = "biz_archives_file_folder"."folder_id" AND "biz_attach"."del_flag" = '1'
+                ) AS "file_num",
+                '文件夹' AS "ext_name",
+                0 AS "type",
+                NULL AS "secret"
+            FROM "biz_archives_file_folder"
+            WHERE
+                "biz_archives_file_folder"."del_flag" = 1
+              AND "biz_archives_file_folder"."folder_parent_id" = #{parentId}
+
+            UNION ALL
+        </if>
+
+        SELECT
+            "biz_attach"."attach_id" AS "id",
+            "biz_attach"."folder_id" AS "parent_id",
+            "biz_attach"."old_name" AS "name",
+            "biz_attach"."create_by" AS "create_by",
+            "biz_attach"."create_time" AS "create_time",
+            "biz_attach"."path" AS "file_url",
+            "biz_attach"."file_size" AS "size",
+            0 AS "folder_num",
+            0 AS "file_num",
+            "biz_attach"."ext_name" AS "ext_name",
+            1 AS "type",
+            "biz_attach"."secret" AS "secret"
+        FROM "biz_attach"
+        WHERE
+            "biz_attach"."del_flag" = 1
+          AND "biz_attach"."create_by" = #{createBy}
+          AND "biz_attach"."folder_id" = #{parentId}
+          AND "biz_attach"."old_name" like concat('%', #{name}, '%')
+
+    </select>
+
+</mapper>

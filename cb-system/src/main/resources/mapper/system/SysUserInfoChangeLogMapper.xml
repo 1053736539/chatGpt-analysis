@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserInfoChangeLogMapper">
+
+    <resultMap type="SysUserInfoChangeLog" id="SysUserInfoChangeLogResult">
+        <result property="userId"    column="user_id"    />
+        <result property="initData"    column="init_data"    />
+        <result property="lastData"    column="last_data"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSysUserInfoChangeLogVo">
+        select user_id, init_data, last_data, create_by, create_time, update_by, update_time from sys_user_info_change_log
+    </sql>
+
+    <select id="selectSysUserInfoChangeLogList" parameterType="SysUserInfoChangeLog" resultMap="SysUserInfoChangeLogResult">
+        <include refid="selectSysUserInfoChangeLogVo"/>
+        <where>
+            <if test="initData != null  and initData != ''"> and init_data = #{initData}</if>
+            <if test="lastData != null  and lastData != ''"> and last_data = #{lastData}</if>
+        </where>
+    </select>
+
+    <select id="selectSysUserInfoChangeLogById" parameterType="Long" resultMap="SysUserInfoChangeLogResult">
+        <include refid="selectSysUserInfoChangeLogVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <insert id="insertSysUserInfoChangeLog" parameterType="SysUserInfoChangeLog">
+        insert into sys_user_info_change_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="initData != null">init_data,</if>
+            <if test="lastData != null">last_data,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="initData != null">#{initData},</if>
+            <if test="lastData != null">#{lastData},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysUserInfoChangeLog" parameterType="SysUserInfoChangeLog">
+        update sys_user_info_change_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="initData != null">init_data = #{initData},</if>
+            <if test="lastData != null">last_data = #{lastData},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteSysUserInfoChangeLogById" parameterType="Long">
+        delete from sys_user_info_change_log where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteSysUserInfoChangeLogByIds" parameterType="String">
+        delete from sys_user_info_change_log where user_id in
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>

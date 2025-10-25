@@ -1,0 +1,3 @@
+<jsplugins>
+	<jspluginonline name="WpsOAAssist" type="wps" url="http://localhost:8080/wps/plugin/wps"/>
+</jsplugins>

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.table.mapper.TableMapper">
+
+    <resultMap type="Table" id="TableVoResult">
+        <result property="owner" column="owner"/>
+        <result property="tableName" column="table_name"/>
+        <result property="tableType" column="table_type"/>
+        <result property="tableComments" column="table_comments"/>
+        <collection property="columns" javaType="java.util.List" resultMap="ColumnVoResult"/>
+    </resultMap>
+    <resultMap id="ColumnVoResult" type="Columns">
+        <id property="columnName" column="column_name"/>
+        <result property="dataType" column="data_type"/>
+        <result property="comments" column="comments"/>
+        <result property="dataLength" column="data_length"/>
+        <result property="nullable" column="nullable"/>
+    </resultMap>
+
+    <sql id="selectTableVo">
+        SELECT com.owner,
+               tab.table_name,
+               tab.table_type,
+               tab.comments AS table_comments,
+               col.column_name,
+               col.data_type,
+               com.comments,
+               col.data_length,
+               col.nullable
+        FROM user_tab_comments tab
+                 join user_tab_columns col on col.table_name = tab.table_name
+                 join user_col_comments com on com.table_name = col.table_name and com.column_name = col.column_name
+    </sql>
+
+
+    <select id="selectTableListAll" resultMap="TableVoResult">
+        <include refid="selectTableVo"></include>
+    </select>
+
+    <select id="selectTableListPrefix" parameterType="String" resultMap="TableVoResult">
+        <include refid="selectTableVo"></include>
+        WHERE tab.table_name like concat(#{prefix},'%') order by col.column_id asc
+    </select>
+
+    <select id="selectTableListSuffix" resultMap="TableVoResult">
+        <include refid="selectTableVo"></include>
+        WHERE tab.table_name like concat('%',#{suffix}) order by col.column_id asc
+    </select>
+
+    <select id="selectTableListByTableName" resultMap="TableVoResult">
+        <include refid="selectTableVo"></include>
+        WHERE tab.table_name =#{tableName} order by col.column_id asc
+    </select>
+
+    <select id="selectBaseDataSourceTableList" resultMap="TableVoResult">
+        <include refid="selectTableVo"></include>
+        WHERE  left(tab.table_name, LENGTH('bas_')) = 'bas_' and right(tab.table_name,LENGTH('_source')) = '_source'
+        order by col.column_id asc
+    </select>
+
+    <select id="selectBaseDataCleanTableList" resultMap="TableVoResult">
+        <include refid="selectTableVo"></include>
+        WHERE  left(tab.table_name, LENGTH('bas_')) = 'bas_' and right(tab.table_name,LENGTH('_source')) != '_source'
+        order by col.column_id asc
+    </select>
+
+    <select id="selectDiyList" resultType="java.util.Map">
+        SELECT * FROM ${diySql}<if test="whereSql != null and whereSql != ''"> ${whereSql} </if>
+    </select>
+    <select id="selectDiyCount" resultType="java.lang.Integer">
+        SELECT COUNT(1) FROM (SELECT * FROM ${diySql}<if test="whereSql != null and whereSql != ''"> ${whereSql} </if>)
+    </select>
+
+    <update id="createTable">
+        CREATE TABLE ${tableName}
+        (
+            ${columnList},
+            NOT CLUSTER PRIMARY KEY(${primaryKeys})
+        ) STORAGE(ON "MAIN", CLUSTERBTR)
+    </update>
+    <update id="commentTable">
+        COMMENT ON TABLE "${tableName}" IS '${comment}'
+    </update>
+    <update id="commentColumn">
+        COMMENT ON COLUMN "${tableName}"."${column}" IS '${comment}'
+    </update>
+
+</mapper>

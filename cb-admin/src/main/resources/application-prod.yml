@@ -1,0 +1,107 @@
+# 项目相关配置
+cbxxjs:
+  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
+  profile: C:/ruoyi/uploadPath
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+
+# 日志配置
+logging:
+  level:
+    com.cb: debug
+    org.springframework: warn
+
+# Spring配置
+spring:
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size:  10MB
+      # 设置总上传的文件大小
+      max-request-size:  20MB
+  #数据库
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+      #        driverClassName: com.mysql.cj.jdbc.Driver
+    driverClassName: dm.jdbc.driver.DmDriver
+    druid:
+      # 主库数据源 mysql
+#      master:
+#          url: jdbc:mysql://192.168.1.215:3306/assessment?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+#          username: root
+#          password: Password@cbxxjs215
+      # 主库数据源 达梦
+      master:
+        url: jdbc:dm://127.0.0.1:5236/KMJJW?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: KMJJW
+        password: 1q2w3e4r5t
+      slave:
+        # 从数据源开关/默认关闭
+        enabled: false
+        url:
+        username:
+        password:
+  # redis 配置
+  redis:
+    # 地址
+    host: localhost
+    # 端口，默认为6379
+    port: 6379
+    # 数据库索引
+    database: 1
+    # 密码
+    password:
+
+  #elasticsearch 配置
+  elasticsearch:
+    rest:
+      uris: http://192.168.1.216:9200
+      username:
+      password:
+      connectionTimeout: 30
+      readTimeout: 30
+
+# Swagger配置
+swagger:
+  # 是否开启swagger
+  enabled: false
+  # 请求前缀
+  pathMapping: /dev-api
+
+# sm 加解密配置
+encipher:
+  # 国密算法类型 本地(local)，云服务(cloud)
+  usage-type: local
+  #sm 加解密配置  当usage-type= local 时有效
+  local-serve:
+    sm4-SecretKey: 3A527D09D74A269F6C1620C127050D65
+  # 以下配置  当usage-type= cloud 时有效
+  cloud-serve:
+
+
+oa:
+  baseUrl: http://10.53.2.200:8533
+
+sso:
+  oa:
+    appId: tjOA
+    appKey: 880d04f2791d4003aec5d80c82ed6f3e
+
+# elasticsearch 配置
+es:
+  hosts: 127.0.0.1:9200
+  username: elastic
+  password:
+  connectTimeout: 30000
+  socketTimeout: 30000
+  connectionRequestTimeout: 30000
+
+#Rpa 采集信息推送AI知识库ID
+rpa:
+  ai:
+    knowledge-id: 11
+

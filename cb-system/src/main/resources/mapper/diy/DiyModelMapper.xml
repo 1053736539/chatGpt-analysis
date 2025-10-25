@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.diy.mapper.DiyModelMapper">
+
+    <resultMap type="DiyModel" id="DiyModelResult">
+        <result property="modelId" column="model_id"/>
+        <result property="name" column="name"/>
+        <result property="backgroundInformation" column="background_information"/>
+        <result property="dataDescription" column="data_description"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="indicatorCount" column="indicatorCount"/>
+    </resultMap>
+
+    <sql id="selectDiyModelVo">
+        select model_id,
+               name,
+               background_information,
+               data_description,
+               remark,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        from diy_model
+    </sql>
+
+    <sql id="selectDiyModelAndIndicator">
+        SELECT m.model_id,
+               m.name,
+               m.background_information,
+               m.data_description,
+               (SELECT COUNT(*) FROM diy_model_indicator i WHERE i.model_id = m.model_id) AS indicatorCount
+        FROM diy_model m
+    </sql>
+
+    <select id="selectDiyModelList" parameterType="DiyModel" resultMap="DiyModelResult">
+        <include refid="selectDiyModelAndIndicator"/>
+        <where>
+            <if test="name != null  and name != ''">and m.name like concat('%', #{name}, '%')</if>
+            <if test="backgroundInformation != null  and backgroundInformation != ''">and m.background_information =
+                #{backgroundInformation}
+            </if>
+            <if test="dataDescription != null  and dataDescription != ''">and m.data_description = #{dataDescription}</if>
+        </where>
+    </select>
+
+    <select id="selectDiyModelById" parameterType="Long" resultMap="DiyModelResult">
+        <include refid="selectDiyModelVo"/>
+        where model_id = #{modelId}
+    </select>
+
+    <insert id="insertDiyModel" parameterType="DiyModel">
+        insert into diy_model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="modelId != null">model_id,</if>
+            <if test="name != null">name,</if>
+            <if test="backgroundInformation != null">background_information,</if>
+            <if test="dataDescription != null">data_description,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="modelId != null">#{modelId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="backgroundInformation != null">#{backgroundInformation},</if>
+            <if test="dataDescription != null">#{dataDescription},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDiyModel" parameterType="DiyModel">
+        update diy_model
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="backgroundInformation != null">background_information = #{backgroundInformation},</if>
+            <if test="dataDescription != null">data_description = #{dataDescription},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where model_id = #{modelId}
+    </update>
+
+    <delete id="deleteDiyModelById" parameterType="Long">
+        delete
+        from diy_model
+        where model_id = #{modelId}
+    </delete>
+
+    <delete id="deleteDiyModelByIds" parameterType="String">
+        delete from diy_model where model_id in
+        <foreach item="modelId" collection="array" open="(" separator="," close=")">
+            #{modelId}
+        </foreach>
+    </delete>
+</mapper>

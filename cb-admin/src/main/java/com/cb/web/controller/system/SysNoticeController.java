@@ -1,0 +1,110 @@
+package com.cb.web.controller.system;
+
+import com.cb.common.annotation.Log;
+import com.cb.common.core.controller.BaseController;
+import com.cb.common.core.domain.AjaxResult;
+import com.cb.common.core.page.TableDataInfo;
+import com.cb.common.enums.BusinessType;
+import com.cb.common.utils.SecurityUtils;
+import com.cb.system.domain.SysNotice;
+import com.cb.system.service.ISysNoticeService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * 公告 信息操作处理
+ * 
+ * @author ruoyi
+ */
+@RestController
+@RequestMapping("/system/notice")
+public class SysNoticeController extends BaseController
+{
+    @Autowired
+    private ISysNoticeService noticeService;
+
+    /**
+     * 获取通知公告列表
+     */
+//    @PreAuthorize("@ss.hasPermi('system:notice:list')")
+    @GetMapping("/list")
+    public TableDataInfo list(SysNotice notice)
+    {
+        startPage();
+        List<SysNotice> list = noticeService.selectNoticeList(notice);
+        return getDataTable(list);
+    }
+
+    /**
+     * 根据通知公告编号获取详细信息
+     */
+    @PreAuthorize("@ss.hasPermi('system:notice:query')")
+    @GetMapping(value = "/{noticeId}")
+    public AjaxResult getInfo(@PathVariable Long noticeId)
+    {
+        return AjaxResult.success(noticeService.selectNoticeById(noticeId));
+    }
+
+    /**
+     * 新增通知公告
+     */
+    @PreAuthorize("@ss.hasPermi('system:notice:add')")
+    @Log(title = "通知公告", businessType = BusinessType.INSERT)
+    @PostMapping
+    public AjaxResult add(@Validated @RequestBody SysNotice notice)
+    {
+        notice.setCreateBy(SecurityUtils.getUsername());
+        return toAjax(noticeService.insertNotice(notice));
+    }
+
+    /**
+     * 修改通知公告
+     */
+    @PreAuthorize("@ss.hasPermi('system:notice:edit')")
+    @Log(title = "通知公告", businessType = BusinessType.UPDATE)
+    @PutMapping
+    public AjaxResult edit(@Validated @RequestBody SysNotice notice)
+    {
+        notice.setUpdateBy(SecurityUtils.getUsername());
+        return toAjax(noticeService.updateNotice(notice));
+    }
+
+    /**
+     * 删除通知公告
+     */
+    @PreAuthorize("@ss.hasPermi('system:notice:remove')")
+    @Log(title = "通知公告", businessType = BusinessType.DELETE)
+    @DeleteMapping("/{noticeIds}")
+    public AjaxResult remove(@PathVariable Long[] noticeIds)
+    {
+        return toAjax(noticeService.deleteNoticeByIds(noticeIds));
+    }
+
+    /**
+     * 切换置顶状态
+     * @param id
+     * @return
+     */
+    @PostMapping("changeTopFlag/{id}")
+    public AjaxResult changeTopFlag(@PathVariable("id") Long id){
+        noticeService.changeTopFlag(id);
+        return AjaxResult.success("操作成功");
+    }
+
+
+    /**
+     * 切换状态
+     * @param id
+     * @return
+     */
+    @PostMapping("changeStatus/{id}")
+    public AjaxResult changeStatus(@PathVariable("id") Long id){
+        noticeService.changeStatus(id);
+        return AjaxResult.success("操作成功");
+    }
+
+}

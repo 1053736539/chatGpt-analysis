@@ -1,0 +1,459 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.RsInfoMapper">
+    
+    <resultMap type="RsInfo" id="RsInfoResult">
+        <result property="id"    column="ID"    />
+        <result property="rsid"    column="RSID"    />
+        <result property="userId"    column="USER_ID"    />
+        <result property="ar"    column="AR"    />
+        <result property="bm"    column="BM"    />
+        <result property="csny"    column="CSNY"    />
+        <result property="dqzp"    column="DQZP"    />
+        <result property="dcdw"    column="DCDW"    />
+        <result property="dcsj"    column="DCSJ"    />
+        <result property="dcyy"    column="DCYY"    />
+        <result property="djdw"    column="DJDW"    />
+        <result property="djsj"    column="DJSJ"    />
+        <result property="djyy"    column="DJYY"    />
+        <result property="fs"    column="FS"    />
+        <result property="hsgz"    column="HSGZ"    />
+        <result property="hsjs"    column="HSJS"    />
+        <result property="jg"    column="JG"    />
+        <result property="jrsj"    column="JRSJ"    />
+        <result property="jl"    column="JL"    />
+        <result property="mz"    column="MZ"    />
+        <result property="ppsj"    column="PPSJ"    />
+        <result property="rylb"    column="RYLB"    />
+        <result property="rybh"    column="RYBH"    />
+        <result property="rmsj"    column="RMSJ"    />
+        <result property="sfzh"    column="SFZH"    />
+        <result property="tzsj"    column="TZSJ"    />
+        <result property="tzyy"    column="TZYY"    />
+        <result property="wyz"    column="WYZ"    />
+        <result property="whcd"    column="WHCD"    />
+        <result property="xb"    column="XB"    />
+        <result property="xm"    column="XM"    />
+        <result property="ygxz"    column="YGXZ"    />
+        <result property="zzmm"    column="ZZMM"    />
+        <result property="zw"    column="ZW"    />
+        <result property="zyzc"    column="ZYZC"    />
+        <result property="zn"    column="ZN"    />
+        <result property="bmmc"    column="BMMC"    />
+        <result property="cs"    column="CS"    />
+        <result property="gzgw"    column="GZGW"    />
+        <result property="gzdw"    column="GZDW"    />
+        <result property="rsfs"    column="RSFS"    />
+        <result property="sxh"    column="SXH"    />
+        <result property="xmpy"    column="XMPY"    />
+        <result property="qssj"    column="QSSJ"    />
+        <result property="bysj"    column="BYSJ"    />
+        <result property="byyxzy"    column="BYYXZY"    />
+        <result property="oldbm"    column="OLDBM"    />
+        <result property="oldrsid"    column="OLDRSID"    />
+        <result property="chushengdi"    column="CHUSHENGDI"    />
+        <result property="worktime"    column="WORKTIME"    />
+        <result property="jointime"    column="JOINTIME"    />
+        <result property="jobunit"    column="JOBUNIT"    />
+        <result property="appointtime"    column="APPOINTTIME"    />
+        <result property="idcard"    column="IDCARD"    />
+        <result property="quanrizixueli"    column="QUANRIZIXUELI"    />
+        <result property="quanrizixuewei"    column="QUANRIZIXUEWEI"    />
+        <result property="quanriziyuanxiao"    column="QUANRIZIYUANXIAO"    />
+        <result property="quanrizizhuanye"    column="QUANRIZIZHUANYE"    />
+        <result property="zaizhixueli"    column="ZAIZHIXUELI"    />
+        <result property="zaizhixuewei"    column="ZAIZHIXUEWEI"    />
+        <result property="zaizhiyuanxiao"    column="ZAIZHIYUANXIAO"    />
+        <result property="zaizhizhuanye"    column="ZAIZHIZHUANYE"    />
+        <result property="qingkuanshuomi"    column="QINGKUANSHUOMI"    />
+        <result property="danganzhengliren"    column="DANGANZHENGLIREN"    />
+        <result property="danganshenheren"    column="DANGANSHENHEREN"    />
+        <result property="shuzihuacaijiren"    column="SHUZIHUACAIJIREN"    />
+        <result property="shuzihuashenheren"    column="SHUZIHUASHENHEREN"    />
+        <result property="danganjuanshu"    column="DANGANJUANSHU"    />
+        <result property="baosongdanwei"    column="BAOSONGDANWEI"    />
+        <result property="baosongriqi"    column="BAOSONGRIQI"    />
+        <result property="modifyyes"    column="MODIFYYES"    />
+        <result property="renwubiandong"    column="RENWUBIANDONG"    />
+        <result property="duanquecailiao"    column="DUANQUECAILIAO"    />
+        <result property="archfile"    column="ARCHFILE"    />
+        <result property="state"    column="State"    />
+        <result property="strxmpy"    column="STRXMPY"    />
+        <result property="mijibiaoshi"    column="MIJIBIAOSHI"    />
+    </resultMap>
+
+    <sql id="selectRsInfoVo">
+        select ID, RSID, USER_ID, AR, BM, CSNY, DQZP, DCDW, DCSJ, DCYY, DJDW, DJSJ, DJYY, FS, HSGZ, HSJS, JG, JRSJ, JL, MZ, PPSJ, RYLB, RYBH, RMSJ, SFZH, TZSJ, TZYY, WYZ, WHCD, XB, XM, YGXZ, ZZMM, ZW, ZYZC, ZN, BMMC, CS, GZGW, GZDW, RSFS, SXH, XMPY, QSSJ, BYSJ, BYYXZY, OLDBM, OLDRSID, CHUSHENGDI, WORKTIME, JOINTIME, JOBUNIT, APPOINTTIME, IDCARD, QUANRIZIXUELI, QUANRIZIXUEWEI, QUANRIZIYUANXIAO, QUANRIZIZHUANYE, ZAIZHIXUELI, ZAIZHIXUEWEI, ZAIZHIYUANXIAO, ZAIZHIZHUANYE, QINGKUANSHUOMI, DANGANZHENGLIREN, DANGANSHENHEREN, SHUZIHUACAIJIREN, SHUZIHUASHENHEREN, DANGANJUANSHU, BAOSONGDANWEI, BAOSONGRIQI, MODIFYYES, RENWUBIANDONG, DUANQUECAILIAO, ARCHFILE, State, STRXMPY, MIJIBIAOSHI from RS_INFO
+    </sql>
+
+    <select id="selectRsInfoList" parameterType="RsInfo" resultMap="RsInfoResult">
+        <include refid="selectRsInfoVo"/>
+        <where>  
+            <if test="rsid != null "> and RSID = #{rsid}</if>
+            <if test="userId != null "> and USER_ID = #{userId}</if>
+            <if test="ar != null  and ar != ''"> and AR = #{ar}</if>
+            <if test="bm != null  and bm != ''"> and BM = #{bm}</if>
+            <if test="csny != null  and csny != ''"> and CSNY = #{csny}</if>
+            <if test="dqzp != null  and dqzp != ''"> and DQZP = #{dqzp}</if>
+            <if test="dcdw != null  and dcdw != ''"> and DCDW = #{dcdw}</if>
+            <if test="dcsj != null  and dcsj != ''"> and DCSJ = #{dcsj}</if>
+            <if test="dcyy != null  and dcyy != ''"> and DCYY = #{dcyy}</if>
+            <if test="djdw != null  and djdw != ''"> and DJDW = #{djdw}</if>
+            <if test="djsj != null  and djsj != ''"> and DJSJ = #{djsj}</if>
+            <if test="djyy != null  and djyy != ''"> and DJYY = #{djyy}</if>
+            <if test="fs != null  and fs != ''"> and FS = #{fs}</if>
+            <if test="hsgz != null  and hsgz != ''"> and HSGZ = #{hsgz}</if>
+            <if test="hsjs != null  and hsjs != ''"> and HSJS = #{hsjs}</if>
+            <if test="jg != null  and jg != ''"> and JG = #{jg}</if>
+            <if test="jrsj != null  and jrsj != ''"> and JRSJ = #{jrsj}</if>
+            <if test="jl != null  and jl != ''"> and JL = #{jl}</if>
+            <if test="mz != null  and mz != ''"> and MZ = #{mz}</if>
+            <if test="ppsj != null  and ppsj != ''"> and PPSJ = #{ppsj}</if>
+            <if test="rylb != null  and rylb != ''"> and RYLB = #{rylb}</if>
+            <if test="rybh != null  and rybh != ''"> and RYBH = #{rybh}</if>
+            <if test="rmsj != null  and rmsj != ''"> and RMSJ = #{rmsj}</if>
+            <if test="sfzh != null  and sfzh != ''"> and SFZH = #{sfzh}</if>
+            <if test="tzsj != null  and tzsj != ''"> and TZSJ = #{tzsj}</if>
+            <if test="tzyy != null  and tzyy != ''"> and TZYY = #{tzyy}</if>
+            <if test="wyz != null  and wyz != ''"> and WYZ = #{wyz}</if>
+            <if test="whcd != null  and whcd != ''"> and WHCD = #{whcd}</if>
+            <if test="xb != null  and xb != ''"> and XB = #{xb}</if>
+            <if test="xm != null  and xm != ''"> and XM = #{xm}</if>
+            <if test="ygxz != null  and ygxz != ''"> and YGXZ = #{ygxz}</if>
+            <if test="zzmm != null  and zzmm != ''"> and ZZMM = #{zzmm}</if>
+            <if test="zw != null  and zw != ''"> and ZW = #{zw}</if>
+            <if test="zyzc != null  and zyzc != ''"> and ZYZC = #{zyzc}</if>
+            <if test="zn != null  and zn != ''"> and ZN = #{zn}</if>
+            <if test="bmmc != null  and bmmc != ''"> and BMMC = #{bmmc}</if>
+            <if test="cs != null  and cs != ''"> and CS = #{cs}</if>
+            <if test="gzgw != null  and gzgw != ''"> and GZGW = #{gzgw}</if>
+            <if test="gzdw != null  and gzdw != ''"> and GZDW = #{gzdw}</if>
+            <if test="rsfs != null  and rsfs != ''"> and RSFS = #{rsfs}</if>
+            <if test="sxh != null "> and SXH = #{sxh}</if>
+            <if test="xmpy != null  and xmpy != ''"> and XMPY = #{xmpy}</if>
+            <if test="qssj != null  and qssj != ''"> and QSSJ = #{qssj}</if>
+            <if test="bysj != null  and bysj != ''"> and BYSJ = #{bysj}</if>
+            <if test="byyxzy != null  and byyxzy != ''"> and BYYXZY = #{byyxzy}</if>
+            <if test="oldbm != null "> and OLDBM = #{oldbm}</if>
+            <if test="oldrsid != null "> and OLDRSID = #{oldrsid}</if>
+            <if test="chushengdi != null  and chushengdi != ''"> and CHUSHENGDI = #{chushengdi}</if>
+            <if test="worktime != null  and worktime != ''"> and WORKTIME = #{worktime}</if>
+            <if test="jointime != null  and jointime != ''"> and JOINTIME = #{jointime}</if>
+            <if test="jobunit != null  and jobunit != ''"> and JOBUNIT = #{jobunit}</if>
+            <if test="appointtime != null  and appointtime != ''"> and APPOINTTIME = #{appointtime}</if>
+            <if test="idcard != null  and idcard != ''"> and IDCARD = #{idcard}</if>
+            <if test="quanrizixueli != null  and quanrizixueli != ''"> and QUANRIZIXUELI = #{quanrizixueli}</if>
+            <if test="quanrizixuewei != null  and quanrizixuewei != ''"> and QUANRIZIXUEWEI = #{quanrizixuewei}</if>
+            <if test="quanriziyuanxiao != null  and quanriziyuanxiao != ''"> and QUANRIZIYUANXIAO = #{quanriziyuanxiao}</if>
+            <if test="quanrizizhuanye != null  and quanrizizhuanye != ''"> and QUANRIZIZHUANYE = #{quanrizizhuanye}</if>
+            <if test="zaizhixueli != null  and zaizhixueli != ''"> and ZAIZHIXUELI = #{zaizhixueli}</if>
+            <if test="zaizhixuewei != null  and zaizhixuewei != ''"> and ZAIZHIXUEWEI = #{zaizhixuewei}</if>
+            <if test="zaizhiyuanxiao != null  and zaizhiyuanxiao != ''"> and ZAIZHIYUANXIAO = #{zaizhiyuanxiao}</if>
+            <if test="zaizhizhuanye != null  and zaizhizhuanye != ''"> and ZAIZHIZHUANYE = #{zaizhizhuanye}</if>
+            <if test="qingkuanshuomi != null  and qingkuanshuomi != ''"> and QINGKUANSHUOMI = #{qingkuanshuomi}</if>
+            <if test="danganzhengliren != null  and danganzhengliren != ''"> and DANGANZHENGLIREN = #{danganzhengliren}</if>
+            <if test="danganshenheren != null  and danganshenheren != ''"> and DANGANSHENHEREN = #{danganshenheren}</if>
+            <if test="shuzihuacaijiren != null  and shuzihuacaijiren != ''"> and SHUZIHUACAIJIREN = #{shuzihuacaijiren}</if>
+            <if test="shuzihuashenheren != null  and shuzihuashenheren != ''"> and SHUZIHUASHENHEREN = #{shuzihuashenheren}</if>
+            <if test="danganjuanshu != null  and danganjuanshu != ''"> and DANGANJUANSHU = #{danganjuanshu}</if>
+            <if test="baosongdanwei != null  and baosongdanwei != ''"> and BAOSONGDANWEI = #{baosongdanwei}</if>
+            <if test="baosongriqi != null  and baosongriqi != ''"> and BAOSONGRIQI = #{baosongriqi}</if>
+            <if test="modifyyes != null "> and MODIFYYES = #{modifyyes}</if>
+            <if test="renwubiandong != null  and renwubiandong != ''"> and RENWUBIANDONG = #{renwubiandong}</if>
+            <if test="duanquecailiao != null  and duanquecailiao != ''"> and DUANQUECAILIAO = #{duanquecailiao}</if>
+            <if test="archfile != null "> and ARCHFILE = #{archfile}</if>
+            <if test="state != null "> and State = #{state}</if>
+            <if test="strxmpy != null  and strxmpy != ''"> and STRXMPY = #{strxmpy}</if>
+            <if test="mijibiaoshi != null  and mijibiaoshi != ''"> and MIJIBIAOSHI = #{mijibiaoshi}</if>
+        </where>
+    </select>
+    
+    <select id="selectRsInfoById" parameterType="Integer" resultMap="RsInfoResult">
+        <include refid="selectRsInfoVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertRsInfo" parameterType="RsInfo">
+        insert into RS_INFO
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="rsid != null">RSID,</if>
+            <if test="userId != null">USER_ID,</if>
+            <if test="ar != null">AR,</if>
+            <if test="bm != null">BM,</if>
+            <if test="csny != null">CSNY,</if>
+            <if test="dqzp != null">DQZP,</if>
+            <if test="dcdw != null">DCDW,</if>
+            <if test="dcsj != null">DCSJ,</if>
+            <if test="dcyy != null">DCYY,</if>
+            <if test="djdw != null">DJDW,</if>
+            <if test="djsj != null">DJSJ,</if>
+            <if test="djyy != null">DJYY,</if>
+            <if test="fs != null">FS,</if>
+            <if test="hsgz != null">HSGZ,</if>
+            <if test="hsjs != null">HSJS,</if>
+            <if test="jg != null">JG,</if>
+            <if test="jrsj != null">JRSJ,</if>
+            <if test="jl != null">JL,</if>
+            <if test="mz != null">MZ,</if>
+            <if test="ppsj != null">PPSJ,</if>
+            <if test="rylb != null">RYLB,</if>
+            <if test="rybh != null">RYBH,</if>
+            <if test="rmsj != null">RMSJ,</if>
+            <if test="sfzh != null">SFZH,</if>
+            <if test="tzsj != null">TZSJ,</if>
+            <if test="tzyy != null">TZYY,</if>
+            <if test="wyz != null">WYZ,</if>
+            <if test="whcd != null">WHCD,</if>
+            <if test="xb != null">XB,</if>
+            <if test="xm != null">XM,</if>
+            <if test="ygxz != null">YGXZ,</if>
+            <if test="zzmm != null">ZZMM,</if>
+            <if test="zw != null">ZW,</if>
+            <if test="zyzc != null">ZYZC,</if>
+            <if test="zn != null">ZN,</if>
+            <if test="bmmc != null">BMMC,</if>
+            <if test="cs != null">CS,</if>
+            <if test="gzgw != null">GZGW,</if>
+            <if test="gzdw != null">GZDW,</if>
+            <if test="rsfs != null">RSFS,</if>
+            <if test="sxh != null">SXH,</if>
+            <if test="xmpy != null">XMPY,</if>
+            <if test="qssj != null">QSSJ,</if>
+            <if test="bysj != null">BYSJ,</if>
+            <if test="byyxzy != null">BYYXZY,</if>
+            <if test="oldbm != null">OLDBM,</if>
+            <if test="oldrsid != null">OLDRSID,</if>
+            <if test="chushengdi != null">CHUSHENGDI,</if>
+            <if test="worktime != null">WORKTIME,</if>
+            <if test="jointime != null">JOINTIME,</if>
+            <if test="jobunit != null">JOBUNIT,</if>
+            <if test="appointtime != null">APPOINTTIME,</if>
+            <if test="idcard != null">IDCARD,</if>
+            <if test="quanrizixueli != null">QUANRIZIXUELI,</if>
+            <if test="quanrizixuewei != null">QUANRIZIXUEWEI,</if>
+            <if test="quanriziyuanxiao != null">QUANRIZIYUANXIAO,</if>
+            <if test="quanrizizhuanye != null">QUANRIZIZHUANYE,</if>
+            <if test="zaizhixueli != null">ZAIZHIXUELI,</if>
+            <if test="zaizhixuewei != null">ZAIZHIXUEWEI,</if>
+            <if test="zaizhiyuanxiao != null">ZAIZHIYUANXIAO,</if>
+            <if test="zaizhizhuanye != null">ZAIZHIZHUANYE,</if>
+            <if test="qingkuanshuomi != null">QINGKUANSHUOMI,</if>
+            <if test="danganzhengliren != null">DANGANZHENGLIREN,</if>
+            <if test="danganshenheren != null">DANGANSHENHEREN,</if>
+            <if test="shuzihuacaijiren != null">SHUZIHUACAIJIREN,</if>
+            <if test="shuzihuashenheren != null">SHUZIHUASHENHEREN,</if>
+            <if test="danganjuanshu != null">DANGANJUANSHU,</if>
+            <if test="baosongdanwei != null">BAOSONGDANWEI,</if>
+            <if test="baosongriqi != null">BAOSONGRIQI,</if>
+            <if test="modifyyes != null">MODIFYYES,</if>
+            <if test="renwubiandong != null">RENWUBIANDONG,</if>
+            <if test="duanquecailiao != null">DUANQUECAILIAO,</if>
+            <if test="archfile != null">ARCHFILE,</if>
+            <if test="state != null">State,</if>
+            <if test="strxmpy != null">STRXMPY,</if>
+            <if test="mijibiaoshi != null">MIJIBIAOSHI,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="rsid != null">#{rsid},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="ar != null">#{ar},</if>
+            <if test="bm != null">#{bm},</if>
+            <if test="csny != null">#{csny},</if>
+            <if test="dqzp != null">#{dqzp},</if>
+            <if test="dcdw != null">#{dcdw},</if>
+            <if test="dcsj != null">#{dcsj},</if>
+            <if test="dcyy != null">#{dcyy},</if>
+            <if test="djdw != null">#{djdw},</if>
+            <if test="djsj != null">#{djsj},</if>
+            <if test="djyy != null">#{djyy},</if>
+            <if test="fs != null">#{fs},</if>
+            <if test="hsgz != null">#{hsgz},</if>
+            <if test="hsjs != null">#{hsjs},</if>
+            <if test="jg != null">#{jg},</if>
+            <if test="jrsj != null">#{jrsj},</if>
+            <if test="jl != null">#{jl},</if>
+            <if test="mz != null">#{mz},</if>
+            <if test="ppsj != null">#{ppsj},</if>
+            <if test="rylb != null">#{rylb},</if>
+            <if test="rybh != null">#{rybh},</if>
+            <if test="rmsj != null">#{rmsj},</if>
+            <if test="sfzh != null">#{sfzh},</if>
+            <if test="tzsj != null">#{tzsj},</if>
+            <if test="tzyy != null">#{tzyy},</if>
+            <if test="wyz != null">#{wyz},</if>
+            <if test="whcd != null">#{whcd},</if>
+            <if test="xb != null">#{xb},</if>
+            <if test="xm != null">#{xm},</if>
+            <if test="ygxz != null">#{ygxz},</if>
+            <if test="zzmm != null">#{zzmm},</if>
+            <if test="zw != null">#{zw},</if>
+            <if test="zyzc != null">#{zyzc},</if>
+            <if test="zn != null">#{zn},</if>
+            <if test="bmmc != null">#{bmmc},</if>
+            <if test="cs != null">#{cs},</if>
+            <if test="gzgw != null">#{gzgw},</if>
+            <if test="gzdw != null">#{gzdw},</if>
+            <if test="rsfs != null">#{rsfs},</if>
+            <if test="sxh != null">#{sxh},</if>
+            <if test="xmpy != null">#{xmpy},</if>
+            <if test="qssj != null">#{qssj},</if>
+            <if test="bysj != null">#{bysj},</if>
+            <if test="byyxzy != null">#{byyxzy},</if>
+            <if test="oldbm != null">#{oldbm},</if>
+            <if test="oldrsid != null">#{oldrsid},</if>
+            <if test="chushengdi != null">#{chushengdi},</if>
+            <if test="worktime != null">#{worktime},</if>
+            <if test="jointime != null">#{jointime},</if>
+            <if test="jobunit != null">#{jobunit},</if>
+            <if test="appointtime != null">#{appointtime},</if>
+            <if test="idcard != null">#{idcard},</if>
+            <if test="quanrizixueli != null">#{quanrizixueli},</if>
+            <if test="quanrizixuewei != null">#{quanrizixuewei},</if>
+            <if test="quanriziyuanxiao != null">#{quanriziyuanxiao},</if>
+            <if test="quanrizizhuanye != null">#{quanrizizhuanye},</if>
+            <if test="zaizhixueli != null">#{zaizhixueli},</if>
+            <if test="zaizhixuewei != null">#{zaizhixuewei},</if>
+            <if test="zaizhiyuanxiao != null">#{zaizhiyuanxiao},</if>
+            <if test="zaizhizhuanye != null">#{zaizhizhuanye},</if>
+            <if test="qingkuanshuomi != null">#{qingkuanshuomi},</if>
+            <if test="danganzhengliren != null">#{danganzhengliren},</if>
+            <if test="danganshenheren != null">#{danganshenheren},</if>
+            <if test="shuzihuacaijiren != null">#{shuzihuacaijiren},</if>
+            <if test="shuzihuashenheren != null">#{shuzihuashenheren},</if>
+            <if test="danganjuanshu != null">#{danganjuanshu},</if>
+            <if test="baosongdanwei != null">#{baosongdanwei},</if>
+            <if test="baosongriqi != null">#{baosongriqi},</if>
+            <if test="modifyyes != null">#{modifyyes},</if>
+            <if test="renwubiandong != null">#{renwubiandong},</if>
+            <if test="duanquecailiao != null">#{duanquecailiao},</if>
+            <if test="archfile != null">#{archfile},</if>
+            <if test="state != null">#{state},</if>
+            <if test="strxmpy != null">#{strxmpy},</if>
+            <if test="mijibiaoshi != null">#{mijibiaoshi},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRsInfo" parameterType="RsInfo">
+        update RS_INFO
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="rsid != null">RSID = #{rsid},</if>
+            <if test="userId != null">USER_ID = #{userId},</if>
+            <if test="ar != null">AR = #{ar},</if>
+            <if test="bm != null">BM = #{bm},</if>
+            <if test="csny != null">CSNY = #{csny},</if>
+            <if test="dqzp != null">DQZP = #{dqzp},</if>
+            <if test="dcdw != null">DCDW = #{dcdw},</if>
+            <if test="dcsj != null">DCSJ = #{dcsj},</if>
+            <if test="dcyy != null">DCYY = #{dcyy},</if>
+            <if test="djdw != null">DJDW = #{djdw},</if>
+            <if test="djsj != null">DJSJ = #{djsj},</if>
+            <if test="djyy != null">DJYY = #{djyy},</if>
+            <if test="fs != null">FS = #{fs},</if>
+            <if test="hsgz != null">HSGZ = #{hsgz},</if>
+            <if test="hsjs != null">HSJS = #{hsjs},</if>
+            <if test="jg != null">JG = #{jg},</if>
+            <if test="jrsj != null">JRSJ = #{jrsj},</if>
+            <if test="jl != null">JL = #{jl},</if>
+            <if test="mz != null">MZ = #{mz},</if>
+            <if test="ppsj != null">PPSJ = #{ppsj},</if>
+            <if test="rylb != null">RYLB = #{rylb},</if>
+            <if test="rybh != null">RYBH = #{rybh},</if>
+            <if test="rmsj != null">RMSJ = #{rmsj},</if>
+            <if test="sfzh != null">SFZH = #{sfzh},</if>
+            <if test="tzsj != null">TZSJ = #{tzsj},</if>
+            <if test="tzyy != null">TZYY = #{tzyy},</if>
+            <if test="wyz != null">WYZ = #{wyz},</if>
+            <if test="whcd != null">WHCD = #{whcd},</if>
+            <if test="xb != null">XB = #{xb},</if>
+            <if test="xm != null">XM = #{xm},</if>
+            <if test="ygxz != null">YGXZ = #{ygxz},</if>
+            <if test="zzmm != null">ZZMM = #{zzmm},</if>
+            <if test="zw != null">ZW = #{zw},</if>
+            <if test="zyzc != null">ZYZC = #{zyzc},</if>
+            <if test="zn != null">ZN = #{zn},</if>
+            <if test="bmmc != null">BMMC = #{bmmc},</if>
+            <if test="cs != null">CS = #{cs},</if>
+            <if test="gzgw != null">GZGW = #{gzgw},</if>
+            <if test="gzdw != null">GZDW = #{gzdw},</if>
+            <if test="rsfs != null">RSFS = #{rsfs},</if>
+            <if test="sxh != null">SXH = #{sxh},</if>
+            <if test="xmpy != null">XMPY = #{xmpy},</if>
+            <if test="qssj != null">QSSJ = #{qssj},</if>
+            <if test="bysj != null">BYSJ = #{bysj},</if>
+            <if test="byyxzy != null">BYYXZY = #{byyxzy},</if>
+            <if test="oldbm != null">OLDBM = #{oldbm},</if>
+            <if test="oldrsid != null">OLDRSID = #{oldrsid},</if>
+            <if test="chushengdi != null">CHUSHENGDI = #{chushengdi},</if>
+            <if test="worktime != null">WORKTIME = #{worktime},</if>
+            <if test="jointime != null">JOINTIME = #{jointime},</if>
+            <if test="jobunit != null">JOBUNIT = #{jobunit},</if>
+            <if test="appointtime != null">APPOINTTIME = #{appointtime},</if>
+            <if test="idcard != null">IDCARD = #{idcard},</if>
+            <if test="quanrizixueli != null">QUANRIZIXUELI = #{quanrizixueli},</if>
+            <if test="quanrizixuewei != null">QUANRIZIXUEWEI = #{quanrizixuewei},</if>
+            <if test="quanriziyuanxiao != null">QUANRIZIYUANXIAO = #{quanriziyuanxiao},</if>
+            <if test="quanrizizhuanye != null">QUANRIZIZHUANYE = #{quanrizizhuanye},</if>
+            <if test="zaizhixueli != null">ZAIZHIXUELI = #{zaizhixueli},</if>
+            <if test="zaizhixuewei != null">ZAIZHIXUEWEI = #{zaizhixuewei},</if>
+            <if test="zaizhiyuanxiao != null">ZAIZHIYUANXIAO = #{zaizhiyuanxiao},</if>
+            <if test="zaizhizhuanye != null">ZAIZHIZHUANYE = #{zaizhizhuanye},</if>
+            <if test="qingkuanshuomi != null">QINGKUANSHUOMI = #{qingkuanshuomi},</if>
+            <if test="danganzhengliren != null">DANGANZHENGLIREN = #{danganzhengliren},</if>
+            <if test="danganshenheren != null">DANGANSHENHEREN = #{danganshenheren},</if>
+            <if test="shuzihuacaijiren != null">SHUZIHUACAIJIREN = #{shuzihuacaijiren},</if>
+            <if test="shuzihuashenheren != null">SHUZIHUASHENHEREN = #{shuzihuashenheren},</if>
+            <if test="danganjuanshu != null">DANGANJUANSHU = #{danganjuanshu},</if>
+            <if test="baosongdanwei != null">BAOSONGDANWEI = #{baosongdanwei},</if>
+            <if test="baosongriqi != null">BAOSONGRIQI = #{baosongriqi},</if>
+            <if test="modifyyes != null">MODIFYYES = #{modifyyes},</if>
+            <if test="renwubiandong != null">RENWUBIANDONG = #{renwubiandong},</if>
+            <if test="duanquecailiao != null">DUANQUECAILIAO = #{duanquecailiao},</if>
+            <if test="archfile != null">ARCHFILE = #{archfile},</if>
+            <if test="state != null">State = #{state},</if>
+            <if test="strxmpy != null">STRXMPY = #{strxmpy},</if>
+            <if test="mijibiaoshi != null">MIJIBIAOSHI = #{mijibiaoshi},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteRsInfoById" parameterType="Integer">
+        delete from RS_INFO where ID = #{id}
+    </delete>
+
+    <delete id="deleteRsInfoByIds" parameterType="String">
+        delete from RS_INFO where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="exportArchivesUserInfoData" parameterType="map" resultMap="RsInfoResult">
+        <include refid="selectRsInfoVo"/>
+        <where>
+            <if test="id != null and id != ''" >
+                <choose>
+                    <when test="isUpdate">
+                        <if test="historyId != null and historyId != ''">
+                            and id <![CDATA[>]]> #{historyId}
+                        </if>
+                        and id <![CDATA[<=]]> #{id}
+                    </when>
+                    <otherwise>
+                        and id <![CDATA[>]]> #{id}
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by id asc
+        <if test="orderBy != null and orderBy != ''">
+            , #{orderBy}
+        </if>
+        <if test="limit != null and limit != ''">
+            limit #{limit}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.table.mapper.DbTableStructureMapper">
+
+    <resultMap type="DbTableStructure" id="DbTableStructureResult">
+        <result property="id" column="id"/>
+        <result property="tableType" column="table_type"/>
+        <result property="tableName" column="table_name"/>
+        <result property="tableComments" column="table_comments"/>
+        <result property="primaryKeyStrategy" column="primary_key_strategy"/>
+        <result property="syncDb" column="sync_db"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+
+    <resultMap type="DbTableStructureColumn" id="DbTableStructureColumnResult">
+        <result property="columnId" column="column_id"/>
+        <result property="tableId" column="table_id"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="columnName" column="column_name"/>
+        <result property="columnComments" column="column_comments"/>
+        <result property="columnLength" column="column_length"/>
+        <result property="columnPointLength" column="column_point_length"/>
+        <result property="columnType" column="column_type"/>
+        <result property="defaultValue" column="default_value"/>
+        <result property="primaryKey" column="primary_key"/>
+        <result property="mustFill" column="must_fill"/>
+        <result property="syncDb" column="sync_db"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectDbTableStructureVo">
+        select id,
+               table_type,
+               table_name,
+               table_comments,
+               primary_key_strategy,
+               sync_db,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from db_table_structure
+    </sql>
+
+    <sql id="selectDbTableStructureColumnVo">
+        select
+            column_id,
+            table_id,
+            order_num,
+            column_name,
+            column_comments,
+            column_length,
+            column_point_length,
+            column_type,
+            default_value,
+            primary_key,
+            must_fill,
+            sync_db,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark
+        from  db_table_structure_column
+    </sql>
+
+
+    <select id="selectDbTableStructureList" parameterType="DbTableStructure" resultMap="DbTableStructureResult">
+        <include refid="selectDbTableStructureVo"/>
+        <where>
+            <if test="tableType != null ">and table_type = #{tableType}</if>
+            <if test="tableName != null  and tableName != ''">and table_name like concat('%', #{tableName}, '%')</if>
+            <if test="tableComments != null  and tableComments != ''">and table_comments = #{tableComments}</if>
+            <if test="primaryKeyStrategy != null ">and primary_key_strategy = #{primaryKeyStrategy}</if>
+            <if test="syncDb != null ">and sync_db = #{syncDb}</if>
+        </where>
+    </select>
+
+    <select id="selectDbTableStructureById" parameterType="String" resultMap="DbTableStructureResult">
+        <include refid="selectDbTableStructureVo"></include>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDbTableStructure" parameterType="DbTableStructure">
+        insert into db_table_structure
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="tableType != null">table_type,</if>
+            <if test="tableName != null and tableName != ''">table_name,</if>
+            <if test="tableComments != null and tableComments != ''">table_comments,</if>
+            <if test="primaryKeyStrategy != null">primary_key_strategy,</if>
+            <if test="syncDb != null">sync_db,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="tableType != null">#{tableType},</if>
+            <if test="tableName != null and tableName != ''">#{tableName},</if>
+            <if test="tableComments != null and tableComments != ''">#{tableComments},</if>
+            <if test="primaryKeyStrategy != null">#{primaryKeyStrategy},</if>
+            <if test="syncDb != null">#{syncDb},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDbTableStructure" parameterType="DbTableStructure">
+        update db_table_structure
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tableType != null">table_type = #{tableType},</if>
+            <if test="tableName != null and tableName != ''">table_name = #{tableName},</if>
+            <if test="tableComments != null and tableComments != ''">table_comments = #{tableComments},</if>
+            <if test="primaryKeyStrategy != null">primary_key_strategy = #{primaryKeyStrategy},</if>
+            <if test="syncDb != null">sync_db = #{syncDb},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="changeAsyncStatus">
+        update db_table_structure set  sync_db=1 where id=#{id}
+    </update>
+
+    <delete id="deleteDbTableStructureById" parameterType="String">
+        delete
+        from db_table_structure
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDbTableStructureByIds" parameterType="String">
+        delete from db_table_structure where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteDbTableStructureColumnByTableIds" parameterType="String">
+        delete from db_table_structure_column where table_id in
+        <foreach item="tableId" collection="array" open="(" separator="," close=")">
+            #{tableId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteDbTableStructureColumnByTableId" parameterType="String">
+        delete
+        from db_table_structure_column
+        where table_id = #{tableId}
+    </delete>
+
+    <insert id="batchDbTableStructureColumn">
+        insert into db_table_structure_column( column_id, table_id, order_num, column_name, column_comments,
+        column_length, column_point_length, column_type, default_value, primary_key, must_fill, sync_db, create_by,
+        create_time, update_by, update_time, remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.columnId}, #{item.tableId}, #{item.orderNum}, #{item.columnName}, #{item.columnComments},
+            #{item.columnLength}, #{item.columnPointLength}, #{item.columnType}, #{item.defaultValue},
+            #{item.primaryKey}, #{item.mustFill}, #{item.syncDb}, #{item.createBy}, #{item.createTime},
+            #{item.updateBy}, #{item.updateTime}, #{item.remark})
+        </foreach>
+    </insert>
+
+
+
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.table.mapper.DbTableStructureColumnMapper">
+
+    <resultMap type="DbTableStructureColumn" id="DbTableStructureColumnResult">
+        <result property="columnId" column="column_id"/>
+        <result property="tableId" column="table_id"/>
+        <result property="orderNum" column="order_num"/>
+        <result property="columnName" column="column_name"/>
+        <result property="columnComments" column="column_comments"/>
+        <result property="columnLength" column="column_length"/>
+        <result property="columnPointLength" column="column_point_length"/>
+        <result property="columnType" column="column_type"/>
+        <result property="defaultValue" column="default_value"/>
+        <result property="primaryKey" column="primary_key"/>
+        <result property="mustFill" column="must_fill"/>
+        <result property="syncDb" column="sync_db"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectDbTableStructureColumnVo">
+        select column_id,
+               table_id,
+               order_num,
+               column_name,
+               column_comments,
+               column_length,
+               column_point_length,
+               column_type,
+               default_value,
+               primary_key,
+               must_fill,
+               sync_db,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark
+        from db_table_structure_column
+    </sql>
+
+    <select id="selectDbTableStructureColumnList" parameterType="DbTableStructureColumn"
+            resultMap="DbTableStructureColumnResult">
+        <include refid="selectDbTableStructureColumnVo"/>
+        <where>
+            <if test="tableId != null  and tableId != ''">and table_id = #{tableId}</if>
+            <if test="orderNum != null ">and order_num = #{orderNum}</if>
+            <if test="columnName != null  and columnName != ''">and column_name like concat('%', #{columnName}, '%')
+            </if>
+            <if test="columnComments != null  and columnComments != ''">and column_comments = #{columnComments}</if>
+            <if test="columnLength != null ">and column_length = #{columnLength}</if>
+            <if test="columnPointLength != null ">and column_point_length = #{columnPointLength}</if>
+            <if test="columnType != null  and columnType != ''">and column_type = #{columnType}</if>
+            <if test="defaultValue != null  and defaultValue != ''">and default_value = #{defaultValue}</if>
+            <if test="primaryKey != null ">and primary_key = #{primaryKey}</if>
+            <if test="mustFill != null ">and must_fill = #{mustFill}</if>
+            <if test="syncDb != null ">and sync_db = #{syncDb}</if>
+        </where>
+    </select>
+
+    <select id="selectDbTableStructureColumnById" parameterType="String" resultMap="DbTableStructureColumnResult">
+        <include refid="selectDbTableStructureColumnVo"/>
+        where column_id = #{columnId}
+    </select>
+
+    <select id="selectDbTableStructureColumnByTableId" resultMap="DbTableStructureColumnResult">
+        <include refid="selectDbTableStructureColumnVo"></include>
+        where table_id = #{tableId}
+    </select>
+
+    <insert id="insertDbTableStructureColumn" parameterType="DbTableStructureColumn">
+        insert into db_table_structure_column
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="columnId != null and columnId != ''">column_id,</if>
+            <if test="tableId != null">table_id,</if>
+            <if test="orderNum != null">order_num,</if>
+            <if test="columnName != null and columnName != ''">column_name,</if>
+            <if test="columnComments != null and columnComments != ''">column_comments,</if>
+            <if test="columnLength != null">column_length,</if>
+            <if test="columnPointLength != null">column_point_length,</if>
+            <if test="columnType != null and columnType != ''">column_type,</if>
+            <if test="defaultValue != null">default_value,</if>
+            <if test="primaryKey != null">primary_key,</if>
+            <if test="mustFill != null">must_fill,</if>
+            <if test="syncDb != null">sync_db,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="columnId != null and columnId != ''">#{columnId},</if>
+            <if test="tableId != null">#{tableId},</if>
+            <if test="orderNum != null">#{orderNum},</if>
+            <if test="columnName != null and columnName != ''">#{columnName},</if>
+            <if test="columnComments != null and columnComments != ''">#{columnComments},</if>
+            <if test="columnLength != null">#{columnLength},</if>
+            <if test="columnPointLength != null">#{columnPointLength},</if>
+            <if test="columnType != null and columnType != ''">#{columnType},</if>
+            <if test="defaultValue != null">#{defaultValue},</if>
+            <if test="primaryKey != null">#{primaryKey},</if>
+            <if test="mustFill != null">#{mustFill},</if>
+            <if test="syncDb != null">#{syncDb},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDbTableStructureColumn" parameterType="DbTableStructureColumn">
+        update db_table_structure_column
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="tableId != null">table_id = #{tableId},</if>
+            <if test="orderNum != null">order_num = #{orderNum},</if>
+            <if test="columnName != null and columnName != ''">column_name = #{columnName},</if>
+            <if test="columnComments != null and columnComments != ''">column_comments = #{columnComments},</if>
+            <if test="columnLength != null">column_length = #{columnLength},</if>
+            <if test="columnPointLength != null">column_point_length = #{columnPointLength},</if>
+            <if test="columnType != null and columnType != ''">column_type = #{columnType},</if>
+            <if test="defaultValue != null">default_value = #{defaultValue},</if>
+            <if test="primaryKey != null">primary_key = #{primaryKey},</if>
+            <if test="mustFill != null">must_fill = #{mustFill},</if>
+            <if test="syncDb != null">sync_db = #{syncDb},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where column_id = #{columnId}
+    </update>
+
+    <delete id="deleteDbTableStructureColumnById" parameterType="String">
+        delete
+        from db_table_structure_column
+        where column_id = #{columnId}
+    </delete>
+
+    <delete id="deleteDbTableStructureColumnByIds" parameterType="String">
+        delete from db_table_structure_column where column_id in
+        <foreach item="columnId" collection="array" open="(" separator="," close=")">
+            #{columnId}
+        </foreach>
+    </delete>
+</mapper>

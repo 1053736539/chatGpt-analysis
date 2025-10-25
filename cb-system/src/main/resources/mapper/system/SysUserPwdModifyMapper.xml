@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserPwdModifyMapper">
+
+    <resultMap type="SysUserPwdModify" id="SysUserPwdModifyResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userName"    column="user_name"    />
+        <result property="newPassword"    column="new_password"    />
+        <result property="modifyTime"    column="modify_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSysUserPwdModifyVo">
+        select id, user_id, modify_time, create_by, create_time, update_by, update_time from sys_user_pwd_modify
+    </sql>
+
+    <select id="selectSysUserPwdModifyList" parameterType="SysUserPwdModify" resultMap="SysUserPwdModifyResult">
+        select m.id, m.user_id,u.user_name, m.modify_time, m.create_by, m.create_time, m.update_by, m.update_time
+        from sys_user_pwd_modify m join sys_user u on m.user_id = u.user_id
+        <where>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="newPassword != null  and newPassword != ''"> and new_password = #{newPassword}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+        </where>
+    </select>
+
+    <select id="selectSysUserPwdModifyById" parameterType="Long" resultMap="SysUserPwdModifyResult">
+        <include refid="selectSysUserPwdModifyVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectSysUserPwdModifyByUserId" resultMap="SysUserPwdModifyResult">
+        <include refid="selectSysUserPwdModifyVo"/>
+        where user_id =#{userId} order by create_time desc limit 1
+    </select>
+
+    <insert id="insertSysUserPwdModify" parameterType="SysUserPwdModify" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_user_pwd_modify
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="newPassword != null">new_password,</if>
+            <if test="modifyTime != null">modify_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="newPassword != null">#{newPassword},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysUserPwdModify" parameterType="SysUserPwdModify">
+        update sys_user_pwd_modify
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="newPassword != null">new_password = #{newPassword},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysUserPwdModifyById" parameterType="Long">
+        delete from sys_user_pwd_modify where id = #{id}
+    </delete>
+
+    <delete id="deleteSysUserPwdModifyByIds" parameterType="String">
+        delete from sys_user_pwd_modify where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

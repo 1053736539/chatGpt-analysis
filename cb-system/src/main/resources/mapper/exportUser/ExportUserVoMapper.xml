@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.ExportUserVoMapper">
+
+    <select id="selectUserExportList" parameterType="com.cb.common.core.domain.vo.ExportUserVo" resultType="com.cb.common.core.domain.vo.ExportUserVo">
+        select u.user_id, u.dept_id, u.user_name, u.avatar, u.phonenumber, u.sex,
+        u.birthday, u.political_identity AS politicalIdentity, u.party_join_time AS partyJoinTime, u.staff_type AS staffType,
+        d.dept_name AS deptName, d.dept_code AS deptCode, d.leader, u.name, u.nation, u.native_place AS nativePlace, u.birth_place AS birthPlace,
+        u.second_party AS secondParty, u.third_party AS thirdParty, u.start_work_time AS startWorkTime, u.health_condition AS healthCondition,
+        u.speciality, u.idcard, u.manage_type AS manageType, u.identity_type AS identityType, u.work_post AS workPost, u.work_post_time AS workPostTime,
+        u.work_title AS workTitle, u.work_title_time AS workTitleTime,u.is_enrollment AS isEnrollment, u.enrollment_time AS enrollmentTime,
+        u.is_selected_student AS isSelectedStudent, u.selected_student_time AS selectedStudentTime, u.grow_place AS growPlace, u.level, u.qualifications,
+        u.treatment, u.office_tel AS officeTel, u.is_main_leader AS isMainLeader, u.join_org_time AS joinOrgTime, u.grassroots_work_time AS grassrootsWorkTime,
+        u.section_chief_time AS sectionChiefTime, u.join_dept_time AS joinDeptTime, u.marital_status AS maritalStatus, u.is_veterans AS isVeterans, u.education,
+        u.degree, u.same_work_post_time AS sameWorkPostTime, u.same_work_title_time AS sameWorkTitleTime, u.work_post_code AS workPostCode,
+        u.work_title_code AS workTitleCode, u.personnel_status AS personnelStatus,
+        u.ability_label AS abilityLabel,u.other_label AS otherLabel,u.reserve_user AS reserveUser,
+        tpi.technical_qualification_name AS technicalQualificationName, tpi.qualification_date AS qualificationDate,
+        ueadd.school_and_department as schoolAndDepartmentDx, ueadd.professional_name as professionalNameDx, ueadd.completion_date AS completionDate,
+        ueadg.education as educationGm, ueadg.school_and_department as schoolAndDepartmentGm, ueadg.professional_name as professionalNameGm
+        from sys_user u
+        left join sys_dept d on u.dept_id = d.dept_id
+        left join v_user_technical_position_info tpi on tpi.user_id = u.user_id
+        left join v_user_education_and_degree_daxue ueadd on ueadd.user_id = u.user_id
+        left join v_user_education_and_degree_guomin ueadg on ueadg.user_id = u.user_id
+        where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2)
+        <if test="name != null and name != ''">
+            AND u.name like concat('%', #{name}, '%')
+        </if>
+        <if test="userName != null and userName != ''">
+            AND u.user_name like concat('%', #{userName}, '%')
+        </if>
+        <if test="abilityLabelIds != null and abilityLabelIds.length>0">
+            AND
+            <foreach item="item" collection="abilityLabelIds" open="(" close=")" separator=" and ">
+                find_in_set( #{item},u."ability_label")
+            </foreach>
+        </if>
+        <if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+        <if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+        <if test="idcard != null  and idcard != ''">
+            AND u.idcard like concat(#{idcard}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND u.status = #{status}
+        </if>
+        <if test="sex != null and sex != ''">
+            AND u.sex = #{sex}
+        </if>
+        <if test="politicalIdentity != null and politicalIdentity != ''">
+            AND u.political_identity = #{politicalIdentity}
+        </if>
+        <if test="phonenumber != null and phonenumber != ''">
+            AND u.phonenumber like concat('%', #{phonenumber}, '%')
+        </if>
+        <if test="officeTel != null and officeTel != ''">
+            AND u.office_tel like concat('%', #{officeTel}, '%')
+        </if>
+        <if test="deptId != null and deptId != 0">
+            AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+        </if>
+        <if test="identityType != null and identityType != ''">
+            AND u.identity_type=#{identityType}
+        </if>
+        <if test="nativePlace != null and nativePlace != ''">
+            AND u.native_place=#{nativePlace}
+        </if>
+        <if test="birthPlace != null and birthPlace != ''">
+            AND u.birth_place=#{birthPlace}
+        </if>
+        <if test="nation != null and nation == 1">
+            AND u.nation= '汉族'
+        </if>
+        <if test="nation != null and nation == 2">
+            AND u.nation is not null AND u.nation != '汉族'
+        </if>
+        <if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+            AND u.grassroots_work_time >= 2
+        </if>
+        <if test="workPost != null and workPost != ''">
+            AND u.work_post=#{workPost}
+        </if>
+        <if test="workTitle != null and workTitle != ''">
+            AND u.work_title=#{workTitle}
+        </if>
+        <if test="education != null and education != ''">
+            AND u.education=#{education}
+        </if>
+        <if test="degree != null and degree != ''">
+            AND u.degree=#{degree}
+        </if>
+        <if test="personnelStatus != null and personnelStatus != ''">
+            AND u.personnel_status=#{personnelStatus}
+        </if>
+        <if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+            AND u.birthday &gt;= #{params.beginbirthday}
+        </if>
+        <if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+            AND u.birthday &lt;= #{params.endbirthday}
+        </if>
+        <if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+            AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+        </if>
+        <if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+            AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+        </if>
+        <if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+            AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+        </if>
+        <if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+            AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+        </if>
+        <if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+            AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+        </if>
+        <if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+            AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+        </if>
+        <if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+            AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+        </if>
+        <if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+            AND u.start_work_time &lt;= #{params.endstartWorkTime}
+        </if>
+        <if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+            AND u.work_post_time &gt;= #{params.beginworkPostTime}
+        </if>
+        <if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+            AND u.work_post_time &lt;= #{params.endworkPostTime}
+        </if>
+        <if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+            AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+        </if>
+        <if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+            AND u.work_title_time &lt;= #{params.endworkTitleTime}
+        </if>
+        <if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+            AND exists(
+            select 1 from sys_user_family_member_social_info f
+            where
+            u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+            )
+        </if>
+        <if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+            AND exists(
+            select 1 from sys_user_family_member_social_info f
+            where
+            u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+            )
+        </if>
+        <if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+            AND exists(
+            select 1 from sys_user_family_member_social_info f
+            where
+            u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+            )
+        </if>
+
+        <if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+            AND exists(
+            select 1 from sys_user_education_and_degree_info e
+            where
+            u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+            )
+        </if>
+        <if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+            AND exists(
+            select 1 from sys_user_education_and_degree_info e
+            where
+            u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+            )
+        </if>
+        <if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+            AND exists(
+            select 1 from sys_user_education_and_degree_info e
+            where
+            u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+            )
+        </if>
+        <!-- 数据范围过滤 -->
+        ${params.dataScope}
+    </select>
+
+    <!--符合担任正处级领导职务人员名单-->
+    <select id="selectUserAppointZcjInfoList" resultType="com.cb.common.core.domain.vo.ExportUserAppointInfo">
+        select
+            u.user_id, u.dept_id, d.dept_name AS deptName, u.name, u.sex, u.nation, u.birthday, u.education,
+            u.start_work_time AS startWorkTime, u.political_identity AS politicalIdentity,
+            u.work_post_code AS workPostCode, u.work_post AS workPost, same_work_post_time AS sameWorkPostTime,
+            u.work_title_code AS workTitleCode, u.work_title AS workTitle, same_work_title_time AS sameWorkTitleTime,
+            u.identity_type AS identityType, d.dept_code AS deptCode,
+            u.is_main_leader AS isMainLeader, u.office_tel AS officeTel,u.phonenumber,u.idcard,u.native_place AS nativePlace,
+            u.party_join_time AS partyJoinTime, u.join_org_time AS joinOrgTime, u.work_post_time AS workPostTime, u.work_title_time AS workTitleTime,
+            u.grassroots_work_time AS grassrootsWorkTime, u.personnel_status AS personnelStatus
+        from sys_user u
+        left join sys_dept d on u.dept_id = d.dept_id
+        where u.del_flag = '0' and u.user_type = '00' and personnel_status not in('3','4')
+           and u.grassroots_work_time >= 2 and TIMESTAMPDIFF(YEAR, fun_str_format_date(u.start_work_time), CURDATE()) >= 5
+           and u.work_post_code = '121'
+           or (u.work_post_code = '122' and TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_post_time), CURDATE()) >= 2)
+           or ((u.work_post_code = '223' and  TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_post_time), CURDATE()) >= 2) and ( u.work_post_code = '224' and  TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_post_time), CURDATE()) >= 2))
+           or (u.work_post_code = '224' and  TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_post_time), CURDATE()) >= 2)
+           or u.work_post_code = '221' or u.work_post_code = '222'
+    </select>
+
+    <!--符合担任副处级领导职务人员名单-->
+    <select id="selectUserAppointFcjInfoList" resultType="com.cb.common.core.domain.vo.ExportUserAppointInfo">
+        select
+            u.user_id, u.dept_id, d.dept_name AS deptName, u.name, u.sex, u.nation, u.birthday, u.education,
+            u.start_work_time AS startWorkTime, u.political_identity AS politicalIdentity,
+            u.work_post_code AS workPostCode, u.work_post AS workPost, same_work_post_time AS sameWorkPostTime,
+            u.work_title_code AS workTitleCode, u.work_title AS workTitle, same_work_title_time AS sameWorkTitleTime,
+            u.identity_type AS identityType, d.dept_code AS deptCode,
+            u.is_main_leader AS isMainLeader, u.office_tel AS officeTel,u.phonenumber,u.idcard,u.native_place AS nativePlace,
+            u.party_join_time AS partyJoinTime, u.join_org_time AS joinOrgTime, u.work_post_time AS workPostTime,
+            u.work_title_time AS workTitleTime,u.grassroots_work_time AS grassrootsWorkTime, u.personnel_status AS personnelStatus
+        from sys_user u left join sys_dept d on u.dept_id = d.dept_id
+        where u.del_flag = '0' and u.user_type = '00' and personnel_status not in('3','4')
+           and u.grassroots_work_time >= 2 and TIMESTAMPDIFF(YEAR, fun_str_format_date(u.start_work_time), CURDATE()) >= 5
+           and u.work_title_code = '231' and TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_title_time), CURDATE()) >= 3
+           and u.work_title_code = '232' and TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_title_time), CURDATE()) >= 3
+           or (u.work_title_code = '232' and TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_title_time), CURDATE()) >= 3 and u.grassroots_work_time >= 2)
+           or (u.work_title_code = '221' and u.grassroots_work_time >= 2 )
+           or (u.work_title_code = '222' and u.grassroots_work_time >= 2 )
+           or (u.work_title_code = '223' and u.grassroots_work_time >= 2 )
+           or (u.work_title_code = '224' and u.grassroots_work_time >= 2 )
+    </select>
+
+    <!--符合担任事业单位正处级领导职务人员名单-->
+    <select id="selectUserAppointSyZcjInfoList" resultType="com.cb.common.core.domain.vo.ExportUserAppointInfo">
+        select
+            u.user_id, u.dept_id, d.dept_name AS deptName, u.name, u.sex, u.nation, u.birthday, u.education,
+            u.start_work_time AS startWorkTime, u.political_identity AS politicalIdentity,
+            u.work_post_code AS workPostCode, u.work_post AS workPost, same_work_post_time AS sameWorkPostTime,
+            u.work_title_code AS workTitleCode, u.work_title AS workTitle, same_work_title_time AS sameWorkTitleTime,
+            u.identity_type AS identityType, d.dept_code AS deptCode,
+            u.is_main_leader AS isMainLeader, u.office_tel AS officeTel,u.phonenumber,u.idcard,u.native_place AS nativePlace,
+            u.party_join_time AS partyJoinTime, u.join_org_time AS joinOrgTime, u.work_post_time AS workPostTime,
+            u.work_title_time AS workTitleTime,u.grassroots_work_time AS grassrootsWorkTime, u.personnel_status AS personnelStatus
+        from sys_user u left join sys_dept d on u.dept_id = d.dept_id
+        where u.del_flag = '0' and u.user_type = '00' and identity_type = '3' and personnel_status not in('3','4')
+           and u.grassroots_work_time >= 2 and TIMESTAMPDIFF(YEAR,fun_str_format_date(u.start_work_time), CURDATE()) >= 5
+           and u.work_post_code = '122' and  TIMESTAMPDIFF(YEAR,fun_str_format_date(u.same_work_post_time), CURDATE()) >= 2
+           or u.work_title_code in ('3101','3102','3103','3104','242','241','234','232','222')
+        <!--or u.work_title_code in ('3101','3102','3103','3104','242','241','234','232','224','222')-->
+           or (u.work_title_code in('3205','3206','3207','3208') and TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_title_time), CURDATE()) >= 2 )
+        <!--or (u.identity_type in ('1','1') and u.work_title_code = '122' and TIMESTAMPDIFF(YEAR, u.same_work_title_time, CURDATE()) >= 2 )
+        or (( u.work_post_code = '223' and  TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_post_time), CURDATE()) >= 2) and ( u.work_post_code = '224' and  TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_post_time), CURDATE()) >= 2))
+        or (( u.work_post_code = '224' and  TIMESTAMPDIFF(YEAR, fun_str_format_date(u.same_work_post_time), CURDATE()) >= 2))
+        -->
+           or u.work_post_code in ('221','222')
+    </select>
+
+
+</mapper>

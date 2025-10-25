@@ -1,0 +1,1804 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserInfoStatisticsMapper">
+
+	<!--门人员性别（男/女）人员统计-->
+	<select id="selectSexCount" resultType="java.util.Map">
+		select count(user_id) totalCount,
+		sum(case
+		when sex = '0' then
+		0
+		else
+		1
+		end) maleCount,
+		sum(case
+		when sex = '1' then
+		0
+		else
+		1
+		end) womanCount
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+	</select>
+
+	<!--政治面貌统计 党员、群众数量-->
+	<select id="selectPartyCount" resultType="java.util.Map">
+        select
+        count(
+        case
+        when political_identity ='中共党员' then 'ccpCount'
+        else null end) ccpCount,
+        count(case
+        when political_identity in('群众','共青团员','NULL','民盟','团员') then
+        'otherCount'
+        else
+        null
+        end) otherCount
+        from sys_user u
+        left join sys_dept d on u.dept_id = d.dept_id
+        where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+	</select>
+
+	<!--年龄阶段统计-->
+	<select id="selectAgeCount" resultType="java.util.Map">
+		select ageTemp,count(*) as total from (
+		select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+		case
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 0 and 20 then '1-20'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 20 and 25 then '20-25'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 25 and 30 then '25-30'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 30 and 35 then '30-35'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 35 and 40 then '35-40'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 40 and 45 then '40-45'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 45 and 50 then '45-50'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 50 and 55 then '50-55'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 55 and 60 then '55-60'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 60 and 65 then '60-65'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  > 65 then '65+'
+		end as ageTemp
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		<if test="deptId != null and deptId != 0">
+			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		)t group by ageTemp order by t.ageTemp
+	</select>
+
+	<!--职级统计-->
+	<select id="selectWorkPostCount" resultType="java.util.Map">
+        <!--
+		select dict_label as zj,IFNULL(num, 0) as num
+        from (select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_gwy' ) a
+        left join (select count(u.user_id) as num,u.work_post_code as work_post_code from sys_user u
+        	where 1=1
+            <if test="deptId != null and deptId != 0">
+                and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+            </if>
+        	group by u.work_post_code)t on t.work_post_code =  a.dict_value
+        order by a.dict_value asc
+		-->
+
+		select t1.*  from
+			(
+			select dict_label as zj,IFNULL(num, 0) as num
+			from
+			(select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_gwy' and dict.dict_value in ('111','112','121','122','131','132')) a
+			left join (select count(u.user_id) as num,u.work_post_code as work_post_code from sys_user u
+			where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+			<if test="deptId != null and deptId != 0">
+				and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+			</if>
+			group by u.work_post_code)t on t.work_post_code =  a.dict_value
+			order by a.dict_value asc
+			) as t1
+
+		UNION
+
+		select t2.* from
+			(
+			select dict_label as zj,IFNULL(num, 0) as num
+			from
+			(select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_gwy' and dict.dict_value not in ('111','112','121','122','131','132') ) a
+			left join (select count(u.user_id) as num,u.work_title_code as work_title_code from sys_user u
+			where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+			<if test="deptId != null and deptId != 0">
+				and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+			</if>
+			group by u.work_title_code)t on t.work_title_code =  a.dict_value
+			order by a.dict_value asc
+			) as t2
+
+	</select>
+
+	<!--编制类型统计（1-行政，2-参公，3-事业）-->
+	<select id="selectIdentityTypeCount" resultType="java.util.Map">
+		SELECT
+		sum(if(u.identity_type = '1', 1, 0))  AS xz,
+		sum(if(u.identity_type = '2', 1, 0)) AS cg,
+		sum(if(u.identity_type = '3', 1, 0)) AS sy,
+		sum(if(u.personnel_status = '2', 1, 0)) AS jd
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		<if test="deptId != null and deptId != 0">
+			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+	</select>
+
+	<!--统计学历（）-->
+	<select id="selectEduCount" resultType="java.util.Map">
+		SELECT
+		sum(if(e.education = '研究生', 1, 0))  AS yjs,
+		sum(if(e.education = '大学', 1, 0)) AS dx,
+		sum(if(e.education = '本科', 1, 0)) AS bk,
+		sum(if(e.education = '专科', 1, 0)) AS zk,
+		sum(if(e.education = '高中', 1, 0)) AS gz,
+		sum(if(e.education = '中专', 1, 0)) AS zz
+		FROM sys_user_education_and_degree_info e
+		left join sys_user u on u.user_id = e.user_id
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		<if test="deptId != null and deptId != 0">
+			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+	</select>
+
+	<!--现任领导职务年限统计-->
+	<select id="selectAppointmentCount" resultType="java.util.Map">
+		select workPostTime,count(*) as total from (
+		select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE()) as postTime,
+		case u.work_post_time IS NULL
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 0 and 2 then '2年以内'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 2 and 3 then '2-3年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 3 and 4 then '3-4年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 4 and 5 then '4-5年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 5 and 6 then '5-6年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 6 and 7 then '6-7年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 7 and 8 then '7-8年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 8 and 9 then '8-9年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 9 and 10 then '9-10年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 10 and 11 then '10-11年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 11 and 12 then '11-12年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 12 and 13 then '12-13年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 13 and 14 then '13-14年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  between 14 and 15 then '14-15年'
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.work_post_time), CURDATE())  > 15 then '15年以上'
+		else
+		''
+		end as workPostTime
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where  u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.work_post_code in('121','122')
+		<if test="deptId != null and deptId != 0">
+			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		)t group by workPostTime order by SUBSTRING(t.workPostTime, 1, 1) asc
+	</select>
+
+	<!--职务任职年龄段统计-->
+	<select id="selectPostAgeCount" resultType="java.util.Map">
+		select a.age_range as ageRange,
+			IFNULL(b.ztj,0) as ztj,
+			IFNULL(b.ftj,0) as ftj,
+			IFNULL(b.zcj,0) as zcj,
+			IFNULL(b.fcj,0) as fcj,
+			IFNULL(b.zkj,0) as zkj,
+			IFNULL(b.fkj,0) as fkj,
+			IFNULL(b.yijixsy,0) as yijixsy,
+
+			(
+			IFNULL(b.erjixsy,0) +
+			IFNULL(b.yijidyy,0) +
+			IFNULL(b.erjidyy,0) +
+			IFNULL(b.sanjidyy,0) +
+			IFNULL(b.sijidyy,0) +
+			IFNULL(b.yijizrky,0) +
+			IFNULL(b.erjizrky,0) +
+			IFNULL(b.sanjizrky,0) +
+			IFNULL(b.sijizrky,0) +
+			IFNULL(b.yijiky,0) +
+			IFNULL(b.erjiky,0) +
+			IFNULL(b.shiyongqi,0) +
+			IFNULL(b.gaojijs,0) +
+			IFNULL(b.jishi,0) +
+			IFNULL(b.gaojig,0) +
+			IFNULL(b.zhongjig,0) +
+			IFNULL(b.chujig,0)
+			) as other
+		from
+		age_range a
+		left join
+		(
+		SELECT
+		(
+		CASE
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 30 THEN	'30岁以下'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 30 and 40 THEN	'30-40岁'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 40 and 50 THEN	'40-50岁'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 50 and 60 THEN	'50-60岁'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >60 THEN '60岁以上'
+		END
+		) age_range,
+		sum(if(u.work_post_code = '111', 1, 0))  AS ztj,
+		sum(if(u.work_post_code = '112', 1, 0)) AS ftj,
+		sum(if(u.work_post_code = '121', 1, 0)) AS zcj,
+		sum(if(u.work_post_code = '122', 1, 0)) AS fcj,
+		sum(if(u.work_post_code = '131', 1, 0)) AS zkj,
+		sum(if(u.work_post_code = '132', 1, 0)) AS fkj,
+		sum(if(u.work_title_code = '211', 1, 0)) AS yijixsy,
+		sum(if(u.work_title_code = '212', 1, 0)) AS erjixsy,
+		sum(if(u.work_title_code = '221', 1, 0)) AS yijidyy,
+		sum(if(u.work_title_code = '222', 1, 0)) AS erjidyy,
+		sum(if(u.work_title_code = '223', 1, 0)) AS sanjidyy,
+		sum(if(u.work_title_code = '224', 1, 0)) AS sijidyy,
+		sum(if(u.work_title_code = '231', 1, 0)) AS yijizrky,
+		sum(if(u.work_title_code = '232', 1, 0)) AS erjizrky,
+		sum(if(u.work_title_code = '233', 1, 0)) AS sanjizrky,
+		sum(if(u.work_title_code = '234', 1, 0)) AS sijizrky,
+		sum(if(u.work_title_code = '241', 1, 0)) AS yijiky,
+		sum(if(u.work_title_code = '242', 1, 0)) AS erjiky,
+		sum(if(u.work_title_code = '251', 1, 0)) AS shiyongqi,
+		sum(if(u.work_title_code = '4101', 1, 0)) AS gaojijs,
+		sum(if(u.work_title_code = '4102', 1, 0)) AS jishi,
+		sum(if(u.work_title_code = '4103', 1, 0)) AS gaojig,
+		sum(if(u.work_title_code = '4104', 1, 0)) AS zhongjig,
+		sum(if(u.work_title_code = '4105', 1, 0)) AS chujig
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		<if test="deptId != null and deptId != 0">
+			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		group by
+		CASE
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 30 THEN '30岁以下'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 30 and 40 THEN '30-40岁'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 40 and 50 THEN '40-50岁'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 50 and 60 THEN '50-60岁'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) > 60 THEN '60岁以上'
+		END
+		) b on b.age_range= a.age_range
+	</select>
+
+	<!-- 职级数量统计 -->
+	<select id="selectWorkPostNumCount" resultType="java.util.Map">
+		SELECT
+		sum(if(u.work_post_code = '111', 1, 0))  AS zt,
+		sum(if(u.work_post_code = '112', 1, 0))  AS ft,
+		sum(if(u.work_post_code = '121', 1, 0))  AS zc,
+		sum(if(u.work_post_code = '122', 1, 0)) AS fc,
+		sum(if(u.work_post_code = '131', 1, 0)) AS zk,
+		sum(if(u.work_post_code = '132', 1, 0)) AS fk,
+		sum(if(u.work_title_code = '211', 1, 0)) AS yjxsy,
+		sum(if(u.work_title_code = '212', 1, 0)) AS ejxsy,
+		sum(if(u.work_title_code = '221', 1, 0)) AS yjdyy,
+		sum(if(u.work_title_code = '222', 1, 0)) AS ejdyy,
+		sum(if(u.work_title_code = '223', 1, 0)) AS sanjdyy,
+		sum(if(u.work_title_code = '224', 1, 0)) AS sijdyy,
+		sum(if(u.work_title_code = '231', 1, 0)) AS yjzrky,
+		sum(if(u.work_title_code = '232', 1, 0)) AS rjzrky,
+		sum(if(u.work_title_code = '233', 1, 0)) AS sjzrky,
+		sum(if(u.work_title_code = '241', 1, 0)) AS yjky,
+		sum(if(u.work_title_code = '242', 1, 0)) AS ejky
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		<if test="deptId != null and deptId != 0">
+		and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+	</select>
+
+    <!-- 事业职务（职称）职级数量统计 -->
+    <select id="selectShiYeWorkPostCount" resultType="java.util.Map">
+        select dict_label as syzj,IFNULL(num, 0) as num
+        from (select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_syb'
+        and dict.dict_value not in('3101','3102','3103','3104','3205','3206','3207','3308','3309','3310','3411','3412')  order by dict.dict_sort asc) a
+        left join (select count(u.user_id) as num,u.work_post_code as work_post_code from sys_user u
+        where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+        <if test="deptId != null and deptId != 0">
+            and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+        </if>
+        group by u.work_post_code)t on t.work_post_code =  a.dict_value
+        order by a.dict_value asc
+    </select>
+
+	<!--行政编制和事业编制分布情况统计-->
+	<select id="selectIdentityTypeNumber" resultType="com.cb.common.core.domain.vo.GwyIdentityTypeVo">
+		SELECT
+		sum(if(u.identity_type = '1', 1, 0))  AS xz,
+		sum(if(u.identity_type = '2', 1, 0)) AS cg,
+		sum(if(u.identity_type = '3', 1, 0)) AS sy,
+		sum(if(u.personnel_status = '2', 1, 0))  AS jd
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		<if test="deptId != null and deptId != 0">
+			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+	</select>
+
+	<!--行政编制和事业编制性别、民族、政治面貌、年龄、学历情况统计-->
+	<select id="selectXzbSybIdentityDistributionNum" resultType="java.util.Map">
+		select *  from
+		(
+		SELECT
+		'xzbWoman' as name,
+		sum(if(u.sex = '1', 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		--and d.dept_id in (100,101,102,103,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'xzbMinorityNationNum' as name,
+		sum(if(u.nation not in('汉族'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		--and d.dept_id in (100,101,102,103,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125)
+		)
+
+
+		UNION
+		select *  from
+		(
+			SELECT
+				'xzbPartyMember' as name,
+				sum(if(u.political_identity =('中共党员'), 1, 0))  AS num
+			FROM sys_user u
+					 left join sys_dept d on u.dept_id = d.dept_id
+			where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+			  and u.identity_type = '1'
+			--and d.dept_id in (100,101,102,103,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'xzbNotPartyMember' as name,
+		sum(if(u.political_identity not in('中共党员'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		--and d.dept_id in (100,101,102,103,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'xzbbkEducationNum' as name,
+		sum(if(u.education not in('高中','大专'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		--and d.dept_id in (100,101,102,103,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125)
+		)
+
+		UNION
+		select *  from
+		(
+		select a.ageTemp as name,num
+		from
+		(
+		select ageTemp,count(*) as num from (
+		select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+		case
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'xzbYearsOld35BelowNum'
+		ELSE '其他'
+		end as ageTemp
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		--and d.dept_id in (100,101,102,103,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125)
+		)t group by ageTemp order by t.ageTemp
+		) a where a.ageTemp != '其他'
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'sybWoman' as name,
+		sum(if(u.sex = '1', 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'sybMinorityNationNum' as name,
+		sum(if(u.nation not in('汉族'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'sybPartyMemberNum' as name,
+		sum(if(u.political_identity =('中共党员'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'sybNotPartyMemberNum' as name,
+		sum(if(u.political_identity not in('中共党员'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'sybbkEducationNum' as name,
+		sum(if(u.education not in('高中','大专'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		)
+
+		UNION
+		select *  from
+		(
+		select a.ageTemp as name,num
+		from
+		(
+		select ageTemp,count(*) as num from (
+		select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+		case
+		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'sybYearsOld35BelowNum'
+		ELSE '其他'
+		end as ageTemp
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		)t group by ageTemp order by t.ageTemp
+		) a where a.ageTemp != '其他'
+		)
+	</select>
+
+	<!--副处级及以上行政编制和事业编制的性别、民族、政治情况统计-->
+	<select id="selectFcjUpXzsybDistributionNum" resultType="java.util.Map">
+		select *  from
+		(
+		SELECT
+		'fcjupxzbNum' as name,
+		IFNULL(count(u.user_id),0) AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupxzbWomanCadreNum' as name,
+		sum(if(u.sex = '1', 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupxzbMinorityNationCadreNum' as name,
+		sum(if(u.nation not in('汉族'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupxzbPartyMemberNum' as name,
+		sum(if(u.political_identity =('中共党员'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupxzbNotPartyMemberNum' as name,
+		sum(if(u.political_identity not in('中共党员'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupsybNum' as name,
+		IFNULL(count(u.user_id),0) AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupsybWomanCadreNum' as name,
+		sum(if(u.sex = '1', 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupsybMinorityNationCadreNum' as name,
+		sum(if(u.nation not in('汉族'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupsybPartyMemberNum' as name,
+		sum(if(u.political_identity =('中共党员'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		and u.work_post_code in (111,112,121,122)
+		)
+
+		UNION
+		select *  from
+		(
+		SELECT
+		'fcjupsybNotPartyMemberNum' as name,
+		sum(if(u.political_identity not in('中共党员'), 1, 0))  AS num
+		FROM sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		and u.work_post_code in (111,112,121,122)
+		)
+	</select>
+
+	<!--副处级及以上行政编制和事业编制的年龄情况统计-->
+	<select id="selectFcjUpXzsybAgeDistributionNum" resultType="java.util.Map">
+		select name,IFNULL(num,0) as num from age_group_query_view v
+		left join
+
+		(select ageTemp as name,num
+			from
+			(
+			select ageTemp,count(*) as num from (
+			select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+			case
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'xzbYearsOld35BelowNum'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 36 and 40 then 'xzbYearsOld36to40Num'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 41 and 45 then 'xzbYearsOld41to45Num'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 46 and 50 then 'xzbYearsOld46to50Num'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 51 and 54 then 'xzbYearsOld51to54Num'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >= 55 THEN 'xzbYearsOld55overNum'
+			end as ageTemp
+			from sys_user u
+			where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+			and u.identity_type = '1'
+			and u.work_post_code in (111,112,121,122)
+			)t group by t.ageTemp order by SUBSTRING (t.ageTemp, 17, 2) asc
+			)
+		)a  on a.name = v.xzb_age_group
+
+		UNION
+
+		select v.syb_age_group as name,IFNULL(num,0) as num from age_group_query_view v
+		left join
+		(select ageTemp as name, num
+			from
+			(
+			select ageTemp,count(*) as num from (
+			select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+			case
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'sybYearsOld35BelowNum'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 36 and 40 then 'sybYearsOld36to40Num'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 41 and 45 then 'sybYearsOld41to45Num'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 46 and 50 then 'sybYearsOld46to50Num'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 51 and 54 then 'sybYearsOld51to54Num'
+			when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >= 55 THEN 'sybYearsOld55overNum'
+			end as ageTemp
+			from sys_user u
+			where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+			and u.identity_type = '3'
+			and u.work_post_code in (111,112,121,122)
+			)t group by t.ageTemp order by SUBSTRING (t.ageTemp, 17, 2) asc
+			)
+		)a on a.name = v.syb_age_group
+
+	</select>
+
+	<!--副处级及以上行政编制和事业编制的学历情况统计-->
+	<select id="selectFcjUpXzsybEducationDistributionNum" resultType="java.util.Map">
+				SELECT
+		'fcjupxzbGraduateDegreeNum' as name,
+		IFNULL(sum(if(u.education =('研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		and u.work_post_code in (111,112,121,122)
+
+        UNION
+
+		SELECT
+		'fcjupxzbBachelorDegreeNum' as name,
+		IFNULL(sum(if(u.education =('大学'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		and u.work_post_code in (111,112,121,122)
+
+        UNION
+
+		SELECT
+		'fcjupxzbJuniorCollegeNum' as name,
+		IFNULL(sum(if(u.education not in('研究生','大学'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		and u.work_post_code in (111,112,121,122)
+
+        UNION
+
+		SELECT
+		'fcjupsybGraduateDegreeNum' as name,
+		IFNULL(sum(if(u.education =('研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		and u.work_post_code in (111,112,121,122)
+
+        UNION
+
+		SELECT
+		'fcjupsybBachelorDegreeNum' as name,
+		IFNULL(sum(if(u.education =('大学'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		and u.work_post_code in (111,112,121,122)
+
+        UNION
+
+		SELECT
+		'fcjupsybJuniorCollegeNum' as name,
+		IFNULL(sum(if(u.education not in('研究生','大学'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		and u.work_post_code in (111,112,121,122)
+	</select>
+
+	<!--行政编职级-->
+	<select id="selectXzbzjNum" resultType="java.util.Map">
+		select *  from
+		(
+		select dict_label as zj,IFNULL(num, 0) as num
+		from
+		(select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_gwy' and dict.dict_value in ('111','112','121','122')) a
+		left join (select count(u.user_id) as num,u.work_post_code as work_post_code from sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		group by u.work_post_code)t on t.work_post_code =  a.dict_value
+		order by a.dict_value asc
+		)
+
+		UNION
+
+		select * from
+		(
+		select dict_label as zj,IFNULL(num, 0) as num
+		from
+		(select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_gwy' and dict.dict_value not in ('111','112','121','122','131','132') ) a
+		left join (select count(u.user_id) as num,u.work_title_code as work_title_code from sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '1'
+		group by u.work_title_code)t on t.work_title_code =  a.dict_value
+		order by a.dict_value asc
+		)
+	</select>
+
+	<!--事业编职级统计-->
+	<select id="selectSybzjNum" resultType="java.util.Map">
+		select *  from
+		(
+		select dict_value as code,dict_label as zj,IFNULL(num, 0) as num
+		from
+		(select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_gwy' and dict.dict_value in ('121','122','131','132')) a
+		left join (select count(u.user_id) as num,u.work_post_code as work_post_code from sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		group by u.work_post_code)t on t.work_post_code =  a.dict_value
+		order by a.dict_value asc
+		)
+
+		UNION
+
+		select * from
+		(
+		select dict_value as code,dict_label as zj,IFNULL(num, 0) as num
+		from
+		(select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_syb' and dict.dict_value
+		in ('222','224','232','234','241','242','3101','3102','3103','3104','3205','3206','3207','3308','3309','3310','3411','3412','4101','4102','4103','4104','4105')  ) a
+		left join (select count(u.user_id) as num,u.work_title_code as work_title_code from sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		and u.identity_type = '3'
+		group by u.work_title_code)t on t.work_title_code =  a.dict_value
+		order by a.dict_value asc
+		)
+	</select>
+	<!--行政编制性别、民族、政治面貌、学历、年龄情况-->
+	<select id="selectXzbIdentityDistributionNum" resultType="java.util.Map">
+		select *  from
+			(
+				SELECT
+					'xzbMaleNum' as name,
+			ifnull(sum(if(u.sex = '0', 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbWomanNum' as name,
+		ifnull(sum(if(u.sex = '1', 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbMinorityNationNum' as name,
+		ifnull(sum(if(u.nation not in('汉族'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbPartyMemberNum' as name,
+		ifnull(sum(if(u.political_identity =('中共党员'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbDemocraticPartyNum' as name,
+		ifnull(sum(if(u.political_identity not in('中共党员','群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbMultitudeNum' as name,
+		ifnull(sum(if(u.political_identity = ('群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbDoctoralStudentNum' as name,
+		ifnull(sum(if(u.education = ('博士研究生'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbPostgraduateNum' as name,
+		ifnull(sum(if(u.education = ('硕士研究生'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbGraduateStudentNum' as name,
+		ifnull(sum(if(u.education = ('研究生'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbUniversityNum' as name,
+		ifnull(sum(if(u.education = ('大学'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbJuniorCollegeNum' as name,
+		ifnull(sum(if(u.education = ('大专'), 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'xzbHighSchoolNum' as name,
+		ifnull(sum(if(u.education = ('高中'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '1'
+			)
+		<!--UNION
+		select *  from
+			(select name,IFNULL(num,0) as num from age_group_query_view v
+				   left join
+			   (select ageTemp as name,num
+				from
+					(
+						select ageTemp,count(*) as num
+							from (
+									select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+										   case
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'xzbYearsOld35BelowNum'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 36 and 40 then 'xzbYearsOld36to40Num'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 41 and 45 then 'xzbYearsOld41to45Num'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 46 and 50 then 'xzbYearsOld46to50Num'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 51 and 54 then 'xzbYearsOld51to54Num'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >= 55 THEN 'xzbYearsOld55overNum'
+											   end as ageTemp
+									from sys_user u
+									where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+									  and u.identity_type = '1'
+								)t group by t.ageTemp order by SUBSTRING (t.ageTemp, 17, 2) asc
+					)
+			   )a  on a.name = v.xzb_age_group
+			)-->
+	</select>
+
+	<!--参公性别、民族、政治面貌、学历、年龄情况-->
+	<select id="selectCgIdentityDistributionNum" resultType="java.util.Map">
+		select *  from
+			(
+				SELECT
+					'cgMaleNum' as name, ifnull(sum(if(u.sex = '0', 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgWomanNum' as name,
+		ifnull(sum(if(u.sex = '1', 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgMinorityNationNum' as name,
+		ifnull(sum(if(u.nation not in('汉族'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgPartyMemberNum' as name,
+		ifnull(sum(if(u.political_identity =('中共党员'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgDemocraticPartyNum' as name,
+		ifnull(sum(if(u.political_identity not in('中共党员','群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgMultitudeNum' as name,
+		ifnull(sum(if(u.political_identity = ('群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgDoctoralStudentNum' as name,
+		ifnull(sum(if(u.education = ('博士研究生'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgPostgraduateNum' as name,
+		ifnull(sum(if(u.education = ('硕士研究生'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgGraduateStudentNum' as name,
+		ifnull(sum(if(u.education = ('研究生'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgUniversityNum' as name,
+		ifnull(sum(if(u.education = ('大学'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgJuniorCollegeNum' as name,
+		ifnull(sum(if(u.education = ('大专'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'cgHighSchoolNum' as name,
+		ifnull(sum(if(u.education = ('高中'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+			)
+		<!--UNION
+		select *  from
+			(select name,IFNULL(num,0) as num from age_group_query_view v
+					   left join
+				   (select ageTemp as name,num
+					from
+						(
+							select ageTemp,count(*) as num
+							from (
+									select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+										   case
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'cgYearsOld35BelowNum'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 36 and 40 then 'cgYearsOld36to40Num'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 41 and 45 then 'cgYearsOld41to45Num'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 46 and 50 then 'cgYearsOld46to50Num'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 51 and 54 then 'cgYearsOld51to54Num'
+											   when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >= 55 THEN 'cgYearsOld55overNum'
+											   end as ageTemp
+									from sys_user u
+									where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+									  and u.identity_type = '2'
+								)t group by t.ageTemp order by SUBSTRING (t.ageTemp, 17, 2) asc
+						)
+				   )a  on a.name = v.cg_age_group
+			)-->
+	</select>
+
+	<!--参公职级数量统计-->
+	<select id="selectCgzjNum" resultType="java.util.Map">
+		select *  from
+			(
+			select dict_label as zj,IFNULL(num, 0) as num
+			from
+				(select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_gwy' and dict.dict_value in ('111','112','121','122')) a
+					left join (select count(u.user_id) as num,u.work_post_code as work_post_code from sys_user u
+							   where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+							   group by u.work_post_code)t on t.work_post_code =  a.dict_value
+			order by a.dict_value asc
+			)
+
+		UNION
+
+		select * from
+			(
+			select dict_label as zj,IFNULL(num, 0) as num
+			from
+				(select dict.dict_value,dict.dict_label from sys_dict_data  dict where dict.dict_type = 'work_title_gwy' and dict.dict_value not in ('111','112','121','122','131','132') ) a
+					left join (select count(u.user_id) as num,u.work_title_code as work_title_code from sys_user u
+							   where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '2'
+							   group by u.work_title_code)t on t.work_title_code =  a.dict_value
+			order by a.dict_value asc
+			)
+	</select>
+
+	<!--副处级及以上行政编制性别、民族、政治面貌情况统计-->
+	<select id="selectFcjUpXzbDistributionNum" resultType="java.util.Map">
+		select *  from
+			(
+				SELECT
+					'fcjupxzbNum' as name,
+					IFNULL(count(u.user_id),0) AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupxzbMaleNum' as name,
+					IFNULL(sum(if(u.sex = '0', 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupxzbWomanNum' as name,
+					IFNULL(sum(if(u.sex = '1', 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupxzbFewNationNum' as name,
+					IFNULL(sum(if(u.nation not in('汉族'), 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1' and u.work_post_code in (111,112,121,122)
+			)
+
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupxzbPartyMemberNum' as name,
+					IFNULL(sum(if(u.political_identity =('中共党员'), 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1' and u.work_post_code in (111,112,121,122)
+			)
+
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupxzbMinzhuPartyNum' as name,
+					IFNULL(sum(if(u.political_identity not in('中共党员','群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupxzbMultitudeNum' as name,
+					IFNULL(sum(if(u.political_identity = ('群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '1' and u.work_post_code in (111,112,121,122)
+			)
+	</select>
+
+	<!--副处级及以上参公性别、民族、政治面貌情况统计-->
+	<select id="selectFcjUpCgDistributionNum" resultType="java.util.Map">
+		select *  from
+			(
+				SELECT
+					'fcjupcgNum' as name,
+					IFNULL(count(u.user_id),0) AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '2' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupcgMaleNum' as name,
+					IFNULL(sum(if(u.sex = '0', 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '2' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupcgWomanNum' as name,
+					IFNULL(sum(if(u.sex = '1', 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '2' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupcgFewNationNum' as name,
+					IFNULL(sum(if(u.nation not in('汉族'), 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '2' and u.work_post_code in (111,112,121,122)
+			)
+
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupcgPartyMemberNum' as name,
+					IFNULL(sum(if(u.political_identity =('中共党员'), 1, 0)),0)  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '2' and u.work_post_code in (111,112,121,122)
+			)
+
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupcgMinzhuPartyNum' as name,
+					IFNULL(sum(if(u.political_identity not in('中共党员','群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '2' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupcgMultitudeNum' as name,
+					IFNULL(sum(if(u.political_identity = ('群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '2' and u.work_post_code in (111,112,121,122)
+			)
+	</select>
+
+	<!--副处级及以上行政编制和参公年龄情况数量统计-->
+	<select id="selectFcjUpXzbcgAgeDistributionNum" resultType="java.util.Map">
+		select v.xzb_age_group as name,IFNULL(num,0) as num from age_group_query_view v
+						 left join
+					 (select ageTemp as name,num
+					  from
+						  (
+							  select ageTemp,count(*) as num from (
+																	  select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+																			 case
+																				 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'xzbYearsOld35BelowNum'
+																				 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 36 and 40 then 'xzbYearsOld36to40Num'
+																				 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 41 and 45 then 'xzbYearsOld41to45Num'
+																				 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 46 and 50 then 'xzbYearsOld46to50Num'
+																				 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 51 and 54 then 'xzbYearsOld51to54Num'
+																				 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >= 55 THEN 'xzbYearsOld55overNum'
+																				 end as ageTemp
+																	  from sys_user u
+																	  where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+																		and u.identity_type = '1'
+																		and u.work_post_code in (111,112,121,122)
+																  )t group by t.ageTemp order by SUBSTRING (t.ageTemp, 17, 2) asc
+						  )
+					 )a  on a.name = v.xzb_age_group
+
+		UNION
+
+		select v.cg_age_group as name,IFNULL(num,0) as num from age_group_query_view v
+							left join
+						(select ageTemp as name, num
+						 from
+							 (
+								 select ageTemp,count(*) as num from (
+																		 select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+																				case
+																					when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'cgYearsOld35BelowNum'
+																					when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 36 and 40 then 'cgYearsOld36to40Num'
+																					when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 41 and 45 then 'cgYearsOld41to45Num'
+																					when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 46 and 50 then 'cgYearsOld46to50Num'
+																					when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 51 and 54 then 'cgYearsOld51to54Num'
+																					when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >= 55 THEN 'cgYearsOld55overNum'
+																					end as ageTemp
+																		 from sys_user u
+																		 where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+																		   and u.identity_type = '2'
+																		   and u.work_post_code in (111,112,121,122)
+																	 )t group by t.ageTemp order by SUBSTRING (t.ageTemp, 17, 2) asc
+							 )
+						)a on a.name = v.cg_age_group
+	</select>
+
+	<!--副处级及以上行政编制学历情况数量统计-->
+	<select id="selectFcjUpXzbEducationDistributionNum" resultType="java.util.Map">
+		SELECT
+			'fcjupxzbDoctoralStudentNum' as name,
+			IFNULL(sum(if(u.education =('博士研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '1'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupxzbPostgraduateNum' as name,
+			IFNULL(sum(if(u.education =('硕士研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '1'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupxzbGraduateStudentNum' as name,
+			IFNULL(sum(if(u.education = ('研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '1'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupxzbUniversityNum' as name,
+			IFNULL(sum(if(u.education = ('大学'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '1'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupxzbJuniorCollegeNum' as name,
+			IFNULL(sum(if(u.education = ('大专'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '1'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupxzbHighSchoolNum' as name,
+			IFNULL(sum(if(u.education = ('高中'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '1'
+		  and u.work_post_code in (111,112,121,122)
+	</select>
+
+	<!--副处级及以上参公学历情况数量统计-->
+	<select id="selectFcjUpCgEducationDistributionNum" resultType="java.util.Map">
+		SELECT
+			'fcjupcgDoctoralStudentNum' as name,
+			IFNULL(sum(if(u.education =('博士研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '2'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupcgPostgraduateNum' as name,
+			IFNULL(sum(if(u.education =('硕士研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '2'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupcgGraduateStudentNum' as name,
+			IFNULL(sum(if(u.education = ('研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '2'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupcgUniversityNum' as name,
+			IFNULL(sum(if(u.education = ('大学'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '2'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupcgJuniorCollegeNum' as name,
+			IFNULL(sum(if(u.education = ('大专'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '2'
+		  and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupcgHighSchoolNum' as name,
+			IFNULL(sum(if(u.education = ('高中'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '2'
+		  and u.work_post_code in (111,112,121,122)
+	</select>
+
+	<!--事业编性别、民族、政治面貌、学历、年龄情况-->
+    <select id="selectSybIdentityDistributionNum" resultType="java.util.Map">
+		select *  from
+			(
+				SELECT
+					'sybMaleNum' as name,
+		ifnull(0,sum(if(u.sex = '0', 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybWomanNum' as name,
+		ifnull(0,sum(if(u.sex = '1', 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybMinorityNationNum' as name,
+		ifnull(0,sum(if(u.nation not in('汉族'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybPartyMemberNum' as name,
+		ifnull(0,sum(if(u.political_identity =('中共党员'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybDemocraticPartyNum' as name,
+		ifnull(0,sum(if(u.political_identity not in('中共党员','群众'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybMultitudeNum' as name,
+		ifnull(0,sum(if(u.political_identity = ('群众'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybDoctoralStudentNum' as name,
+		ifnull(0,sum(if(u.education = ('博士研究生'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybPostgraduateNum' as name,
+		ifnull(0,sum(if(u.education = ('硕士研究生'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybGraduateStudentNum' as name,
+		ifnull(0,sum(if(u.education = ('研究生'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybUniversityNum' as name,
+		ifnull(0,sum(if(u.education = ('大学'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybJuniorCollegeNum' as name,
+		ifnull(0,sum(if(u.education = ('大专'), 1, 0)))  AS num
+				FROM sys_user u
+						 left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3'
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'sybHighSchoolNum' as name,
+		ifnull(0,sum(if(u.education = ('高中'), 1, 0)))  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2') and u.identity_type = '3'
+			)
+		<!--UNION
+		select *  from
+			(select name,IFNULL(num,0) as num from age_group_query_view v
+													   left join
+												   (select ageTemp as name,num
+													from
+														(
+															select ageTemp,count(*) as num
+															from (
+																	 select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+																			case
+																				when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'sybYearsOld35BelowNum'
+																				when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 36 and 40 then 'sybYearsOld36to40Num'
+																				when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 41 and 45 then 'sybYearsOld41to45Num'
+																				when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 46 and 50 then 'sybYearsOld46to50Num'
+																				when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 51 and 54 then 'sybYearsOld51to54Num'
+																				when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >= 55 THEN 'sybYearsOld55overNum'
+																				end as ageTemp
+																	 from sys_user u
+																	 where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+																	   and u.identity_type = '3'
+																 )t group by t.ageTemp order by SUBSTRING (t.ageTemp, 17, 2) asc
+														)
+												   )a  on a.name = v.syb_age_group
+			)-->
+	</select>
+
+	<!--副处级及以上事业编性别、民族、政治面貌情况统计-->
+	<select id="selectFcjUpSybDistributionNum" resultType="java.util.Map">
+		select *  from
+			(
+				SELECT
+					'fcjupsybNum' as name, IFNULL(count(u.user_id),0) AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupsybMaleNum' as name, IFNULL(sum(if(u.sex = '0', 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupsybWomanNum' as name, IFNULL(sum(if(u.sex = '1', 1, 0)),0) AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupsybFewNationNum' as name, IFNULL(sum(if(u.nation not in('汉族'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+			)
+
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupsybPartyMemberNum' as name, IFNULL(sum(if(u.political_identity =('中共党员'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+			)
+
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupsybMinzhuPartyNum' as name, IFNULL(sum(if(u.political_identity not in('中共党员','群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+			)
+		UNION
+		select *  from
+			(
+				SELECT
+					'fcjupsybMultitudeNum' as name, IFNULL(sum(if(u.political_identity = ('群众'), 1, 0)),0)  AS num
+				FROM sys_user u left join sys_dept d on u.dept_id = d.dept_id
+				where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+				  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+			)
+	</select>
+
+	<!--副处级及以上事业编年龄情况数量统计-->
+	<select id="fcjUpSybAgeDistributionNum" resultType="java.util.Map">
+		select v.syb_age_group as name,IFNULL(num,0) as num from age_group_query_view v
+				 left join
+			 (select ageTemp as name,num
+			  from
+				  (
+					  select ageTemp,count(*) as num from (
+															  select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
+																	 case
+																		 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 0 and 35 then 'sybYearsOld35BelowNum'
+																		 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 36 and 40 then 'sybYearsOld36to40Num'
+																		 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 41 and 45 then 'sybYearsOld41to45Num'
+																		 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 46 and 50 then 'sybYearsOld46to50Num'
+																		 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) between 51 and 54 then 'sybYearsOld51to54Num'
+																		 when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) >= 55 THEN 'sybYearsOld55overNum'
+																		 end as ageTemp
+															  from sys_user u
+															  where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+																and u.identity_type = '3'
+																and u.work_post_code in (111,112,121,122)
+														  )t group by t.ageTemp order by SUBSTRING (t.ageTemp, 17, 2) asc
+				  )
+			 )a  on a.name = v.syb_age_group
+	</select>
+
+	<!--副处级及以上事业编学历情况数量统计-->
+	<select id="selectFcjUpSybEducationDistributionNum" resultType="java.util.Map">
+		SELECT
+			'fcjupsybDoctoralStudentNum' as name, IFNULL(sum(if(u.education =('博士研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupsybPostgraduateNum' as name, IFNULL(sum(if(u.education =('硕士研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupsybGraduateStudentNum' as name,
+			IFNULL(sum(if(u.education = ('研究生'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupsybUniversityNum' as name, IFNULL(sum(if(u.education = ('大学'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupsybJuniorCollegeNum' as name, IFNULL(sum(if(u.education = ('大专'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+
+		UNION
+
+		SELECT
+			'fcjupsybHighSchoolNum' as name, IFNULL(sum(if(u.education = ('高中'), 1, 0)),0)  AS num
+		FROM sys_user u
+		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		  and u.identity_type = '3' and u.work_post_code in (111,112,121,122)
+	</select>
+
+
+	<select id="selectAbilityLabelCount" resultType="java.util.Map">
+		 SELECT  1 AS id ,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=1 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('1',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  2 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=2 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('2',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  3 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=3 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('3',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  4 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=4 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('4',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  5 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=5 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('5',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  6 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=6 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('6',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+-- 		 SELECT  7 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=7 ) AS abilityLabel
+-- 		 FROM "sys_user" su
+-- 		 WHERE  FIND_IN_SET('7',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+-- 		 UNION
+		 SELECT  8 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=8 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('8',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  9 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=9 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('9',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  10 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=10 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('10',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  11 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=11 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('11',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  12 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=12 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('12',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  13 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=13 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('13',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  14 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=14 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('14',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+-- 		 UNION
+-- 		 SELECT  15 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=15 ) AS abilityLabel
+-- 		 FROM "sys_user" su
+-- 		 WHERE  FIND_IN_SET('15',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+		 SELECT  16 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=16 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('16',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+		 UNION
+-- 		 SELECT  17 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=17 ) AS abilityLabel
+-- 		 FROM "sys_user" su
+-- 		 WHERE  FIND_IN_SET('17',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+-- 		 UNION
+-- 		 SELECT  18 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=18 ) AS abilityLabel
+-- 		 FROM "sys_user" su
+-- 		 WHERE  FIND_IN_SET('18',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+-- 		 UNION
+-- 		 SELECT  19 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=19 ) AS abilityLabel
+-- 		 FROM "sys_user" su
+-- 		 WHERE  FIND_IN_SET('19',su."ability_label" )   AND su."ability_label" IS NOT NULL AND su.del_flag = '0'
+-- 		 UNION
+		 SELECT  20 AS id,count(*) AS labelCount,(SELECT "ability_label" FROM SYS_USER_ABILITY_LABEL  WHERE id=20 ) AS abilityLabel
+		 FROM "sys_user" su
+		 WHERE  FIND_IN_SET('20',su."ability_label" )   AND su."ability_label" IS NOT NULL  AND su.del_flag = '0'
+		 ORDER  BY id ASC
+	</select>
+
+</mapper>

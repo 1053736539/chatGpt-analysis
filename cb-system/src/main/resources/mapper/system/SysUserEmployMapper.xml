@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserEmployMapper">
+    
+    <resultMap type="SysUserEmploy" id="SysUserEmployResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="dutiesBefor"    column="duties_befor"    />
+        <result property="dutiesAfter"    column="duties_after"    />
+        <result property="changeTime"    column="change_time"    />
+        <result property="attach"    column="attach"    />
+        <result property="type"    column="type"    />
+        <result property="status"    column="status"    />
+        <result property="information"    column="information"    />
+        <result property="saveType"    column="save_type"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="equalChangeTime"    column="equal_change_time"    />
+    </resultMap>
+
+    <sql id="selectSysUserEmployVo">
+        select id, user_id, duties_befor, duties_after, change_time, attach, type, status,
+               information, save_type, create_time, update_time, create_by, update_by, del_flag,equal_change_time from sys_user_employ
+    </sql>
+
+    <select id="selectSysUserEmployList" parameterType="SysUserEmploy" resultMap="SysUserEmployResult">
+        select sue.id,sue.user_id,sue.duties_befor,sue.duties_after,sue.change_time,sue.attach,sue.type,sue.status,
+        sue.information,sue.save_type,sue.create_time,sue.update_time,sue.create_by,sue.update_by,sue.del_flag,u.same_work_post_time as equal_change_time
+        from sys_user_employ sue
+        left join sys_user u on u.user_id=sue.user_id
+        <where>  
+            <if test="userId != null  and userId != ''"> and sue.user_id = #{userId}</if>
+            <if test="dutiesBefor != null  and dutiesBefor != ''"> and sue.duties_befor = #{dutiesBefor}</if>
+            <if test="dutiesAfter != null  and dutiesAfter != ''"> and sue.duties_after = #{dutiesAfter}</if>
+            <if test="changeTime != null  and changeTime != ''"> and sue.change_time = #{changeTime}</if>
+            <if test="attach != null  and attach != ''"> and sue.attach = #{attach}</if>
+            <if test="type != null  and type != ''"> and sue.type = #{type}</if>
+            <if test="status != null  and status != ''"> and sue.status = #{status}</if>
+            <if test="information != null  and information != ''"> and sue.information = #{information}</if>
+            <if test="saveType != null  and saveType != ''"> and sue.save_type = #{saveType}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectSysUserEmployById" parameterType="String" resultMap="SysUserEmployResult">
+        <include refid="selectSysUserEmployVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertSysUserEmploy" parameterType="SysUserEmploy">
+        insert into sys_user_employ
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="dutiesBefor != null">duties_befor,</if>
+            <if test="dutiesAfter != null">duties_after,</if>
+            <if test="changeTime != null">change_time,</if>
+            <if test="attach != null">attach,</if>
+            <if test="type != null">type,</if>
+            <if test="status != null">status,</if>
+            <if test="information != null">information,</if>
+            <if test="saveType != null">save_type,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="equalChangeTime != null">equal_change_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="dutiesBefor != null">#{dutiesBefor},</if>
+            <if test="dutiesAfter != null">#{dutiesAfter},</if>
+            <if test="changeTime != null">#{changeTime},</if>
+            <if test="attach != null">#{attach},</if>
+            <if test="type != null">#{type},</if>
+            <if test="status != null">#{status},</if>
+            <if test="information != null">#{information},</if>
+            <if test="saveType != null">#{saveType},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="equalChangeTime != null">#{equalChangeTime,</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysUserEmploy" parameterType="SysUserEmploy">
+        update sys_user_employ
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="dutiesBefor != null">duties_befor = #{dutiesBefor},</if>
+            <if test="dutiesAfter != null">duties_after = #{dutiesAfter},</if>
+            <if test="changeTime != null">change_time = #{changeTime},</if>
+            <if test="attach != null">attach = #{attach},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="information != null">information = #{information},</if>
+            <if test="saveType != null">save_type = #{saveType},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="equalChangeTime != null">equal_change_time = #{equalChangeTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysUserEmployById" parameterType="String">
+        delete from sys_user_employ where id = #{id}
+    </delete>
+
+    <delete id="deleteSysUserEmployByIds" parameterType="String">
+        delete from sys_user_employ where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

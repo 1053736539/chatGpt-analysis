@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.RsMaterialTypeMapper">
+    
+    <resultMap type="RsMaterialType" id="RsMaterialTypeResult">
+        <result property="id"    column="ID"    />
+        <result property="descript"    column="DESCRIPT"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="parentId"    column="PARENT_ID"    />
+        <result property="type"    column="TYPE"    />
+        <result property="parentType"    column="PARENT_TYPE"    />
+    </resultMap>
+
+    <sql id="selectRsMaterialTypeVo">
+        select ID, DESCRIPT, CREATE_TIME, CREATE_BY, UPDATE_TIME, UPDATE_BY, PARENT_ID,TYPE, PARENT_TYPE from RS_MATERIAL_TYPE
+    </sql>
+
+    <select id="selectRsMaterialTypeList" parameterType="RsMaterialType" resultMap="RsMaterialTypeResult">
+        <include refid="selectRsMaterialTypeVo"/>
+        <where>  
+            <if test="descript != null  and descript != ''"> and DESCRIPT like concat('%', #{descript}, '%')</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="updateTime != null  and updateTime != ''"> and UPDATE_TIME = #{updateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="parentId != null "> and PARENT_ID = #{parentId}</if>
+            <if test="type != null "> and TYPE = #{type}</if>
+            <if test="parentType != null "> and PARENT_TYPE = #{parentType}</if>
+        </where>
+        ORDER  BY ID  ASC
+    </select>
+    
+    <select id="selectRsMaterialTypeById" parameterType="Integer" resultMap="RsMaterialTypeResult">
+        <include refid="selectRsMaterialTypeVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertRsMaterialType" parameterType="RsMaterialType">
+        insert into RS_MATERIAL_TYPE
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="descript != null">DESCRIPT,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="parentId != null">PARENT_ID,</if>
+            <if test="type != null">TYPE,</if>
+            <if test="parentType != null">PARENT_TYPE,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="descript != null">#{descript},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="type != null">#{type},</if>
+            <if test="parentType != null">#{parentType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRsMaterialType" parameterType="RsMaterialType">
+        update RS_MATERIAL_TYPE
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="descript != null">DESCRIPT = #{descript},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="parentId != null">PARENT_ID = #{parentId},</if>
+            <if test="type != null">TYPE = #{type},</if>
+            <if test="parentType != null">PARENT_TYPE = #{parentType},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteRsMaterialTypeById" parameterType="Integer">
+        delete from RS_MATERIAL_TYPE where ID = #{id}
+    </delete>
+
+    <delete id="deleteRsMaterialTypeByIds" parameterType="String">
+        delete from RS_MATERIAL_TYPE where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectRsMaterialTypeParentList" parameterType="RsMaterialType" resultMap="RsMaterialTypeResult">
+        <include refid="selectRsMaterialTypeVo"/>
+        <where>
+            <if test="descript != null  and descript != ''"> and DESCRIPT like concat('%', #{descript}, '%')</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="updateTime != null  and updateTime != ''"> and UPDATE_TIME = #{updateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="parentId != null "> and PARENT_ID = #{parentId} OR ID =#{parentId}</if>
+            <if test="type != null "> and TYPE = #{type}</if>
+            <if test="parentType != null and parentType !=0" > and PARENT_TYPE = #{parentType} OR TYPE=#{parentType} </if>
+        </where>
+    </select>
+
+    <select id="exportArchivesCatalogueOfTypesData" parameterType="map" resultMap="RsMaterialTypeResult">
+        <include refid="selectRsMaterialTypeVo"/>
+        <where>
+            <if test="id != null and id != ''" >
+                <choose>
+                    <when test="isUpdate">
+                        <if test="historyId != null and historyId != ''">
+                            and id <![CDATA[>]]> #{historyId}
+                        </if>
+                        and id <![CDATA[<=]]> #{id}
+                    </when>
+                    <otherwise>
+                        and id <![CDATA[>]]> #{id}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="lastExportTime != null and lastExportTime != ''">
+                and TO_TIMESTAMP(update_time, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[>=]]> TO_TIMESTAMP(#{lastExportTime}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+        </where>
+        order by id asc
+        <if test="orderBy != null and orderBy != ''">
+            , #{orderBy}
+        </if>
+        <if test="limit != null and limit != ''">
+            limit #{limit}
+        </if>
+    </select>
+</mapper>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.filemanage.mapper.BizAttachMapper">
+
+    <resultMap type="BizAttach" id="BizAttachResult">
+        <result property="id"    column="id"    />
+        <result property="attachId"    column="attach_id"    />
+        <result property="folderId"    column="folder_id"    />
+        <result property="oldName"    column="old_name"    />
+        <result property="newName"    column="new_name"    />
+        <result property="extName"    column="ext_name"    />
+        <result property="secret"    column="secret"    />
+        <result property="path"    column="path"    />
+        <result property="modules"    column="modules"    />
+        <result property="fileSize"    column="file_size"    />
+        <result property="version"    column="version"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+
+    <sql id="selectBizAttachVo">
+        select id, attach_id, folder_id, old_name, new_name, ext_name, secret, path, modules, file_size, version, del_flag, create_by, create_time, update_by, update_time from biz_attach
+    </sql>
+
+    <select id="selectBizAttachList" parameterType="BizAttach" resultMap="BizAttachResult">
+        <include refid="selectBizAttachVo"/>
+        <where>
+            <if test="folderId != null  and folderId != ''"> and folder_id = #{folderId}</if>
+            <if test="oldName != null  and oldName != ''"> and old_name like concat('%', #{oldName}, '%')</if>
+            <if test="secret != null "> and secret = #{secret}</if>
+            <if test="version != null  and version != ''"> and version = #{version}</if>
+        </where>
+    </select>
+    <select id="selectBizAttachListByIds" resultMap="BizAttachResult">
+        <include refid="selectBizAttachVo"/>
+        <foreach collection="attachIds" open="where attach_id in (" close=")" item="attachId" separator=",">
+            #{attachId}
+        </foreach>
+        order by create_time desc
+    </select>
+    <select id="selectBizAttachById" parameterType="Long" resultMap="BizAttachResult">
+        <include refid="selectBizAttachVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectBizAttachByAttachId" parameterType="String" resultMap="BizAttachResult">
+        <include refid="selectBizAttachVo"/>
+        where attach_id = #{attachId}
+    </select>
+
+    <insert id="insertBizAttach" parameterType="BizAttach" useGeneratedKeys="true" keyProperty="id">
+        insert into biz_attach
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="attachId != null">attach_id,</if>
+            <if test="folderId != null and folderId != ''">folder_id,</if>
+            <if test="oldName != null">old_name,</if>
+            <if test="newName != null">new_name,</if>
+            <if test="extName != null">ext_name,</if>
+            <if test="secret != null">secret,</if>
+            <if test="path != null">path,</if>
+            <if test="modules != null">modules,</if>
+            <if test="fileSize != null">file_size,</if>
+            <if test="version != null">version,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="attachId != null">#{attachId},</if>
+            <if test="folderId != null and folderId != ''">#{folderId},</if>
+            <if test="oldName != null">#{oldName},</if>
+            <if test="newName != null">#{newName},</if>
+            <if test="extName != null">#{extName},</if>
+            <if test="secret != null">#{secret},</if>
+            <if test="path != null">#{path},</if>
+            <if test="modules != null">#{modules},</if>
+            <if test="fileSize != null">#{fileSize},</if>
+            <if test="version != null">#{version},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAttach" parameterType="BizAttach">
+        update biz_attach
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="attachId != null">attach_id = #{attachId},</if>
+            <if test="folderId != null and folderId != ''">folder_id = #{folderId},</if>
+            <if test="oldName != null">old_name = #{oldName},</if>
+            <if test="newName != null">new_name = #{newName},</if>
+            <if test="extName != null">ext_name = #{extName},</if>
+            <if test="secret != null">secret = #{secret},</if>
+            <if test="path != null">path = #{path},</if>
+            <if test="modules != null">modules = #{modules},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateBizAttachByAttachId" parameterType="BizAttach">
+        update biz_attach
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="oldName != null">old_name = #{oldName},</if>
+            <if test="newName != null">new_name = #{newName},</if>
+            <if test="extName != null">ext_name = #{extName},</if>
+            <if test="path != null">path = #{path},</if>
+            <if test="modules != null">modules = #{modules},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="version != null">version = #{version},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where attach_id = #{attachId}
+    </update>
+
+    <delete id="deleteBizAttachById" parameterType="Long">
+        delete from biz_attach where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAttachByIds" parameterType="String">
+        delete from biz_attach where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="logicDeleteBizAttachByAttachId">
+          update biz_attach set del_flag = #{delFlag} where attach_id = #{attachId}
+    </delete>
+</mapper>

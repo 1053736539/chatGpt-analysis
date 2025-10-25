@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.BizCustomizeSearchMapper">
+    
+    <resultMap type="BizCustomizeSearch" id="BizCustomizeSearchResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="name"    column="name"    />
+        <result property="expList"    column="exp_list"    />
+        <result property="shareStatus"    column="share_status"    />
+    </resultMap>
+
+    <sql id="selectBizCustomizeSearchVo">
+        select id, user_id, name, exp_list, share_status from biz_customize_search
+    </sql>
+
+    <select id="selectBizCustomizeSearchList" parameterType="BizCustomizeSearch" resultMap="BizCustomizeSearchResult">
+        <include refid="selectBizCustomizeSearchVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="expList != null  and expList != ''"> and exp_list = #{expList}</if>
+            <if test="shareStatus != null  and shareStatus != ''"> and share_status = #{shareStatus}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizCustomizeSearchById" parameterType="Integer" resultMap="BizCustomizeSearchResult">
+        <include refid="selectBizCustomizeSearchVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizCustomizeSearch" parameterType="BizCustomizeSearch">
+        insert into biz_customize_search
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="name != null">name,</if>
+            <if test="expList != null">exp_list,</if>
+            <if test="shareStatus != null">share_status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="expList != null">#{expList},</if>
+            <if test="shareStatus != null">#{shareStatus},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizCustomizeSearch" parameterType="BizCustomizeSearch">
+        update biz_customize_search
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="expList != null">exp_list = #{expList},</if>
+            <if test="shareStatus != null">share_status = #{shareStatus},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizCustomizeSearchById" parameterType="Integer">
+        delete from biz_customize_search where id = #{id}
+    </delete>
+
+    <delete id="deleteBizCustomizeSearchByIds" parameterType="String">
+        delete from biz_customize_search where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.docArchive.mapper.BizDocArchiveRecordMapper">
+    
+    <resultMap type="BizDocArchiveRecord" id="BizDocArchiveRecordResult">
+        <result property="archiveNo"    column="archive_no"    />
+        <result property="fondsNo"    column="fonds_no"    />
+        <result property="archiveKindCode"    column="archive_kind_code"    />
+        <result property="archiveYear"    column="archive_year"    />
+        <result property="retentionPeriod"    column="retention_period"    />
+        <result property="organizationProblem"    column="organization_problem"    />
+        <result property="partNo"    column="part_no"    />
+        <result property="responsibility"    column="responsibility"    />
+        <result property="title"    column="title"    />
+        <result property="fileNo"    column="file_no"    />
+        <result property="fileDate"    column="file_date"    />
+        <result property="filePage"    column="file_page"    />
+        <result property="secretLevel"    column="secret_level"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="attachId"    column="attach_id"    />
+        <result property="folderId"    column="folder_id"    />
+
+        <result property="createByName"    column="createByName"    />
+        <result property="attachName"    column="attachName"    />
+    </resultMap>
+
+    <sql id="selectBizDocArchiveRecordVo">
+        select r.archive_no, r.fonds_no, r.archive_kind_code, r.archive_year, r.retention_period, r.organization_problem, r.part_no, r.responsibility, r.title, r.file_no, r.file_date, r.file_page, r.secret_level, r.create_by, r.create_time, r.update_by, r.update_time, r.remark, r.attach_id, r.folder_id
+            ,cu.name as createByName
+            ,ba.old_name as attachName
+        from biz_doc_archive_record r
+        left join sys_user cu on r.create_by = cu.user_name
+        left join biz_attach ba on r.attach_id = ba.attach_id
+    </sql>
+
+    <select id="selectBizDocArchiveRecordList" parameterType="BizDocArchiveRecord" resultMap="BizDocArchiveRecordResult">
+        <include refid="selectBizDocArchiveRecordVo"/>
+        <where>
+            <if test="fondsNo != null  and fondsNo != ''"> and r.fonds_no = #{fondsNo}</if>
+            <if test="archiveNo != null  and archiveNo != ''"> and r.archive_no like concat(#{archiveNo}, '%') </if>
+            <if test="archiveKindCode != null  and archiveKindCode != ''"> and r.archive_kind_code = #{archiveKindCode}</if>
+            <if test="archiveYear != null  and archiveYear != ''"> and r.archive_year = #{archiveYear}</if>
+            <if test="retentionPeriod != null  and retentionPeriod != ''"> and r.retention_period = #{retentionPeriod}</if>
+            <if test="organizationProblem != null  and organizationProblem != ''"> and r.organization_problem = #{organizationProblem}</if>
+            <if test="partNo != null  and partNo != ''"> and r.part_no = #{partNo}</if>
+            <if test="responsibility != null  and responsibility != ''"> and r.responsibility = #{responsibility}</if>
+            <if test="title != null  and title != ''"> and r.title like concat('%', #{title}, '%')</if>
+            <if test="fileNo != null  and fileNo != ''"> and r.file_no = #{fileNo}</if>
+            <if test="fileDate != null  and fileDate != ''"> and r.file_date = #{fileDate}</if>
+            <if test="filePage != null "> and r.file_page = #{filePage}</if>
+            <if test="secretLevel != null  and secretLevel != ''"> and r.secret_level = #{secretLevel}</if>
+            <if test="attachId != null  and attachId != ''"> and r.attach_id = #{attachId}</if>
+            <if test="folderId != null  and folderId != ''"> and r.folder_id = #{folderId}</if>
+        </where>
+    </select>
+
+    <select id="listInFolderIds" parameterType="BizDocArchiveRecord" resultMap="BizDocArchiveRecordResult">
+        <include refid="selectBizDocArchiveRecordVo"/>
+        <where>
+            <if test="fondsNo != null  and fondsNo != ''"> and r.fonds_no = #{fondsNo}</if>
+            <!--<if test="archiveNo != null  and archiveNo != ''"> and r.archive_no like concat(#{archiveNo}, '%') </if>-->
+            <if test="archiveKindCode != null  and archiveKindCode != ''"> and r.archive_kind_code = #{archiveKindCode}</if>
+            <if test="archiveYear != null  and archiveYear != ''"> and r.archive_year = #{archiveYear}</if>
+            <if test="retentionPeriod != null  and retentionPeriod != ''"> and r.retention_period = #{retentionPeriod}</if>
+            <if test="organizationProblem != null  and organizationProblem != ''"> and r.organization_problem = #{organizationProblem}</if>
+            <if test="partNo != null  and partNo != ''"> and r.part_no = #{partNo}</if>
+            <if test="responsibility != null  and responsibility != ''"> and r.responsibility = #{responsibility}</if>
+            <if test="title != null  and title != ''">
+                and (
+                    r.title like concat('%', #{title}, '%') or r.archive_no like concat(#{title}, '%')
+                )
+            </if>
+            <if test="fileNo != null  and fileNo != ''"> and r.file_no = #{fileNo}</if>
+            <if test="fileDate != null  and fileDate != ''"> and r.file_date = #{fileDate}</if>
+            <if test="filePage != null "> and r.file_page = #{filePage}</if>
+            <if test="secretLevel != null  and secretLevel != ''"> and r.secret_level = #{secretLevel}</if>
+            <if test="attachId != null  and attachId != ''"> and r.attach_id = #{attachId}</if>
+            <!--<if test="folderId != null  and folderId != ''"> and r.folder_id = #{folderId}</if>-->
+            <if test="folderIds != null and folderIds.size() > 0">
+                <!-- 集合非空的处理 -->
+                and r.folder_id in
+                <foreach collection="folderIds" item="folderId" open="(" separator="," close=")">
+                    #{folderId}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectBizDocArchiveRecordById" parameterType="String" resultMap="BizDocArchiveRecordResult">
+        <include refid="selectBizDocArchiveRecordVo"/>
+        where r.archive_no = #{archiveNo}
+    </select>
+        
+    <insert id="insertBizDocArchiveRecord" parameterType="BizDocArchiveRecord">
+        insert into biz_doc_archive_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="archiveNo != null and archiveNo != ''">archive_no,</if>
+            <if test="fondsNo != null and fondsNo != ''">fonds_no,</if>
+            <if test="archiveKindCode != null and archiveKindCode != ''">archive_kind_code,</if>
+            <if test="archiveYear != null and archiveYear != ''">archive_year,</if>
+            <if test="retentionPeriod != null">retention_period,</if>
+            <if test="organizationProblem != null">organization_problem,</if>
+            <if test="partNo != null">part_no,</if>
+            <if test="responsibility != null">responsibility,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="fileNo != null">file_no,</if>
+            <if test="fileDate != null">file_date,</if>
+            <if test="filePage != null">file_page,</if>
+            <if test="secretLevel != null">secret_level,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="attachId != null">attach_id,</if>
+            <if test="folderId != null">folder_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="archiveNo != null and archiveNo != ''">#{archiveNo},</if>
+            <if test="fondsNo != null and fondsNo != ''">#{fondsNo},</if>
+            <if test="archiveKindCode != null and archiveKindCode != ''">#{archiveKindCode},</if>
+            <if test="archiveYear != null and archiveYear != ''">#{archiveYear},</if>
+            <if test="retentionPeriod != null">#{retentionPeriod},</if>
+            <if test="organizationProblem != null">#{organizationProblem},</if>
+            <if test="partNo != null">#{partNo},</if>
+            <if test="responsibility != null">#{responsibility},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="fileNo != null">#{fileNo},</if>
+            <if test="fileDate != null">#{fileDate},</if>
+            <if test="filePage != null">#{filePage},</if>
+            <if test="secretLevel != null">#{secretLevel},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="attachId != null">#{attachId},</if>
+            <if test="folderId != null">#{folderId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizDocArchiveRecord" parameterType="BizDocArchiveRecord">
+        update biz_doc_archive_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="fondsNo != null and fondsNo != ''">fonds_no = #{fondsNo},</if>
+            <if test="archiveKindCode != null and archiveKindCode != ''">archive_kind_code = #{archiveKindCode},</if>
+            <if test="archiveYear != null and archiveYear != ''">archive_year = #{archiveYear},</if>
+            <if test="retentionPeriod != null">retention_period = #{retentionPeriod},</if>
+            <if test="organizationProblem != null">organization_problem = #{organizationProblem},</if>
+            <if test="partNo != null">part_no = #{partNo},</if>
+            <if test="responsibility != null">responsibility = #{responsibility},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="fileNo != null">file_no = #{fileNo},</if>
+            <if test="fileDate != null">file_date = #{fileDate},</if>
+            <if test="filePage != null">file_page = #{filePage},</if>
+            <if test="secretLevel != null">secret_level = #{secretLevel},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="attachId != null">attach_id = #{attachId},</if>
+            <if test="folderId != null">folder_id = #{folderId},</if>
+        </trim>
+        where archive_no = #{archiveNo}
+    </update>
+
+    <delete id="deleteBizDocArchiveRecordById" parameterType="String">
+        delete from biz_doc_archive_record where archive_no = #{archiveNo}
+    </delete>
+
+    <delete id="deleteBizDocArchiveRecordByIds" parameterType="String">
+        delete from biz_doc_archive_record where archive_no in 
+        <foreach item="archiveNo" collection="array" open="(" separator="," close=")">
+            #{archiveNo}
+        </foreach>
+    </delete>
+</mapper>

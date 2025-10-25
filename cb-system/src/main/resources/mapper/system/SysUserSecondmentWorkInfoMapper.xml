@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserSecondmentWorkInfoMapper">
+    
+    <resultMap type="SysUserSecondmentWorkInfo" id="SysUserSecondmentWorkInfoResult">
+        <result property="secondmentWorkInfoId"    column="secondment_work_info_id"    />
+        <result property="borrowUnitName"    column="borrow_unit_name"    />
+        <result property="borrowUnitLevel"    column="borrow_unit_level"    />
+        <result property="borrowUnitNature"    column="borrow_unit_nature"    />
+        <result property="lendingUnitName"    column="lending_unit_name"    />
+        <result property="lendingUnitLevel"    column="lending_unit_level"    />
+        <result property="lendingUnitNature"    column="lending_unit_nature"    />
+        <result property="userId"    column="user_id"    />
+        <result property="identityCategory"    column="identity_category"    />
+        <result property="startDate"    column="start_date"    />
+        <result property="endDate"    column="end_date"    />
+        <result property="secondmentType"    column="secondment_type"    />
+        <result property="secondmentDept"    column="secondment_dept"    />
+        <result property="filingTime"    column="filing_time"    />
+        <result property="secondmentNotes"    column="secondment_notes"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <resultMap id="sysUserSecondmentWorkInfoVo" type="SysUserSecondmentWorkInfoVo" extends="SysUserSecondmentWorkInfoResult">
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+
+    <sql id="selectSysUserSecondmentWorkInfoVo">
+        <!--
+        select secondment_work_info_id, borrow_unit_name, borrow_unit_level, borrow_unit_nature, lending_unit_name,
+               lending_unit_level, lending_unit_nature, user_id, identity_category, start_date, end_date, secondment_type,
+               secondment_dept, secondment_notes, create_by, create_time, update_by, update_time
+        from sys_user_secondment_work_info
+        -->
+        select
+            swi.secondment_work_info_id, swi.borrow_unit_name,swi.borrow_unit_level, swi.borrow_unit_nature,
+            swi.lending_unit_name, swi.lending_unit_level, swi.lending_unit_nature, swi.user_id,  swi.identity_category,
+            swi.start_date, swi.end_date, swi.secondment_type, swi.secondment_dept, swi.filing_time, swi.secondment_notes,swi.create_by,
+            swi.create_time, swi.update_by, swi.update_time, u.name, d.dept_name
+        from sys_user_secondment_work_info swi
+        inner join sys_user u on swi.user_id=u.user_id
+        inner join sys_dept d on swi.secondment_dept=d.dept_id
+    </sql>
+
+    <select id="selectSysUserSecondmentWorkInfoList" parameterType="SysUserSecondmentWorkInfo" resultMap="SysUserSecondmentWorkInfoResult">
+        <include refid="selectSysUserSecondmentWorkInfoVo"/>
+        <where>  
+            <if test="secondmentWorkInfoId != null  and secondmentWorkInfoId != ''"> and secondment_work_info_id = #{secondmentWorkInfoId}</if>
+            <if test="borrowUnitName != null  and borrowUnitName != ''"> and borrow_unit_name like concat('%', #{borrowUnitName}, '%')</if>
+            <if test="borrowUnitLevel != null  and borrowUnitLevel != ''"> and borrow_unit_level = #{borrowUnitLevel}</if>
+            <if test="borrowUnitNature != null  and borrowUnitNature != ''"> and borrow_unit_nature = #{borrowUnitNature}</if>
+            <if test="lendingUnitName != null  and lendingUnitName != ''"> and lending_unit_name like concat('%', #{lendingUnitName}, '%')</if>
+            <if test="lendingUnitLevel != null  and lendingUnitLevel != ''"> and lending_unit_level = #{lendingUnitLevel}</if>
+            <if test="lendingUnitNature != null  and lendingUnitNature != ''"> and lending_unit_nature = #{lendingUnitNature}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="identityCategory != null  and identityCategory != ''"> and identity_category = #{identityCategory}</if>
+            <if test="params.beginStartDate != null and params.beginStartDate != '' and params.endStartDate != null and params.endStartDate != ''"> and start_date between #{params.beginStartDate} and #{params.endStartDate}</if>
+            <if test="params.beginEndDate != null and params.beginEndDate != '' and params.endEndDate != null and params.endEndDate != ''"> and end_date between #{params.beginEndDate} and #{params.endEndDate}</if>
+            <if test="secondmentType != null  and secondmentType != ''"> and secondment_type = #{secondmentType}</if>
+            <if test="secondmentDept != null  and secondmentDept != ''"> and secondment_dept = #{secondmentDept}</if>
+            <if test="secondmentNotes != null  and secondmentNotes != ''"> and secondment_notes = #{secondmentNotes}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysUserSecondmentWorkInfoById" parameterType="String" resultMap="SysUserSecondmentWorkInfoResult">
+        <include refid="selectSysUserSecondmentWorkInfoVo"/>
+        where swi.secondment_work_info_id = #{secondmentWorkInfoId}
+    </select>
+
+    <select id="selectSysUserSecondmentWorkInfoVoList" parameterType="SysUserSecondmentWorkInfoVo" resultMap="sysUserSecondmentWorkInfoVo">
+        <include refid="selectSysUserSecondmentWorkInfoVo"/>
+        <where>
+            <if test="userId != null "> and swi.user_id = #{userId}</if>
+            <if test="secondmentDept != null and secondmentDept != 0">
+                AND (swi.secondment_dept = #{secondmentDept} OR swi.secondment_dept IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{secondmentDept}, ancestors) ))
+            </if>
+            <if test="lendingUnitName != null  and lendingUnitName != ''"> and swi.lending_unit_name like concat('%', #{lendingUnitName}, '%')</if>
+            <if test="lendingUnitLevel != null  and lendingUnitLevel != ''"> and swi.lending_unit_level = #{lendingUnitLevel}</if>
+            <if test="lendingUnitNature != null  and lendingUnitNature != ''"> and swi.lending_unit_nature = #{lendingUnitNature}</if>
+            <if test="identityCategory != null  and identityCategory != ''"> and swi.identity_category = #{identityCategory}</if>
+            <if test="secondmentType != null  and secondmentType != ''"> and swi.secondment_type = #{secondmentType}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%',#{name},'%') </if>
+            <if test="deptName != null  and deptName != ''"> and d.dept_name like concat('%',#{deptName},'%') </if>
+        </where>
+    </select>
+
+    <insert id="insertSysUserSecondmentWorkInfo" parameterType="SysUserSecondmentWorkInfo">
+        insert into sys_user_secondment_work_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="secondmentWorkInfoId != null and secondmentWorkInfoId != ''">secondment_work_info_id,</if>
+            <if test="borrowUnitName != null">borrow_unit_name,</if>
+            <if test="borrowUnitLevel != null">borrow_unit_level,</if>
+            <if test="borrowUnitNature != null">borrow_unit_nature,</if>
+            <if test="lendingUnitName != null">lending_unit_name,</if>
+            <if test="lendingUnitLevel != null">lending_unit_level,</if>
+            <if test="lendingUnitNature != null">lending_unit_nature,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="identityCategory != null">identity_category,</if>
+            <if test="startDate != null">start_date,</if>
+            <if test="endDate != null">end_date,</if>
+            <if test="secondmentType != null">secondment_type,</if>
+            <if test="secondmentDept != null">secondment_dept,</if>
+            <if test="filingTime != null">filing_time,</if>
+            <if test="secondmentNotes != null">secondment_notes,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="secondmentWorkInfoId != null and secondmentWorkInfoId != ''">#{secondmentWorkInfoId},</if>
+            <if test="borrowUnitName != null">#{borrowUnitName},</if>
+            <if test="borrowUnitLevel != null">#{borrowUnitLevel},</if>
+            <if test="borrowUnitNature != null">#{borrowUnitNature},</if>
+            <if test="lendingUnitName != null">#{lendingUnitName},</if>
+            <if test="lendingUnitLevel != null">#{lendingUnitLevel},</if>
+            <if test="lendingUnitNature != null">#{lendingUnitNature},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="identityCategory != null">#{identityCategory},</if>
+            <if test="startDate != null">#{startDate},</if>
+            <if test="endDate != null">#{endDate},</if>
+            <if test="secondmentType != null">#{secondmentType},</if>
+            <if test="secondmentDept != null">#{secondmentDept},</if>
+            <if test="secondmentNotes != null">#{secondmentNotes},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysUserSecondmentWorkInfo" parameterType="SysUserSecondmentWorkInfo">
+        update sys_user_secondment_work_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="borrowUnitName != null">borrow_unit_name = #{borrowUnitName},</if>
+            <if test="borrowUnitLevel != null">borrow_unit_level = #{borrowUnitLevel},</if>
+            <if test="borrowUnitNature != null">borrow_unit_nature = #{borrowUnitNature},</if>
+            <if test="lendingUnitName != null">lending_unit_name = #{lendingUnitName},</if>
+            <if test="lendingUnitLevel != null">lending_unit_level = #{lendingUnitLevel},</if>
+            <if test="lendingUnitNature != null">lending_unit_nature = #{lendingUnitNature},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="identityCategory != null">identity_category = #{identityCategory},</if>
+            <if test="startDate != null">start_date = #{startDate},</if>
+            <if test="endDate != null">end_date = #{endDate},</if>
+            <if test="secondmentType != null">secondment_type = #{secondmentType},</if>
+            <if test="secondmentDept != null">secondment_dept = #{secondmentDept},</if>
+            <if test="filingTime != null">filing_time = #{filingTime},</if>
+            <if test="secondmentNotes != null">secondment_notes = #{secondmentNotes},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where secondment_work_info_id = #{secondmentWorkInfoId}
+    </update>
+
+    <delete id="deleteSysUserSecondmentWorkInfoById" parameterType="String">
+        delete from sys_user_secondment_work_info where secondment_work_info_id = #{secondmentWorkInfoId}
+    </delete>
+
+    <delete id="deleteSysUserSecondmentWorkInfoByIds" parameterType="String">
+        delete from sys_user_secondment_work_info where secondment_work_info_id in 
+        <foreach item="secondmentWorkInfoId" collection="array" open="(" separator="," close=")">
+            #{secondmentWorkInfoId}
+        </foreach>
+    </delete>
+</mapper>

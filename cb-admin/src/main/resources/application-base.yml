@@ -1,0 +1,257 @@
+# 项目相关配置
+cbxxjs:
+  # 名称
+  name: CB-VUE
+  # 版本
+  version: 3.4.0
+  # 版权年份
+  copyrightYear: 2021
+  # 实例演示开关
+  demoEnabled: true
+  # 文件路径 示例（ Windows配置D:/ruoyi/uploadPath，Linux配置 /home/ruoyi/uploadPath）
+  profile: /home/ruoyi/uploadPath
+  # 获取ip地址开关
+  addressEnabled: false
+  # 验证码类型 math 数组计算 char 字符验证
+  captchaType: math
+
+# 开发环境配置
+server:
+  # 服务器的HTTP端口，默认为8080
+  port: 8080
+  servlet:
+    # 应用的访问路径
+    context-path: /
+  tomcat:
+    # tomcat的URI编码
+    uri-encoding: UTF-8
+    # tomcat最大线程数，默认为200
+    max-threads: 800
+    # Tomcat启动初始化的线程数，默认值25
+    min-spare-threads: 30
+
+# 日志配置
+logging:
+  level:
+    com.cb: debug
+    org.springframework: warn
+
+# Spring配置
+spring:
+  # 资源信息
+  messages:
+    # 国际化资源文件路径
+    basename: i18n/messages
+  # 文件上传
+  servlet:
+    multipart:
+      # 单个文件大小
+      max-file-size:  10MB
+      # 设置总上传的文件大小
+      max-request-size:  20MB
+  # 服务模块
+  devtools:
+    restart:
+      # 热部署开关
+      enabled: true
+  #数据库
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
+#    driverClassName: com.mysql.cj.jdbc.Driver
+    driverClassName: dm.jdbc.driver.DmDriver
+    druid:
+      # 主库数据源 mysql
+#      master:
+#          url: jdbc:mysql://192.168.1.215:3306/assessment?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+#          username: root
+#          password: Password@cbxxjs215
+      # 主库数据源 达梦
+      master:
+        url: jdbc:dm://127.0.0.1:5236/KMJJW?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=true&serverTimezone=GMT%2B8
+        username: KMJJW
+        password: 1q2w3e4r5t
+      # 从库数据源
+      slave:
+        # 从数据源开关/默认关闭
+        enabled: false
+        url:
+        username:
+        password:
+      # 初始连接数
+      initialSize: 5
+      # 最小连接池数量
+      minIdle: 10
+      # 最大连接池数量
+      maxActive: 20
+      # 配置获取连接等待超时的时间
+      maxWait: 60000
+      # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
+      timeBetweenEvictionRunsMillis: 60000
+      # 配置一个连接在池中最小生存的时间，单位是毫秒
+      minEvictableIdleTimeMillis: 300000
+      # 配置一个连接在池中最大生存的时间，单位是毫秒
+      maxEvictableIdleTimeMillis: 900000
+      # 配置检测连接是否有效
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+      webStatFilter:
+        enabled: true
+      statViewServlet:
+        enabled: true
+        # 设置白名单，不填则允许所有访问
+        allow:
+        url-pattern: /druid/*
+        # 控制台管理用户名和密码
+        login-username: admin
+        login-password: admin123
+      filter:
+        stat:
+          enabled: true
+          # 慢SQL记录
+          log-slow-sql: true
+          slow-sql-millis: 1000
+          merge-sql: true
+        wall:
+          config:
+            multi-statement-allow: true
+  # redis 配置
+  redis:
+    # 地址
+    host: localhost
+    # 端口，默认为6379
+    port: 6379
+    # 数据库索引
+    database: 1
+    # 密码
+    password:
+    # 连接超时时间
+    timeout: 10s
+    lettuce:
+      pool:
+        # 连接池中的最小空闲连接
+        min-idle: 0
+        # 连接池中的最大空闲连接
+        max-idle: 8
+        # 连接池的最大数据库连接数
+        max-active: 8
+        # #连接池最大阻塞等待时间（使用负值表示没有限制）
+        max-wait: -1ms
+  # activiti 模块
+  activiti:
+    # 解决启动报错：class path resource [processes/] cannot be resolved to URL because it does not exist
+    check-process-definitions: false
+    # 检测身份信息表是否存在
+    db-identity-used: false
+  # 全局时间序列化处理
+  jackson:
+    # 设置 java.util.Date, Calendar 序列化、反序列化的格式
+    date-format: yyyy-MM-dd HH:mm:ss
+    # 当地时区
+    locale: zh
+    # 设置全局时区
+    time-zone: GMT+8
+    # 设置空如何序列化
+    defaultPropertyInclusion: always
+    serialization:
+      # 禁止将 java.util.Date, Calendar 序列化为数字(时间戳)
+      WRITE_DATES_AS_TIMESTAMPS: false
+      # 格式化输出
+      indent_output: false
+      # 序列化时，对象为 null，是否抛异常
+      fail_on_empty_beans: false
+    deserialization:
+      #允许对象忽略json中不存在的属性
+      fail_on_unknown_properties: false
+
+  #elasticsearch 配置
+  elasticsearch:
+    rest:
+      uris: http://192.168.1.216:9200
+      username:
+      password:
+      connectionTimeout: 30
+      readTimeout: 30
+# token配置
+token:
+  # 令牌自定义标识
+  header: Authorization
+  # 令牌密钥
+  secret: abcdefghijklmnopqrstuvwxyz
+  # 令牌有效期（默认60分钟）
+  expireTime: 60
+
+# MyBatis配置
+mybatis:
+  # 搜索指定包别名
+  typeAliasesPackage: com.cb.**.domain
+  # 配置mapper的扫描，找到所有的mapper.xml映射文件
+  mapperLocations: classpath*:mapper/**/*Mapper.xml
+  # 加载全局的配置文件
+  configLocation: classpath:mybatis/mybatis-config.xml
+
+# PageHelper分页插件
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+# Swagger配置
+swagger:
+  # 是否开启swagger
+  enabled: false
+  # 请求前缀
+  pathMapping: /dev-api
+
+# 防止XSS攻击
+xss:
+  # 过滤开关
+  enabled: true
+  # 排除链接（多个用逗号分隔）
+  excludes: /system/notice/*
+  # 匹配链接
+  urlPatterns: /system/*,/monitor/*,/tool/*
+
+# sm 加解密配置
+encipher:
+  # 国密算法类型 本地(local)，云服务(cloud)
+  usage-type: local
+  #sm 加解密配置  当usage-type= local 时有效
+  local-serve:
+    sm4-SecretKey: 3A527D09D74A269F6C1620C127050D65
+  # 以下配置  当usage-type= cloud 时有效
+  cloud-serve:
+
+
+oa:
+  baseUrl: http://10.53.2.200:8533
+
+sso:
+  oa:
+    appId: tjOA
+    appKey: 880d04f2791d4003aec5d80c82ed6f3e
+
+ai:
+  baseUrl: http://10.10.10.68:3001
+  # 助手app
+  assistantAppIds:
+    # 数字昆纪小助手
+    szkj: f9c4ec8c-6044-472c-bc58-7ed98d9785f1
+
+  #技能app
+  skillAppIds:
+    # 数据清洗
+    generalClean: 5fa797e6-7a18-4bab-81a0-17b45fbbc339
+    # 上传文件并给出提示词
+    uploadFileAndPrompt: 5701bd89-1b88-4ddd-89b8-84f1706379c9
+    textByOneKE: 4f6a13d7-f804-4a9a-b898-3159dd43490f
+    parseRelationGraphByText: a8d35ae4-fdbd-4c90-a6cb-6973b3712493
+    parseRelationGraphByFileLib: 14d7db13-31d0-41fb-8305-cf5eb03f01c5
+
+
+#Rpa 采集信息推送AI知识库ID
+rpa:
+  ai:
+    knowledge-id: 11

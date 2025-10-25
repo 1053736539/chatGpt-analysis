@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.salary.mapper.SalaryMapper">
+
+    <resultMap type="Salary" id="SalaryResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="userType"    column="user_type"    />
+        <result property="year"    column="year"    />
+        <result property="month"    column="month"    />
+        <result property="postSalary"    column="post_salary"    />
+        <result property="gradSalary"    column="grad_salary"    />
+        <result property="workSubsidy"    column="work_subsidy"    />
+        <result property="lifeSubsidy"    column="life_subsidy"    />
+        <result property="reformSubsidy"    column="reform_subsidy"    />
+        <result property="reformSubsidy2017"    column="reform_subsidy2017"    />
+        <result property="oneChildSubsidy"    column="one_child_subsidy"    />
+        <result property="huiNationSubsidy"    column="hui_nation_subsidy"    />
+        <result property="yearlyBonus"    column="yearly_bonus"    />
+        <result property="trafficSubsidy"    column="traffic_subsidy"    />
+        <result property="basicMerit"    column="basic_merit"    />
+        <result property="yearlyAssessAward"    column="yearly_assess_award"    />
+        <result property="other"    column="other"    />
+        <result property="reissueSum"    column="reissue_sum"    />
+        <result property="rededuceSum"    column="rededuce_sum"    />
+        <result property="payableItem"    column="payable_item"    />
+        <result property="housingFee"    column="housing_fee"    />
+        <result property="retirementInsurance"    column="retirement_insurance"    />
+        <result property="medicalInsurance"    column="medical_insurance"    />
+        <result property="incomeTax"    column="income_tax"    />
+        <result property="deducedSalary"    column="deduced_salary"    />
+        <result property="payedSalary"    column="payed_salary"    />
+        <result property="remark"    column="remark"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="status"    column="status"    />
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+
+    <sql id="selectSalaryVo">
+        select s.*, u.name from salary s inner join sys_user u on s.user_id=u.user_id
+    </sql>
+
+    <select id="selectSalaryList" parameterType="Salary" resultMap="SalaryResult">
+        <include refid="selectSalaryVo"/>
+        <where>
+            <if test="userId != null "> and s.user_id = #{userId}</if>
+            <if test="year != null  and year != ''"> and s.year = #{year}</if>
+            <if test="month != null  and month != ''"> and s.month = #{month}</if>
+            <if test="status != null "> and s.status = #{status}</if>
+            <if test="userType != null "> and s.user_type = #{userType}</if>
+            <if test="name != null "> and u.name like concat('%', #{name},'%')</if>
+            <if test="deptId != null and deptId != 0">
+                AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+            </if>
+        </where>
+    </select>
+
+    <select id="selectSalaryById" parameterType="Long" resultMap="SalaryResult">
+        <include refid="selectSalaryVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSalary" parameterType="Salary">
+        insert into salary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="year != null">year,</if>
+            <if test="month != null">month,</if>
+            <if test="postSalary != null">post_salary,</if>
+            <if test="gradSalary != null">grad_salary,</if>
+            <if test="workSubsidy != null">work_subsidy,</if>
+            <if test="lifeSubsidy != null">life_subsidy,</if>
+            <if test="reformSubsidy != null">reform_subsidy,</if>
+            <if test="reformSubsidy2017 != null">reform_subsidy2017,</if>
+            <if test="oneChildSubsidy != null">one_child_subsidy,</if>
+            <if test="huiNationSubsidy != null">hui_nation_subsidy,</if>
+            <if test="yearlyBonus != null">yearly_bonus,</if>
+            <if test="trafficSubsidy != null">traffic_subsidy,</if>
+            <if test="basicMerit != null">basic_merit,</if>
+            <if test="yearlyAssessAward != null">yearly_assess_award,</if>
+            <if test="other != null">other,</if>
+            <if test="reissueSum != null">reissue_sum,</if>
+            <if test="rededuceSum != null">rededuce_sum,</if>
+            <if test="payableItem != null">payable_item,</if>
+            <if test="housingFee != null">housing_fee,</if>
+            <if test="retirementInsurance != null">retirement_insurance,</if>
+            <if test="medicalInsurance != null">medical_insurance,</if>
+            <if test="incomeTax != null">income_tax,</if>
+            <if test="deducedSalary != null">deduced_salary,</if>
+            <if test="payedSalary != null">payed_salary,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="status != null">status,</if>
+            <if test="userType != null">user_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="year != null">#{year},</if>
+            <if test="month != null">#{month},</if>
+            <if test="postSalary != null">#{postSalary},</if>
+            <if test="gradSalary != null">#{gradSalary},</if>
+            <if test="workSubsidy != null">#{workSubsidy},</if>
+            <if test="lifeSubsidy != null">#{lifeSubsidy},</if>
+            <if test="reformSubsidy != null">#{reformSubsidy},</if>
+            <if test="reformSubsidy2017 != null">#{reformSubsidy2017},</if>
+            <if test="oneChildSubsidy != null">#{oneChildSubsidy},</if>
+            <if test="huiNationSubsidy != null">#{huiNationSubsidy},</if>
+            <if test="yearlyBonus != null">#{yearlyBonus},</if>
+            <if test="trafficSubsidy != null">#{trafficSubsidy},</if>
+            <if test="basicMerit != null">#{basicMerit},</if>
+            <if test="yearlyAssessAward != null">#{yearlyAssessAward},</if>
+            <if test="other != null">#{other},</if>
+            <if test="reissueSum != null">#{reissueSum},</if>
+            <if test="rededuceSum != null">#{rededuceSum},</if>
+            <if test="payableItem != null">#{payableItem},</if>
+            <if test="housingFee != null">#{housingFee},</if>
+            <if test="retirementInsurance != null">#{retirementInsurance},</if>
+            <if test="medicalInsurance != null">#{medicalInsurance},</if>
+            <if test="incomeTax != null">#{incomeTax},</if>
+            <if test="deducedSalary != null">#{deducedSalary},</if>
+            <if test="payedSalary != null">#{payedSalary},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="status != null">#{status},</if>
+            <if test="userType != null">#{userType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSalary" parameterType="Salary">
+        update salary
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="year != null">year = #{year},</if>
+            <if test="month != null">month = #{month},</if>
+            <if test="postSalary != null">post_salary = #{postSalary},</if>
+            <if test="gradSalary != null">grad_salary = #{gradSalary},</if>
+            <if test="workSubsidy != null">work_subsidy = #{workSubsidy},</if>
+            <if test="lifeSubsidy != null">life_subsidy = #{lifeSubsidy},</if>
+            <if test="reformSubsidy != null">reform_subsidy = #{reformSubsidy},</if>
+            <if test="reformSubsidy2017 != null">reform_subsidy2017 = #{reformSubsidy2017},</if>
+            <if test="oneChildSubsidy != null">one_child_subsidy = #{oneChildSubsidy},</if>
+            <if test="huiNationSubsidy != null">hui_nation_subsidy = #{huiNationSubsidy},</if>
+            <if test="yearlyBonus != null">yearly_bonus = #{yearlyBonus},</if>
+            <if test="trafficSubsidy != null">traffic_subsidy = #{trafficSubsidy},</if>
+            <if test="basicMerit != null">basic_merit = #{basicMerit},</if>
+            <if test="yearlyAssessAward != null">yearly_assess_award = #{yearlyAssessAward},</if>
+            <if test="other != null">other = #{other},</if>
+            <if test="reissueSum != null">reissue_sum = #{reissueSum},</if>
+            <if test="rededuceSum != null">rededuce_sum = #{rededuceSum},</if>
+            <if test="payableItem != null">payable_item = #{payableItem},</if>
+            <if test="housingFee != null">housing_fee = #{housingFee},</if>
+            <if test="retirementInsurance != null">retirement_insurance = #{retirementInsurance},</if>
+            <if test="medicalInsurance != null">medical_insurance = #{medicalInsurance},</if>
+            <if test="incomeTax != null">income_tax = #{incomeTax},</if>
+            <if test="deducedSalary != null">deduced_salary = #{deducedSalary},</if>
+            <if test="payedSalary != null">payed_salary = #{payedSalary},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="userType != null">user_type = #{userType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="auditSalary" parameterType="Salary">
+        update salary set status = 1 where status = 0
+        <if test="year != null  and year != ''"> and year = #{year}</if>
+        <if test="month != null  and month != ''"> and month = #{month}</if>
+    </update>
+
+    <delete id="deleteSalaryById" parameterType="Long">
+        delete from salary where id = #{id}
+    </delete>
+
+    <delete id="deleteSalaryByIds" parameterType="String">
+        delete from salary where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

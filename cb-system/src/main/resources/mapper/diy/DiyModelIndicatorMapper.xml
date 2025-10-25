@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.diy.mapper.DiyModelIndicatorMapper">
+
+    <resultMap type="DiyModelIndicator" id="DiyModelIndicatorResult">
+        <result property="id" column="id"/>
+        <result property="modelId" column="model_id"/>
+        <result property="name" column="name"/>
+        <result property="introduction" column="introduction"/>
+        <result property="process" column="process"/>
+        <result property="remark" column="remark"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectDiyModelIndicatorVo">
+        select id,
+               model_id,
+               name,
+               introduction,
+               process,
+               remark,
+               create_by,
+               create_time,
+               update_by,
+               update_time
+        from diy_model_indicator
+    </sql>
+
+    <select id="selectDiyModelIndicatorList" parameterType="DiyModelIndicator" resultMap="DiyModelIndicatorResult">
+        <include refid="selectDiyModelIndicatorVo"/>
+        <where>
+            <if test="modelId != null ">and model_id = #{modelId}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="introduction != null  and introduction != ''">and introduction = #{introduction}</if>
+            <if test="process != null  and process != ''">and process = #{process}</if>
+        </where>
+    </select>
+
+    <select id="selectDiyModelIndicatorById" parameterType="Long" resultMap="DiyModelIndicatorResult">
+        <include refid="selectDiyModelIndicatorVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertDiyModelIndicator" parameterType="DiyModelIndicator">
+        insert into diy_model_indicator
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="modelId != null">model_id,</if>
+            <if test="name != null">name,</if>
+            <if test="introduction != null">introduction,</if>
+            <if test="process != null">process,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="modelId != null">#{modelId},</if>
+            <if test="name != null">#{name},</if>
+            <if test="introduction != null">#{introduction},</if>
+            <if test="process != null">#{process},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateDiyModelIndicator" parameterType="DiyModelIndicator">
+        update diy_model_indicator
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="modelId != null">model_id = #{modelId},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="introduction != null">introduction = #{introduction},</if>
+            <if test="process != null">process = #{process},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteDiyModelIndicatorById" parameterType="Integer">
+        delete
+        from diy_model_indicator
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteDiyModelIndicatorByIds" parameterType="String">
+        delete from diy_model_indicator where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

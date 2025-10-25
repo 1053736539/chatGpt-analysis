@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.RsArchInfoMapper">
+    
+    <resultMap type="RsArchInfo" id="RsArchInfoResult">
+        <result property="id"    column="ID"    />
+        <result property="archId"    column="ARCH_ID"    />
+        <result property="rsId"    column="RS_ID"    />
+        <result property="remark"    column="REMARK"    />
+        <result property="materialName"    column="MATERIAL_NAME"    />
+        <result property="materialType"    column="MATERIAL_TYPE"    />
+        <result property="serialNumber"    column="SERIAL_NUMBER"    />
+        <result property="pageNumber"    column="PAGE_NUMBER"    />
+        <result property="materialYear"    column="MATERIAL_YEAR"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="materialMonth"    column="MATERIAL_MONTH"    />
+        <result property="materialDay"    column="MATERIAL_DAY"    />
+        <result property="materialTime"    column="MATERIAL_TIME"    />
+        <result property="fs"    column="FS"    />
+        <result property="checkId"    column="CHECK_ID"    />
+        <result property="checkField"    column="CHECK_FIELD"    />
+        <result property="examineFileld"    column="EXAMINE_FILELD"    />
+        <result property="condition"    column="CONDITION"    />
+        <result property="oldArchid"    column="OLD_ARCHID"    />
+        <result property="oldRsid"    column="OLD_RSID"    />
+        <result property="jsclId"    column="JSCL_ID"    />
+        <result property="addTime"    column="ADD_TIME"    />
+        <result property="userId"     column="user_id"   />
+        <result property="beginYear"    column="begin_year"    />
+        <result property="endYear"     column="end_year"   />
+    </resultMap>
+
+    <sql id="selectRsArchInfoVo">
+        select ID, ARCH_ID, RS_ID, REMARK, MATERIAL_NAME, MATERIAL_TYPE, SERIAL_NUMBER, PAGE_NUMBER, MATERIAL_YEAR, CREATE_TIME, CREATE_BY, UPDATE_TIME, UPDATE_BY, MATERIAL_MONTH, MATERIAL_DAY, MATERIAL_TIME, FS, CHECK_ID, CHECK_FIELD, EXAMINE_FILELD, CONDITION, OLD_ARCHID, OLD_RSID, JSCL_ID, ADD_TIME from RS_ARCH_INFO
+    </sql>
+
+    <select id="selectRsArchInfoList" parameterType="RsArchInfo" resultMap="RsArchInfoResult">
+        <include refid="selectRsArchInfoVo"/>
+        <where>  
+            <if test="archId != null "> and ARCH_ID = #{archId}</if>
+            <if test="rsId != null "> and RS_ID = #{rsId}</if>
+            <if test="remark != null  and remark != ''"> and REMARK = #{remark}</if>
+            <if test="materialName != null  and materialName != ''"> and MATERIAL_NAME like concat('%', #{materialName}, '%')</if>
+            <if test="materialType != null "> and MATERIAL_TYPE = #{materialType}</if>
+            <if test="serialNumber != null "> and SERIAL_NUMBER = #{serialNumber}</if>
+            <if test="pageNumber != null "> and PAGE_NUMBER = #{pageNumber}</if>
+            <if test="materialYear != null "> and MATERIAL_YEAR = #{materialYear}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="materialMonth != null "> and MATERIAL_MONTH = #{materialMonth}</if>
+            <if test="materialDay != null "> and MATERIAL_DAY = #{materialDay}</if>
+            <if test="materialTime != null "> and MATERIAL_TIME = #{materialTime}</if>
+            <if test="fs != null "> and FS = #{fs}</if>
+            <if test="checkId != null "> and CHECK_ID = #{checkId}</if>
+            <if test="checkField != null  and checkField != ''"> and CHECK_FIELD = #{checkField}</if>
+            <if test="examineFileld != null  and examineFileld != ''"> and EXAMINE_FILELD = #{examineFileld}</if>
+            <if test="condition != null  and condition != ''"> and CONDITION = #{condition}</if>
+            <if test="oldArchid != null  and oldArchid != ''"> and OLD_ARCHID = #{oldArchid}</if>
+            <if test="oldRsid != null  and oldRsid != ''"> and OLD_RSID = #{oldRsid}</if>
+            <if test="jsclId != null  and jsclId != ''"> and JSCL_ID = #{jsclId}</if>
+            <if test="addTime != null "> and ADD_TIME = #{addTime}</if>
+        </where>
+    </select>
+
+    <select id="selectRsArchInfoById" parameterType="Integer" resultMap="RsArchInfoResult">
+        <include refid="selectRsArchInfoVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertRsArchInfo" parameterType="RsArchInfo">
+        insert into RS_ARCH_INFO
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="archId != null">ARCH_ID,</if>
+            <if test="rsId != null">RS_ID,</if>
+            <if test="remark != null">REMARK,</if>
+            <if test="materialName != null">MATERIAL_NAME,</if>
+            <if test="materialType != null">MATERIAL_TYPE,</if>
+            <if test="serialNumber != null">SERIAL_NUMBER,</if>
+            <if test="pageNumber != null">PAGE_NUMBER,</if>
+            <if test="materialYear != null">MATERIAL_YEAR,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="materialMonth != null">MATERIAL_MONTH,</if>
+            <if test="materialDay != null">MATERIAL_DAY,</if>
+            <if test="materialTime != null">MATERIAL_TIME,</if>
+            <if test="fs != null">FS,</if>
+            <if test="checkId != null">CHECK_ID,</if>
+            <if test="checkField != null">CHECK_FIELD,</if>
+            <if test="examineFileld != null">EXAMINE_FILELD,</if>
+            <if test="condition != null">CONDITION,</if>
+            <if test="oldArchid != null">OLD_ARCHID,</if>
+            <if test="oldRsid != null">OLD_RSID,</if>
+            <if test="jsclId != null">JSCL_ID,</if>
+            <if test="addTime != null">ADD_TIME,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="archId != null">#{archId},</if>
+            <if test="rsId != null">#{rsId},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="materialName != null">#{materialName},</if>
+            <if test="materialType != null">#{materialType},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="pageNumber != null">#{pageNumber},</if>
+            <if test="materialYear != null">#{materialYear},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="materialMonth != null">#{materialMonth},</if>
+            <if test="materialDay != null">#{materialDay},</if>
+            <if test="materialTime != null">#{materialTime},</if>
+            <if test="fs != null">#{fs},</if>
+            <if test="checkId != null">#{checkId},</if>
+            <if test="checkField != null">#{checkField},</if>
+            <if test="examineFileld != null">#{examineFileld},</if>
+            <if test="condition != null">#{condition},</if>
+            <if test="oldArchid != null">#{oldArchid},</if>
+            <if test="oldRsid != null">#{oldRsid},</if>
+            <if test="jsclId != null">#{jsclId},</if>
+            <if test="addTime != null">#{addTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRsArchInfo" parameterType="RsArchInfo">
+        update RS_ARCH_INFO
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="archId != null">ARCH_ID = #{archId},</if>
+            <if test="rsId != null">RS_ID = #{rsId},</if>
+            <if test="remark != null">REMARK = #{remark},</if>
+            <if test="materialName != null">MATERIAL_NAME = #{materialName},</if>
+            <if test="materialType != null">MATERIAL_TYPE = #{materialType},</if>
+            <if test="serialNumber != null">SERIAL_NUMBER = #{serialNumber},</if>
+            <if test="pageNumber != null">PAGE_NUMBER = #{pageNumber},</if>
+            <if test="materialYear != null">MATERIAL_YEAR = #{materialYear},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="materialMonth != null">MATERIAL_MONTH = #{materialMonth},</if>
+            <if test="materialDay != null">MATERIAL_DAY = #{materialDay},</if>
+            <if test="materialTime != null">MATERIAL_TIME = #{materialTime},</if>
+            <if test="fs != null">FS = #{fs},</if>
+            <if test="checkId != null">CHECK_ID = #{checkId},</if>
+            <if test="checkField != null">CHECK_FIELD = #{checkField},</if>
+            <if test="examineFileld != null">EXAMINE_FILELD = #{examineFileld},</if>
+            <if test="condition != null">CONDITION = #{condition},</if>
+            <if test="oldArchid != null">OLD_ARCHID = #{oldArchid},</if>
+            <if test="oldRsid != null">OLD_RSID = #{oldRsid},</if>
+            <if test="jsclId != null">JSCL_ID = #{jsclId},</if>
+            <if test="addTime != null">ADD_TIME = #{addTime},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteRsArchInfoById" parameterType="Integer">
+        delete from RS_ARCH_INFO where ID = #{id}
+    </delete>
+
+    <delete id="deleteRsArchInfoByIds" parameterType="String">
+        delete from RS_ARCH_INFO where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectArchInfoCatalogList" parameterType="RsArchInfo" resultMap="RsArchInfoResult">
+        SELECT  rai.*  FROM  RS_ARCH_INFO rai
+        LEFT JOIN RS_INFO ri ON rai.rs_id = ri.RSID
+        LEFT JOIN "sys_user" su  ON  ri.USER_ID = su."user_id"
+        <where>
+            <if test="archId != null "> and rai.ARCH_ID = #{archId}</if>
+            <if test="rsId != null "> and rai.RS_ID = #{rsId}</if>
+            <if test="remark != null  and remark != ''"> and rai.REMARK = #{remark}</if>
+            <if test="materialName != null  and materialName != ''"> and rai.MATERIAL_NAME like concat('%', #{materialName}, '%')</if>
+            <if test="materialType != null "> and rai.MATERIAL_TYPE = #{materialType}</if>
+            <if test="serialNumber != null "> and rai.SERIAL_NUMBER = #{serialNumber}</if>
+            <if test="pageNumber != null "> and rai.PAGE_NUMBER = #{pageNumber}</if>
+            <if test="beginYear != null and beginYear !=''">
+                AND rai.MATERIAL_YEAR &gt;= #{beginYear}
+            </if>
+            <if test="endYear != null and  endYear !=''">
+                AND rai.MATERIAL_YEAR &lt;= #{endYear}
+            </if>
+            <if test="materialYear != null "> and rai.MATERIAL_YEAR = #{materialYear}</if>
+            <if test="createTime != null "> and rai.CREATE_TIME = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and rai.CREATE_BY = #{createBy}</if>
+            <if test="updateTime != null "> and rai.UPDATE_TIME = #{updateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and rai.UPDATE_BY = #{updateBy}</if>
+            <if test="materialMonth != null "> and rai.MATERIAL_MONTH = #{materialMonth}</if>
+            <if test="materialDay != null "> and rai.MATERIAL_DAY = #{materialDay}</if>
+            <if test="materialTime != null "> and rai.MATERIAL_TIME = #{materialTime}</if>
+            <if test="fs != null "> and rai.FS = #{fs}</if>
+            <if test="checkId != null "> and rai.CHECK_ID = #{checkId}</if>
+            <if test="checkField != null  and checkField != ''"> and rai.CHECK_FIELD = #{checkField}</if>
+            <if test="examineFileld != null  and examineFileld != ''"> and rai.EXAMINE_FILELD = #{examineFileld}</if>
+            <if test="condition != null  and condition != ''"> and rai.CONDITION = #{condition}</if>
+            <if test="oldArchid != null  and oldArchid != ''"> and rai.LD_ARCHID = #{oldArchid}</if>
+            <if test="oldRsid != null  and oldRsid != ''"> and rai.OLD_RSID = #{oldRsid}</if>
+            <if test="jsclId != null  and jsclId != ''"> and rai.JSCL_ID = #{jsclId}</if>
+            <if test="addTime != null "> and rai.ADD_TIME = #{addTime}</if>
+            <if test="userId !=null ">and su.user_id = #{userId}</if>
+        ORDER  BY rai.ARCH_ID ASC
+
+        </where>
+    </select>
+
+    <select id="exportArchivesCatalogueOfMaterialsData" parameterType="map" resultMap="RsArchInfoResult">
+        <include refid="selectRsArchInfoVo"/>
+        <where>
+            <if test="id != null and id != ''" >
+                <choose>
+                    <when test="isUpdate">
+                        <if test="historyId != null and historyId != ''">
+                            and id <![CDATA[>]]> #{historyId}
+                        </if>
+                        and id <![CDATA[<=]]> #{id}
+                    </when>
+                    <otherwise>
+                        and id <![CDATA[>]]> #{id}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="lastExportTime != null and lastExportTime != ''">
+                and TO_TIMESTAMP(update_time, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[>=]]> TO_TIMESTAMP(#{lastExportTime}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+        </where>
+        order by id asc
+        <if test="orderBy != null and orderBy != ''">
+            , #{orderBy}
+        </if>
+        <if test="limit != null and limit != ''">
+            limit #{limit}
+        </if>
+    </select>
+</mapper>
+
+

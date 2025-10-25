@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysDeptMapper">
+
+	<resultMap type="SysDept" id="SysDeptResult">
+		<id     property="deptId"     column="dept_id"     />
+		<result property="parentId"   column="parent_id"   />
+		<result property="ancestors"  column="ancestors"   />
+		<result property="deptName"   column="dept_name"   />
+		<result property="orderNum"   column="order_num"   />
+		<result property="leader"     column="leader"      />
+		<result property="phone"      column="phone"       />
+		<result property="email"      column="email"       />
+		<result property="status"     column="status"      />
+		<result property="delFlag"    column="del_flag"    />
+		<result property="parentName" column="parent_name" />
+		<result property="createBy"   column="create_by"   />
+		<result property="createTime" column="create_time" />
+		<result property="updateBy"   column="update_by"   />
+		<result property="updateTime" column="update_time" />
+		<result property="deptCode"     column="dept_code"      />
+		<result property="deptAbbreviation"    column="dept_abbreviation" />
+		<result property="deptType" column="dept_type" />
+		<result property="region"   column="region"   />
+		<result property="affiliations" column="affiliations" />
+		<result property="deptInstitution"   column="dept_institution"   />
+		<result property="orgLevel" column="org_level" />
+		<result property="establishedTime"     column="established_time"      />
+		<result property="approvalDate"    column="approval_date"    />
+		<result property="principalLeaderNo" column="principal_leader_no" />
+		<result property="assistantLeaderNo"   column="assistant_leader_no"   />
+		<result property="administrativeStaffing" column="administrative_staffing" />
+		<result property="causeOrgPublic"   column="cause_org_public"   />
+		<result property="causeOrgPrivate" column="cause_org_private" />
+		<result property="workforceHeadcount"     column="workforce_headcount"      />
+		<result property="otherHeadcount"    column="other_headcount"    />
+		<result property="ratifyNumber" column="ratify_number" />
+		<result property="applicationNumber"   column="application_number"   />
+		<result property="approvalNumber" column="approval_number" />
+		<result property="leaderNumber"   column="leader_number"   />
+		<result property="remarks" column="remarks" />
+		<result property="leaderCharge" column="leader_charge" />
+
+	</resultMap>
+	<resultMap id="SysDeptResultVo" extends="SysDeptResult" type="SysDeptVo">
+		<result property="leaderChargeName" column="leader_charge_name"/>
+	</resultMap>
+	<sql id="selectDeptVo">
+        select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.phone, d.email,
+		d.status, d.del_flag, d.create_by,d.dept_code,d.dept_abbreviation,
+		d.create_time, d.dept_type,d.region,d.affiliations,d.dept_institution,d.org_level,d.established_time,
+		d.approval_date,d.principal_leader_no,d.assistant_leader_no,d.administrative_staffing,
+		d.cause_org_public,d.cause_org_private,d.workforce_headcount,d.other_headcount,d.ratify_number,d.application_number,
+		d.approval_number,d.leader_number,d.remarks,d.leader_charge,u.name as leader_charge_name
+        from sys_dept d
+        left join sys_user u on d.leader_charge=u.user_id
+    </sql>
+
+	<select id="selectDeptList" parameterType="SysDept" resultMap="SysDeptResultVo">
+        <include refid="selectDeptVo"/>
+        where d.del_flag = '0'
+        <if test="parentId != null and parentId != 0">
+			AND (d.parent_id = #{parentId} OR d.dept_id = #{parentId})
+		</if>
+		<if test="deptName != null and deptName != ''">
+			AND d.dept_name like concat('%', #{deptName}, '%')
+		</if>
+		<if test="deptCode != null and deptCode != ''">
+			AND d.dept_code like concat('%', #{deptCode}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND d.status = #{status}
+		</if>
+		<if test="leaderCharge != null and leaderCharge != ''">
+			AND d.leader_charge = #{leaderCharge}
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+		order by d.parent_id, d.order_num
+    </select>
+
+    <select id="selectDeptListByRoleId" resultType="Integer">
+		select d.dept_id
+		from sys_dept d
+            left join sys_role_dept rd on d.dept_id = rd.dept_id
+        where rd.role_id = #{roleId}
+            <if test="deptCheckStrictly">
+              and d.dept_id not in (select d.parent_id from sys_dept d inner join sys_role_dept rd on d.dept_id = rd.dept_id and rd.role_id = #{roleId})
+            </if>
+		order by d.parent_id, d.order_num
+	</select>
+
+    <select id="selectDeptById" parameterType="Long" resultMap="SysDeptResultVo">
+		<include refid="selectDeptVo"/>
+		where d.dept_id = #{deptId}
+	</select>
+
+    <select id="checkDeptExistUser" parameterType="Long" resultType="int">
+		select count(1) from sys_user where dept_id = #{deptId} and del_flag = '0'
+	</select>
+	<select id="checkDeptExistUser" parameterType="Long" resultType="int" databaseId="kingbase">
+		select count(1) from "PUBLIC"."sys_user" where dept_id = #{deptId} and del_flag = '0'
+	</select>
+
+	<select id="hasChildByDeptId" parameterType="Long" resultType="int">
+		select count(1) from sys_dept
+		where del_flag = '0' and parent_id = #{deptId} limit 1
+	</select>
+
+	<select id="selectChildrenDeptById" parameterType="Long" resultMap="SysDeptResult">
+		select * from sys_dept where find_in_set(#{deptId}, ancestors)
+	</select>
+
+	<select id="selectNormalChildrenDeptById" parameterType="Long" resultType="int">
+		select count(*) from sys_dept where status = 0 and del_flag = '0' and find_in_set(#{deptId}, ancestors)
+	</select>
+
+	<select id="checkDeptNameUnique" resultMap="SysDeptResult">
+	    <include refid="selectDeptVo"/>
+		where d.dept_name=#{deptName} and d.parent_id = #{parentId} limit 1
+	</select>
+
+    <insert id="insertDept" parameterType="SysDept">
+ 		insert into sys_dept(
+ 			<if test="deptId != null and deptId != 0">dept_id,</if>
+ 			<if test="parentId != null and parentId != 0">parent_id,</if>
+ 			<if test="deptName != null and deptName != ''">dept_name,</if>
+ 			<if test="ancestors != null and ancestors != ''">ancestors,</if>
+ 			<if test="orderNum != null and orderNum != ''">order_num,</if>
+ 			<if test="leader != null and leader != ''">leader,</if>
+ 			<if test="phone != null and phone != ''">phone,</if>
+ 			<if test="email != null and email != ''">email,</if>
+ 			<if test="status != null">status,</if>
+ 			<if test="createBy != null and createBy != ''">create_by,</if>
+
+			<if test="deptCode != null and deptCode != ''">dept_code,</if>
+			<if test="deptAbbreviation != null and deptAbbreviation != ''">dept_abbreviation,</if>
+			<if test="deptType != null and deptType != ''">dept_type,</if>
+			<if test="region != null and region != ''">region,</if>
+			<if test="affiliations != null and affiliations != ''">affiliations,</if>
+			<if test="deptInstitution != null and deptInstitution != ''">dept_institution,</if>
+			<if test="orgLevel != null and orgLevel != ''">org_level,</if>
+			<if test="establishedTime != null and establishedTime != ''">established_time,</if>
+			<if test="approvalDate != null and approvalDate != ''">approval_date,</if>
+			<if test="principalLeaderNo != null and principalLeaderNo != ''">principal_leader_no,</if>
+			<if test="assistantLeaderNo != null and assistantLeaderNo != ''">administrative_staffing,</if>
+			<if test="administrativeStaffing != null and administrativeStaffing != ''">cause_org_public,</if>
+			<if test="causeOrgPublic != null and causeOrgPublic != ''">cause_org_private,</if>
+			<if test="causeOrgPrivate != null and causeOrgPrivate != ''">workforce_headcount,</if>
+			<if test="workforceHeadcount != null and workforceHeadcount != ''">other_headcount,</if>
+			<if test="ratifyNumber != null and ratifyNumber != ''">ratify_number,</if>
+			<if test="applicationNumber != null and applicationNumber != ''">application_number,</if>
+			<if test="approvalNumber != null and approvalNumber != ''">approval_number,</if>
+			<if test="leaderNumber != null and leaderNumber != ''">leader_number,</if>
+			<if test="remarks != null and remarks != ''">remarks,</if>
+			<if test="leaderCharge != null and leaderCharge != ''">leader_charge,</if>
+
+		create_time
+ 		)values(
+ 			<if test="deptId != null and deptId != 0">#{deptId},</if>
+ 			<if test="parentId != null and parentId != 0">#{parentId},</if>
+ 			<if test="deptName != null and deptName != ''">#{deptName},</if>
+ 			<if test="ancestors != null and ancestors != ''">#{ancestors},</if>
+ 			<if test="orderNum != null and orderNum != ''">#{orderNum},</if>
+ 			<if test="leader != null and leader != ''">#{leader},</if>
+ 			<if test="phone != null and phone != ''">#{phone},</if>
+ 			<if test="email != null and email != ''">#{email},</if>
+ 			<if test="status != null">#{status},</if>
+ 			<if test="createBy != null and createBy != ''">#{createBy},</if>
+
+			<if test="deptCode != null and deptCode != ''">#{deptCode},</if>
+			<if test="deptAbbreviation != null and deptAbbreviation != ''">#{deptAbbreviation},</if>
+			<if test="deptType != null and deptType != ''">#{deptType},</if>
+			<if test="region != null and region != ''">#{region},</if>
+			<if test="affiliations != null and affiliations != ''">#{affiliations},</if>
+			<if test="deptInstitution != null and deptInstitution != ''">#{deptInstitution},</if>
+			<if test="orgLevel != null and orgLevel != ''">#{orgLevel},</if>
+			<if test="establishedTime != null and establishedTime != ''">#{establishedTime},</if>
+			<if test="approvalDate != null and approvalDate != ''">#{approvalDate},</if>
+			<if test="principalLeaderNo != null and principalLeaderNo != ''">#{principalLeaderNo},</if>
+			<if test="assistantLeaderNo != null and assistantLeaderNo != ''">#{assistantLeaderNo},</if>
+			<if test="administrativeStaffing != null and administrativeStaffing != ''">#{administrativeStaffing},</if>
+			<if test="causeOrgPublic != null and causeOrgPublic != ''">#{causeOrgPublic},</if>
+			<if test="causeOrgPrivate != null and causeOrgPrivate != ''">#{causeOrgPrivate},</if>
+			<if test="workforceHeadcount != null and workforceHeadcount != ''">#{workforceHeadcount},</if>
+			<if test="ratifyNumber != null and ratifyNumber != ''">#{ratifyNumber},</if>
+			<if test="applicationNumber != null and applicationNumber != ''">#{applicationNumber},</if>
+			<if test="approvalNumber != null and approvalNumber != ''">#{approvalNumber},</if>
+			<if test="leaderNumber != null and leaderNumber != ''">#{leaderNumber},</if>
+			<if test="remarks != null and remarks != ''">#{remarks},</if>
+			<if test="leaderCharge != null and leaderCharge != ''">#{leaderCharge},</if>
+
+ 			sysdate()
+ 		)
+	</insert>
+	<insert id="insertDept" parameterType="SysDept" databaseId="kingbase">
+		insert into sys_dept(
+		<if test="deptId != null and deptId != 0">dept_id,</if>
+		<if test="parentId != null and parentId != 0">parent_id,</if>
+		<if test="deptName != null and deptName != ''">dept_name,</if>
+		<if test="ancestors != null and ancestors != ''">ancestors,</if>
+		<if test="orderNum != null and orderNum != ''">order_num,</if>
+		<if test="leader != null and leader != ''">leader,</if>
+		<if test="phone != null and phone != ''">phone,</if>
+		<if test="email != null and email != ''">email,</if>
+		<if test="status != null">status,</if>
+
+		<if test="deptCode != null and deptCode != ''">dept_code,</if>
+		<if test="deptAbbreviation != null and deptAbbreviation != ''">dept_abbreviation,</if>
+		<if test="deptType != null and deptType != ''">dept_type,</if>
+		<if test="region != null and region != ''">region,</if>
+		<if test="affiliations != null and affiliations != ''">affiliations,</if>
+		<if test="deptInstitution != null and deptInstitution != ''">dept_institution,</if>
+		<if test="orgLevel != null and orgLevel != ''">org_level,</if>
+		<if test="establishedTime != null and establishedTime != ''">established_time,</if>
+		<if test="approvalDate != null and approvalDate != ''">approval_date,</if>
+		<if test="principalLeaderNo != null and principalLeaderNo != ''">principal_leader_no,</if>
+		<if test="assistantLeaderNo != null and assistantLeaderNo != ''">administrative_staffing,</if>
+		<if test="administrativeStaffing != null and administrativeStaffing != ''">cause_org_public,</if>
+		<if test="causeOrgPublic != null and causeOrgPublic != ''">cause_org_private,</if>
+		<if test="causeOrgPrivate != null and causeOrgPrivate != ''">workforce_headcount,</if>
+		<if test="workforceHeadcount != null and workforceHeadcount != ''">other_headcount,</if>
+		<if test="otherHeadcount != null and otherHeadcount != ''">workforce_headcount,</if>
+		<if test="ratifyNumber != null and ratifyNumber != ''">ratify_number,</if>
+		<if test="applicationNumber != null and applicationNumber != ''">application_number,</if>
+		<if test="approvalNumber != null and approvalNumber != ''">approval_number,</if>
+		<if test="leaderNumber != null and leaderNumber != ''">leader_number,</if>
+		<if test="remarks != null and remarks != ''">remarks,</if>
+		<if test="leaderCharge != null and leaderCharge != ''">leader_charge,</if>
+		create_time
+		)values(
+		<if test="deptId != null and deptId != 0">#{deptId},</if>
+		<if test="parentId != null and parentId != 0">#{parentId},</if>
+		<if test="deptName != null and deptName != ''">#{deptName},</if>
+		<if test="ancestors != null and ancestors != ''">#{ancestors},</if>
+		<if test="orderNum != null and orderNum != ''">#{orderNum},</if>
+		<if test="leader != null and leader != ''">#{leader},</if>
+		<if test="phone != null and phone != ''">#{phone},</if>
+		<if test="email != null and email != ''">#{email},</if>
+		<if test="status != null">#{status},</if>
+		<if test="createBy != null and createBy != ''">#{createBy},</if>
+
+		<if test="deptCode != null and deptCode != ''">#{deptCode},</if>
+		<if test="deptAbbreviation != null and deptAbbreviation != ''">#{deptAbbreviation},</if>
+		<if test="deptType != null and deptType != ''">#{deptType},</if>
+		<if test="region != null and region != ''">#{region},</if>
+		<if test="affiliations != null and affiliations != ''">#{affiliations},</if>
+		<if test="deptInstitution != null and deptInstitution != ''">#{deptInstitution},</if>
+		<if test="orgLevel != null and orgLevel != ''">#{orgLevel},</if>
+		<if test="establishedTime != null and establishedTime != ''">#{establishedTime},</if>
+		<if test="approvalDate != null and approvalDate != ''">#{approvalDate},</if>
+		<if test="principalLeaderNo != null and principalLeaderNo != ''">#{principalLeaderNo},</if>
+		<if test="assistantLeaderNo != null and assistantLeaderNo != ''">#{assistantLeaderNo},</if>
+		<if test="administrativeStaffing != null and administrativeStaffing != ''">#{administrativeStaffing},</if>
+		<if test="causeOrgPublic != null and causeOrgPublic != ''">#{causeOrgPublic},</if>
+		<if test="causeOrgPrivate != null and causeOrgPrivate != ''">#{causeOrgPrivate},</if>
+		<if test="workforceHeadcount != null and workforceHeadcount != ''">#{workforceHeadcount},</if>
+		<if test="otherHeadcount != null and otherHeadcount != ''">#{otherHeadcount},</if>
+		<if test="ratifyNumber != null and ratifyNumber != ''">#{ratifyNumber},</if>
+		<if test="applicationNumber != null and applicationNumber != ''">#{applicationNumber},</if>
+		<if test="approvalNumber != null and approvalNumber != ''">#{approvalNumber},</if>
+		<if test="leaderNumber != null and leaderNumber != ''">#{leaderNumber},</if>
+		<if test="remarks != null and remarks != ''">#{remarks},</if>
+		<if test="leaderCharge != null and leaderCharge != ''">#{leaderCharge},</if>
+		sysdate
+		)
+	</insert>
+
+	<update id="updateDept" parameterType="SysDept">
+ 		update sys_dept
+ 		<set>
+ 			<if test="parentId != null and parentId != 0">parent_id = #{parentId},</if>
+ 			<if test="deptName != null and deptName != ''">dept_name = #{deptName},</if>
+ 			<if test="ancestors != null and ancestors != ''">ancestors = #{ancestors},</if>
+ 			<if test="orderNum != null and orderNum != ''">order_num = #{orderNum},</if>
+ 			<if test="leader != null">leader = #{leader},</if>
+ 			<if test="phone != null">phone = #{phone},</if>
+ 			<if test="email != null">email = #{email},</if>
+ 			<if test="status != null and status != ''">status = #{status},</if>
+ 			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+
+			<if test="deptCode != null and deptCode != ''">dept_code = #{deptCode},</if>
+			<if test="deptAbbreviation != null and deptAbbreviation != ''">dept_abbreviation = #{deptAbbreviation},</if>
+			<if test="deptType != null and deptType != ''">dept_type = #{deptType},</if>
+			<if test="region != null and region != ''">region = #{region},</if>
+			<if test="affiliations != null and affiliations != ''">affiliations = #{affiliations},</if>
+			<if test="deptInstitution != null and deptInstitution != ''">dept_institution = #{deptInstitution},</if>
+			<if test="orgLevel != null and orgLevel != ''">org_level = #{orgLevel},</if>
+			<if test="establishedTime != null and establishedTime != ''">established_time = #{establishedTime},</if>
+			<if test="approvalDate != null and approvalDate != ''">approval_date = #{approvalDate},</if>
+			<if test="principalLeaderNo != null and principalLeaderNo != ''">principal_leader_no = #{principalLeaderNo},</if>
+			<if test="assistantLeaderNo != null and assistantLeaderNo != ''">assistant_leader_no = #{assistantLeaderNo},</if>
+			<if test="administrativeStaffing != null and administrativeStaffing != ''">administrative_staffing = #{administrativeStaffing},</if>
+			<if test="causeOrgPublic != null and causeOrgPublic != ''">cause_org_public = #{causeOrgPublic},</if>
+			<if test="causeOrgPrivate != null and causeOrgPrivate != ''">cause_org_private = #{causeOrgPrivate},</if>
+			<if test="workforceHeadcount != null and workforceHeadcount != ''">workforce_headcount = #{workforceHeadcount},</if>
+			<if test="otherHeadcount != null and otherHeadcount != ''">other_headcount = #{otherHeadcount},</if>
+			<if test="ratifyNumber != null and ratifyNumber != ''">ratify_number = #{ratifyNumber},</if>
+			<if test="applicationNumber != null and applicationNumber != ''">application_number = #{applicationNumber},</if>
+			<if test="approvalNumber != null and approvalNumber != ''">approval_number = #{approvalNumber},</if>
+			<if test="leaderNumber != null and leaderNumber != ''">leader_number = #{leaderNumber},</if>
+			<if test="remarks != null and remarks != ''">remarks = #{remarks},</if>
+			<if test="leaderCharge != null and leaderCharge != ''">leader_charge=#{leaderCharge},</if>
+ 			update_time = sysdate()
+ 		</set>
+ 		where dept_id = #{deptId}
+	</update>
+	<update id="updateDept" parameterType="SysDept" databaseId="kingbase">
+		update sys_dept
+		<set>
+			<if test="parentId != null and parentId != 0">parent_id = #{parentId},</if>
+			<if test="deptName != null and deptName != ''">dept_name = #{deptName},</if>
+			<if test="ancestors != null and ancestors != ''">ancestors = #{ancestors},</if>
+			<if test="orderNum != null and orderNum != ''">order_num = #{orderNum},</if>
+			<if test="leader != null">leader = #{leader},</if>
+			<if test="phone != null">phone = #{phone},</if>
+			<if test="email != null">email = #{email},</if>
+			<if test="status != null and status != ''">status = #{status},</if>
+			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+
+			<if test="deptCode != null and deptCode != ''">dept_code = #{deptCode},</if>
+			<if test="deptAbbreviation != null and deptAbbreviation != ''">dept_abbreviation = #{deptAbbreviation},</if>
+			<if test="deptType != null and deptType != ''">dept_type = #{deptType},</if>
+			<if test="region != null and region != ''">region = #{region},</if>
+			<if test="affiliations != null and affiliations != ''">affiliations = #{affiliations},</if>
+			<if test="deptInstitution != null and deptInstitution != ''">dept_institution = #{deptInstitution},</if>
+			<if test="orgLevel != null and orgLevel != ''">org_level = #{orgLevel},</if>
+			<if test="establishedTime != null and establishedTime != ''">established_time = #{establishedTime},</if>
+			<if test="approvalDate != null and approvalDate != ''">approval_date = #{approvalDate},</if>
+			<if test="principalLeaderNo != null and principalLeaderNo != ''">principal_leader_no = #{principalLeaderNo},</if>
+			<if test="assistantLeaderNo != null and assistantLeaderNo != ''">assistant_leader_no = #{assistantLeaderNo},</if>
+			<if test="administrativeStaffing != null and administrativeStaffing != ''">administrative_staffing = #{administrativeStaffing},</if>
+			<if test="causeOrgPublic != null and causeOrgPublic != ''">cause_org_public = #{causeOrgPublic},</if>
+			<if test="causeOrgPrivate != null and causeOrgPrivate != ''">cause_org_private = #{causeOrgPrivate},</if>
+			<if test="workforceHeadcount != null and workforceHeadcount != ''">workforce_headcount = #{workforceHeadcount},</if>
+			<if test="otherHeadcount != null and otherHeadcount != ''">other_headcount = #{otherHeadcount},</if>
+			<if test="ratifyNumber != null and ratifyNumber != ''">ratify_number = #{ratifyNumber},</if>
+			<if test="applicationNumber != null and applicationNumber != ''">application_number = #{applicationNumber},</if>
+			<if test="approvalNumber != null and approvalNumber != ''">approval_number = #{approvalNumber},</if>
+			<if test="leaderNumber != null and leaderNumber != ''">leader_number = #{leaderNumber},</if>
+			<if test="remarks != null and remarks != ''">remarks = #{remarks},</if>
+			<if test="leaderCharge != null and leaderCharge != ''">leader_charge=#{leaderCharge},</if>
+			update_time = sysdate
+		</set>
+		where dept_id = #{deptId}
+	</update>
+
+	<update id="updateDeptChildren" parameterType="java.util.List">
+	    update sys_dept set ancestors =
+	    <foreach collection="depts" item="item" index="index"
+	        separator=" " open="case dept_id" close="end">
+	        when #{item.deptId} then #{item.ancestors}
+	    </foreach>
+	    where dept_id in
+	    <foreach collection="depts" item="item" index="index"
+	        separator="," open="(" close=")">
+	        #{item.deptId}
+	    </foreach>
+	</update>
+
+	 <update id="updateDeptStatus" parameterType="SysDept">
+ 	    update sys_dept
+ 	    <set>
+ 	        <if test="status != null and status != ''">status = #{status},</if>
+ 	        <if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+ 	        update_time = sysdate()
+        </set>
+ 	    where dept_id in (${ancestors})
+	</update>
+	<update id="updateDeptStatus" parameterType="SysDept" databaseId="kingbase">
+		update sys_dept
+		<set>
+			<if test="status != null and status != ''">status = #{status},</if>
+			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+			update_time = sysdate
+		</set>
+		where dept_id in (${ancestors})
+	</update>
+	<delete id="deleteDeptById" parameterType="Long">
+		update sys_dept set del_flag = '2' where dept_id = #{deptId}
+	</delete>
+
+	<select id="selectChargeDeptList" resultMap="SysDeptResult">
+		select d.dept_id, d.parent_id, d.ancestors, d.dept_name, d.order_num, d.leader, d.phone, d.email,
+			   d.status, d.del_flag, d.create_by,d.dept_code,d.dept_abbreviation,
+			   d.create_time, d.dept_type,d.region,d.affiliations,d.dept_institution,d.org_level,d.established_time,
+			   d.approval_date,d.principal_leader_no,d.assistant_leader_no,d.administrative_staffing,
+			   d.cause_org_public,d.cause_org_private,d.workforce_headcount,d.other_headcount,d.ratify_number,d.application_number,
+			   d.approval_number,d.leader_number,d.remarks,d.leader_charge
+		       from sys_dept d where d.leader_charge = #{userId}
+	</select>
+
+	<select id="getDeptBasicInfoList4PersonnelType" resultType="com.cb.common.core.domain.vo.SysDeptBasicInfoVo">
+		select t.dept_id as deptId,
+		       t.parent_id as parentId,
+		       t.ancestors,
+		       t.dept_name as deptName,
+		       t.dept_abbreviation as deptAbbreviation,
+		       t.order_num as orderNum,
+		       t.leader_charge as leaderCharge,
+			   t.dept_code as deptCode,
+		       t.dept_identity_type as deptIdentityType
+		from (
+				 select dept_id,parent_id,ancestors,dept_name,dept_abbreviation,order_num,leader_charge,
+						dept_code,
+						(case
+							 when SUBSTR(dept_code,1,1) = 'A' then '1'
+							 when SUBSTR(dept_code,1,1) = 'B' then '1'
+							 when SUBSTR(dept_code,1,1) = 'C' then '3'
+							 else null
+							end) as dept_identity_type
+				 from sys_dept
+				 where status = '0' and del_flag = '0'
+				 order by order_num
+			 ) t
+		where t.dept_identity_type is not null
+		  and t.dept_name not in ('局领导','巡视员','总师')
+	</select>
+
+	<select id="selectAllDeptList" resultMap="SysDeptResult">
+		select * from sys_dept
+	</select>
+	<select id="selectDeptListByAncestors" resultMap="SysDeptResult">
+		select * from sys_dept where ancestors = #{ancestors}
+	</select>
+	<select id="selectDeptListLeftLikeAncestors" resultMap="SysDeptResult">
+		select * from sys_dept
+		where del_flag = '0' and status = '0'
+		  and ancestors like concat(#{ancestors},'%')
+	</select>
+
+	<select id="selectDeptListLeftLikeAncestorsAndDeptId" resultMap="SysDeptResult">
+		select * from sys_dept
+		where del_flag = '0' and status = '0'
+		    and (dept_id = #{deptId} or ancestors like concat(#{ancestors},'%'))
+		order by order_num
+	</select>
+
+	<select id="selectDeptListLeftBydeptId" resultMap="SysDeptResult">
+		select * from sys_dept
+		where del_flag = '0' and status = '0'
+			and dept_id=#{deptId}
+	</select>
+
+	<select id="selectDeptByDeptName" resultMap="SysDeptResult">
+		select * from sys_dept where dept_name=#{deptName}
+	</select>
+
+	<select id="getDeptListByRoleKeys" resultMap="SysDeptResult">
+		select d.*
+		from sys_dept d
+		left join sys_role_dept rd on d.dept_id = rd.dept_id
+		left join sys_role r on rd.role_id = r.role_id
+		where r.del_flag = '0' and r.status= '0' and d.del_flag = '0' and d.status= '0'
+			and r.role_key in
+		<foreach collection="roleKeys" item="roleKey" open="(" separator="," close=")">
+			#{roleKey}
+		</foreach>
+	</select>
+
+	<select id="exportDeptInfoData" parameterType="map" resultMap="SysDeptResult">
+		select * from sys_dept d where d.del_flag = '0'
+		<if test="id != null and id != ''" >
+			<choose>
+				<when test="isUpdate">
+					<if test="historyId != null and historyId != ''">
+						and d.dept_id <![CDATA[>]]> #{historyId}
+					</if>
+					and d.dept_id <![CDATA[<=]]> #{id}
+				</when>
+				<otherwise>
+					and d.dept_id <![CDATA[>]]> #{id}
+				</otherwise>
+			</choose>
+		</if>
+		<if test="lastExportTime != null and lastExportTime != ''">
+			and TO_TIMESTAMP(d.update_time, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[>=]]> TO_TIMESTAMP(#{lastExportTime}, 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		order by d.dept_id asc
+		<if test="orderBy != null and orderBy != ''">
+			, #{orderBy}
+		</if>
+		<if test="limit != null and limit != ''">
+			limit #{limit}
+		</if>
+	</select>
+</mapper>

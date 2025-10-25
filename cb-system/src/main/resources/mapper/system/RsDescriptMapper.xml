@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.RsDescriptMapper">
+    
+    <resultMap type="RsDescript" id="RsDescriptResult">
+        <result property="id"    column="ID"    />
+        <result property="archId"    column="ARCH_ID"    />
+        <result property="length"    column="LENGTH"    />
+        <result property="pdfKey"    column="PDF_KEY"    />
+        <result property="serialMumber"    column="SERIAL_MUMBER"    />
+        <result property="oldFileName"    column="OLD_FILE_NAME"    />
+        <result property="newFileName"    column="NEW_FILE_NAME"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="gaoqingLeangth"    column="GAOQING_LEANGTH"    />
+        <result property="gaoqingPdfKey"    column="GAOQING_PDF_KEY"    />
+        <result property="path"    column="PATH"    />
+    </resultMap>
+
+    <sql id="selectRsDescriptVo">
+        select ID, ARCH_ID, LENGTH, PDF_KEY, SERIAL_MUMBER, OLD_FILE_NAME, NEW_FILE_NAME, UPDATE_TIME, UPDATE_BY, CREATE_TIME, CREATE_BY, GAOQING_LEANGTH, GAOQING_PDF_KEY, PATH from RS_DESCRIPT
+    </sql>
+
+    <select id="selectRsDescriptList" parameterType="RsDescript" resultMap="RsDescriptResult">
+        <include refid="selectRsDescriptVo"/>
+        <where>  
+            <if test="archId != null "> and ARCH_ID = #{archId}</if>
+            <if test="length != null "> and LENGTH = #{length}</if>
+            <if test="pdfKey != null  and pdfKey != ''"> and PDF_KEY = #{pdfKey}</if>
+            <if test="serialMumber != null "> and SERIAL_MUMBER = #{serialMumber}</if>
+            <if test="oldFileName != null  and oldFileName != ''"> and OLD_FILE_NAME like concat('%', #{oldFileName}, '%')</if>
+            <if test="newFileName != null  and newFileName != ''"> and NEW_FILE_NAME like concat('%', #{newFileName}, '%')</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="gaoqingLeangth != null "> and GAOQING_LEANGTH = #{gaoqingLeangth}</if>
+            <if test="gaoqingPdfKey != null  and gaoqingPdfKey != ''"> and GAOQING_PDF_KEY = #{gaoqingPdfKey}</if>
+            <if test="path != null  and path != ''"> and PATH = #{path}</if>
+        </where>
+    </select>
+    
+    <select id="selectRsDescriptById" parameterType="Integer" resultMap="RsDescriptResult">
+        <include refid="selectRsDescriptVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertRsDescript" parameterType="RsDescript">
+        insert into RS_DESCRIPT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="archId != null">ARCH_ID,</if>
+            <if test="length != null">LENGTH,</if>
+            <if test="pdfKey != null">PDF_KEY,</if>
+            <if test="serialMumber != null">SERIAL_MUMBER,</if>
+            <if test="oldFileName != null">OLD_FILE_NAME,</if>
+            <if test="newFileName != null">NEW_FILE_NAME,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="gaoqingLeangth != null">GAOQING_LEANGTH,</if>
+            <if test="gaoqingPdfKey != null">GAOQING_PDF_KEY,</if>
+            <if test="path != null">PATH,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="archId != null">#{archId},</if>
+            <if test="length != null">#{length},</if>
+            <if test="pdfKey != null">#{pdfKey},</if>
+            <if test="serialMumber != null">#{serialMumber},</if>
+            <if test="oldFileName != null">#{oldFileName},</if>
+            <if test="newFileName != null">#{newFileName},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="gaoqingLeangth != null">#{gaoqingLeangth},</if>
+            <if test="gaoqingPdfKey != null">#{gaoqingPdfKey},</if>
+            <if test="path != null">#{path},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRsDescript" parameterType="RsDescript">
+        update RS_DESCRIPT
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="archId != null">ARCH_ID = #{archId},</if>
+            <if test="length != null">LENGTH = #{length},</if>
+            <if test="pdfKey != null">PDF_KEY = #{pdfKey},</if>
+            <if test="serialMumber != null">SERIAL_MUMBER = #{serialMumber},</if>
+            <if test="oldFileName != null">OLD_FILE_NAME = #{oldFileName},</if>
+            <if test="newFileName != null">NEW_FILE_NAME = #{newFileName},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="gaoqingLeangth != null">GAOQING_LEANGTH = #{gaoqingLeangth},</if>
+            <if test="gaoqingPdfKey != null">GAOQING_PDF_KEY = #{gaoqingPdfKey},</if>
+            <if test="path != null">PATH = #{path},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteRsDescriptById" parameterType="Integer">
+        delete from RS_DESCRIPT where ID = #{id}
+    </delete>
+
+    <delete id="deleteRsDescriptByIds" parameterType="String">
+        delete from RS_DESCRIPT where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="exportArchivesAttachmentData" parameterType="map" resultMap="RsDescriptResult">
+        <include refid="selectRsDescriptVo"/>
+        <where>
+            <if test="id != null and id != ''" >
+                <choose>
+                    <when test="isUpdate">
+                        <if test="historyId != null and historyId != ''">
+                            and id <![CDATA[>]]> #{historyId}
+                        </if>
+                        and id <![CDATA[<=]]> #{id}
+                    </when>
+                    <otherwise>
+                        and id <![CDATA[>]]> #{id}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="lastExportTime != null and lastExportTime != ''">
+                and TO_TIMESTAMP(update_time, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[>=]]> TO_TIMESTAMP(#{lastExportTime}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+        </where>
+        order by id asc
+        <if test="orderBy != null and orderBy != ''">
+            , #{orderBy}
+        </if>
+        <if test="limit != null and limit != ''">
+            limit #{limit}
+        </if>
+    </select>
+</mapper>

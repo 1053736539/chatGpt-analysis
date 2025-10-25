@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserAbilityLabelMapper">
+    
+    <resultMap type="SysUserAbilityLabel" id="SysUserAbilityLabelResult">
+        <result property="id"    column="ID"    />
+        <result property="abilityLabel"    column="ABILITY_LABEL"    />
+        <result property="description"    column="DESCRIPTION"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+    </resultMap>
+
+    <sql id="selectSysUserAbilityLabelVo">
+        select ID, ABILITY_LABEL, DESCRIPTION, CREATE_TIME, CREATE_BY, UPDATE_TIME, UPDATE_BY from SYS_USER_ABILITY_LABEL
+    </sql>
+
+    <select id="selectSysUserAbilityLabelList" parameterType="SysUserAbilityLabel" resultMap="SysUserAbilityLabelResult">
+        <include refid="selectSysUserAbilityLabelVo"/>
+        <where>  
+            <if test="abilityLabel != null  and abilityLabel != ''"> and ABILITY_LABEL = #{abilityLabel}</if>
+            <if test="description != null  and description != ''"> and DESCRIPTION = #{description}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+        </where>
+    </select>
+
+    <select id="selectAbilityLabelList" parameterType="SysUserAbilityLabel" resultMap="SysUserAbilityLabelResult">
+        <include refid="selectSysUserAbilityLabelVo"/>
+    </select>
+    
+    <select id="selectSysUserAbilityLabelById" parameterType="Integer" resultMap="SysUserAbilityLabelResult">
+        <include refid="selectSysUserAbilityLabelVo"/>
+        where ID = #{id}
+    </select>
+        
+    <insert id="insertSysUserAbilityLabel" parameterType="SysUserAbilityLabel">
+        insert into SYS_USER_ABILITY_LABEL
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="abilityLabel != null and abilityLabel != ''">ABILITY_LABEL,</if>
+            <if test="description != null">DESCRIPTION,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="abilityLabel != null and abilityLabel != ''">#{abilityLabel},</if>
+            <if test="description != null">#{description},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysUserAbilityLabel" parameterType="SysUserAbilityLabel">
+        update SYS_USER_ABILITY_LABEL
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="abilityLabel != null and abilityLabel != ''">ABILITY_LABEL = #{abilityLabel},</if>
+            <if test="description != null">DESCRIPTION = #{description},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteSysUserAbilityLabelById" parameterType="Integer">
+        delete from SYS_USER_ABILITY_LABEL where ID = #{id}
+    </delete>
+
+    <delete id="deleteSysUserAbilityLabelByIds" parameterType="String">
+        delete from SYS_USER_ABILITY_LABEL where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

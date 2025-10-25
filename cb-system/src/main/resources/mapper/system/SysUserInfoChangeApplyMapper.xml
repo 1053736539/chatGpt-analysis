@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserInfoChangeApplyMapper">
+
+    <resultMap type="SysUserInfoChangeApply" id="SysUserInfoChangeApplyResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="beforeData"    column="before_data"    />
+        <result property="afterData"    column="after_data"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"    column="status"    />
+        <result property="approvalOpinion"    column="approval_opinion"    />
+        <result property="approvalBy"    column="approval_by"    />
+
+        <result property="userName" column="userName" />
+        <result property="approvalName" column="approvalName" />
+    </resultMap>
+
+    <sql id="selectSysUserInfoChangeApplyVo">
+        select t.id, t.user_id, t.before_data, t.after_data, t.create_by, t.create_time, t.update_by, t.update_time, t.status, t.approval_opinion, t.approval_by
+            ,u.nick_name as userName
+            ,au.nick_name as approvalName
+        from sys_user_info_change_apply t
+        left join sys_user u on t.user_id=u.user_id
+        left join sys_user au on t.approval_by=au.user_name
+    </sql>
+
+    <select id="selectSysUserInfoChangeApplyList" parameterType="SysUserInfoChangeApply" resultMap="SysUserInfoChangeApplyResult">
+        <include refid="selectSysUserInfoChangeApplyVo"/>
+        <where>
+            <if test="userId != null "> and t.user_id = #{userId}</if>
+            <if test="beforeData != null  and beforeData != ''"> and t.before_data = #{beforeData}</if>
+            <if test="afterData != null  and afterData != ''"> and t.after_data = #{afterData}</if>
+            <if test="status != null  and status != ''"> and t.status = #{status}</if>
+            <if test="approvalOpinion != null  and approvalOpinion != ''"> and t.approval_opinion = #{approvalOpinion}</if>
+            <if test="createBy != null  and createBy != ''"> and t.create_by = #{createBy}</if>
+            <if test="approvalBy != null  and approvalBy != ''"> and t.approval_by = #{approvalBy}</if>
+            <if test="userName != null and userName != ''"> and u.nick_name like concat('%',#{userName},'%')</if>
+            <if test="approvalName != null and approvalName != ''"> and au.nick_name like concat('%',#{approvalName},'%')</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+        order by t.create_time desc
+    </select>
+
+    <select id="selectSysUserInfoChangeApplyById" parameterType="String" resultMap="SysUserInfoChangeApplyResult">
+        <include refid="selectSysUserInfoChangeApplyVo"/>
+        where t.id = #{id}
+    </select>
+
+    <insert id="insertSysUserInfoChangeApply" parameterType="SysUserInfoChangeApply">
+        insert into sys_user_info_change_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="beforeData != null">before_data,</if>
+            <if test="afterData != null">after_data,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="approvalOpinion != null">approval_opinion,</if>
+            <if test="approvalBy != null">approval_by,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="beforeData != null">#{beforeData},</if>
+            <if test="afterData != null">#{afterData},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="approvalOpinion != null">#{approvalOpinion},</if>
+            <if test="approvalBy != null">#{approvalBy},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into sys_user_info_change_apply
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            user_id,
+            before_data,
+            after_data,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            status,
+            approval_opinion,
+            approval_by,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.userId},
+                #{entity.beforeData},
+                #{entity.afterData},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.status},
+                #{entity.approvalOpinion},
+                #{entity.approvalBy},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateSysUserInfoChangeApply" parameterType="SysUserInfoChangeApply">
+        update sys_user_info_change_apply
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="beforeData != null">before_data = #{beforeData},</if>
+            <if test="afterData != null">after_data = #{afterData},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="approvalOpinion != null">approval_opinion = #{approvalOpinion},</if>
+            <if test="approvalBy != null">approval_by = #{approvalBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysUserInfoChangeApplyById" parameterType="String">
+        delete from sys_user_info_change_apply where id = #{id}
+    </delete>
+
+    <delete id="deleteSysUserInfoChangeApplyByIds" parameterType="String">
+        delete from sys_user_info_change_apply where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteSysUserInfoChangeApplyByIdsExcludePass" parameterType="String">
+        delete from sys_user_info_change_apply
+        where status != '2'
+        and id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectByIds" resultMap="SysUserInfoChangeApplyResult" >
+        <include refid="selectSysUserInfoChangeApplyVo"/>
+        where t.id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <update id="approval" >
+        update sys_user_info_change_apply
+        <set>
+            <if test="status != null">status = #{status},</if>
+            approval_opinion = #{approvalOpinion},
+            <if test="approvalBy != null">approval_by = #{approvalBy},</if>
+            update_time = #{updateTime},
+        </set>
+        where status = '1'
+         and id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="reApply">
+        update sys_user_info_change_apply
+        <set>
+            <if test="afterData != null">after_data = #{afterData},</if>
+            approval_opinion = null,
+            status = '1',
+            update_time = #{updateTime},
+        </set>
+        where status = '3'
+         and id = #{id}
+    </update>
+
+    <select id="selectUserNoPassList" resultMap="SysUserInfoChangeApplyResult" >
+        <include refid="selectSysUserInfoChangeApplyVo"/>
+        where t.user_id = #{userId}
+        and t.status != '2'
+    </select>
+
+    <select id="countPending" resultType="long">
+        select count(1) from sys_user_info_change_apply
+        where status = '1'
+    </select>
+
+</mapper>

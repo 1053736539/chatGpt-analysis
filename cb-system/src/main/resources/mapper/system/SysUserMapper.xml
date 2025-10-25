@@ -1,0 +1,3024 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+		PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserMapper">
+
+	<resultMap type="SysUser" id="SysUserResult">
+		<id     property="userId"       column="user_id"      />
+		<result property="deptId"       column="dept_id"      />
+		<result property="userName"     column="user_name"    />
+		<result property="nickName"     column="nick_name"    />
+		<result property="email"        column="email"        />
+		<result property="phonenumber"  column="phonenumber"  />
+		<result property="sex"          column="sex"          />
+		<result property="avatar"       column="avatar"       />
+		<result property="password"     column="password"     />
+		<result property="status"       column="status"       />
+		<result property="delFlag"      column="del_flag"     />
+		<result property="loginIp"      column="login_ip"     />
+		<result property="loginDate"    column="login_date"   />
+		<result property="createBy"     column="create_by"    />
+		<result property="createTime"   column="create_time"  />
+		<result property="updateBy"     column="update_by"    />
+		<result property="updateTime"   column="update_time"  />
+		<result property="remark"       column="remark"       />
+		<result property="userType"       column="user_type"       />
+		<result property="secretLevel"       column="secret_level"       />
+		<result property="sequence"       column="sequence"       />
+		<result property="abilityLabel"       column="ability_label"       />
+		<result property="otherLabel"       column="other_label"       />
+		<result property="recruitLot"       column="recruit_lot"       />
+        <!--  关联查询部门      -->
+		<result property="deptName" column="dept_name"   />
+		<result property="abilityLabelId"       column="ability_label_id"       />
+		<!--	统计局项目新增字段 开始	-->
+		<result property="name"       column="name"       />
+		<result property="birthday"       column="birthday"       />
+		<result property="nation"       column="nation"       />
+		<result property="nativePlace"       column="native_place"       />
+		<result property="birthPlace"       column="birth_place"       />
+		<result property="politicalIdentity"       column="political_identity"       />
+		<result property="partyJoinTime"       column="party_join_time"       />
+		<result property="secondParty"       column="second_party"       />
+		<result property="thirdParty"       column="third_party"       />
+		<result property="startWorkTime"       column="start_work_time"       />
+		<result property="healthCondition"       column="health_condition"       />
+		<result property="speciality"       column="speciality"       />
+		<result property="idcard"       column="idcard"       />
+		<result property="manageType"       column="manage_type"       />
+		<result property="staffType"       column="staff_type"       />
+		<result property="identityType"       column="identity_type"       />
+		<result property="workPost"       column="work_post"       />
+		<result property="workPostCode"       column="work_post_code"       />
+		<result property="workPostTime"       column="work_post_time"       />
+		<result property="sameWorkPostTime"       column="same_work_post_time"       />
+		<result property="workTitle"       column="work_title"       />
+		<result property="workTitleCode"       column="work_title_code"       />
+		<result property="workTitleTime"       column="work_title_time"       />
+		<result property="sameWorkTitleTime"       column="same_work_title_time"       />
+		<result property="isEnrollment"       column="is_enrollment"       />
+		<result property="enrollmentTime"       column="enrollment_time"       />
+		<result property="isSelectedStudent"       column="is_selected_student"       />
+		<result property="selectedStudentTime"       column="selected_student_time"       />
+		<result property="growPlace"       column="grow_place"       />
+		<result property="level"       column="level"       />
+		<result property="qualifications"       column="qualifications"       />
+		<result property="treatment"       column="treatment"       />
+		<result property="officeTel"       column="office_tel"       />
+		<result property="isMainLeader"       column="is_main_leader"       />
+		<result property="joinOrgTime"       column="join_org_time"       />
+		<result property="grassrootsWorkTime"       column="grassroots_work_time"       />
+		<result property="sectionChiefTime"       column="section_chief_time"       />
+		<result property="joinDeptTime"       column="join_dept_time"       />
+		<result property="maritalStatus"       column="marital_status"       />
+		<result property="isVeterans"       column="is_veterans"       />
+		<result property="education"       column="education"       />
+		<result property="degree"       column="degree"       />
+		<result property="personnelStatus"  column="personnel_status" />
+		<result property="lendingUnits"  column="lending_units" />
+		<result property="retirementTime"  column="retirement_time" />
+		<result property="signImg"  column="sign_img" />
+		<result property="isHostingWork"  column="is_hosting_work" />
+		<!--	统计局项目新增字段 结束	-->
+		<!--	市纪委新增字段 开始	-->
+		<result property="professionalDuty"  column="professional_duty" />
+		<result property="fullTimeEducationLevel"  column="full_time_education_level" />
+		<result property="fullTimeEducationSchoolAndMajor"  column="full_time_education_school_and_major" />
+		<result property="onJobEducationLevel"  column="on_job_education_level" />
+		<result property="onJobEducationSchoolAndMajor"  column="on_job_education_school_and_major" />
+		<result property="currentPosition"  column="current_position" />
+		<result property="positionShort"  column="position_short" />
+		<result property="proposedAppointmentPosition"  column="proposed_appointment_position" />
+		<result property="proposedRemovalPosition"  column="proposed_removal_position" />
+		<result property="resumeJsonArray"  column="resume_json_array" />
+		<result property="rewardAndPunishment"  column="reward_and_punishment" />
+		<result property="annualAssessment"  column="annual_assessment" />
+		<result property="reasonForAppointmentOrRemoval"  column="reason_for_appointment_or_removal" />
+		<result property="familyMemberJsonArray"  column="family_member_json_array" />
+		<!--优缺点-->
+		<result property="advantages"  column="advantages" />
+		<result property="disadvantages"  column="disadvantages" />
+		<result property="reserveUser"  column="reserve_user" />
+		<result property="userDuty"  column="user_duty" />
+		<result property="userRank"  column="user_rank" />
+		<result property="dutyRankType"  column="duty_rank_type" />
+		<!--  	市纪委新增字段 结束	-->
+
+		<association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />
+		<collection  property="roles"   javaType="java.util.List"        resultMap="RoleResult" />
+	</resultMap>
+
+	<resultMap id="deptResult" type="SysDept">
+		<id     property="deptId"   column="dept_id"     />
+		<result property="parentId" column="parent_id"   />
+		<result property="deptName" column="dept_name"   />
+		<result property="deptCode" column="dept_code"   />
+		<result property="orderNum" column="order_num"   />
+		<result property="leader"   column="leader"      />
+		<result property="status"   column="dept_status" />
+	</resultMap>
+
+	<resultMap id="RoleResult" type="SysRole">
+		<id     property="roleId"       column="role_id"        />
+		<result property="roleName"     column="role_name"      />
+		<result property="roleKey"      column="role_key"       />
+		<result property="roleSort"     column="role_sort"      />
+		<result property="dataScope"     column="data_scope"    />
+		<result property="status"       column="role_status"    />
+	</resultMap>
+
+	<resultMap type="SysUserTechnicalPositionInfo" id="SysUserTechnicalPositionInfoResult">
+		<result property="technicalPositionInfoId"    column="technical_position_info_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="technicalQualificationCode"    column="technical_qualification_code"    />
+		<result property="technicalQualificationName"    column="technical_qualification_name"    />
+		<result property="qualificationDate"    column="qualification_date"    />
+		<result property="qualificationRoad"    column="qualification_road"    />
+		<result property="juryOrExamName"    column="jury_or_exam_name"    />
+		<result property="delFlag"    column="del_flag"    />
+	</resultMap>
+
+	<resultMap type="SysUserEducationAndDegreeInfo" id="SysUserEducationAndDegreeInfoResult">
+		<result property="educationAndDegreeInfoId"    column="education_and_degree_info_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="educationCategory"    column="education_category"    />
+		<result property="education"    column="education"    />
+		<result property="educationalName"    column="educational_name"    />
+		<result property="educationalSystem"    column="educational_system"    />
+		<result property="degree"    column="degree"    />
+		<result property="degreeName"    column="degree_name"    />
+		<result property="schoolAndDepartment"    column="school_and_department"    />
+		<result property="professionalCategory"    column="professional_category"    />
+		<result property="professionalName"    column="professional_name"    />
+		<result property="enrollmentDate"    column="enrollment_date"    />
+		<result property="completionDate"    column="completion_date"    />
+		<result property="degreeAwardDate"    column="degree_award_date"    />
+		<result property="delFlag"    column="del_flag"    />
+	</resultMap>
+
+	<resultMap type="SysUserRewardsAndPenaltiesInfo" id="SysUserRewardsAndPenaltiesInfoResult">
+		<result property="rewardsAndPenaltiesInfoId"    column="rewards_and_penalties_info_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="rewardsAndPenaltiesNameCode"    column="rewards_and_penalties_name_code"    />
+		<result property="rewardsAndPenaltiesName"    column="rewards_and_penalties_name"    />
+		<result property="approvalDate"    column="approval_date"    />
+		<result property="approvalAuthority"    column="approval_authority"    />
+		<result property="approvalAuthorityLevel"    column="approval_authority_level"    />
+		<result property="positionHierarchy"    column="position_hierarchy"    />
+		<result property="rankLevel"    column="rank_level"    />
+		<result property="revocationDate"    column="revocation_date"    />
+		<result property="approvalAuthorityNature"    column="approval_authority_nature"    />
+		<result property="rewardAndPenaltiesDesc"    column="reward_and_penalties_desc"    />
+		<result property="delFlag"    column="del_flag"    />
+		<result property="sortNum"    column="sort_num"    />
+	</resultMap>
+
+	<resultMap type="SysUserOtherInfo" id="SysUserOtherInfoResult">
+		<result property="otherInfoId"    column="other_info_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="sortNum"    column="sort_num"    />
+		<result property="admission"    column="admission"    />
+		<result property="employmentTime"    column="employment_time"    />
+		<result property="selectedStudents"    column="selected_students"    />
+		<result property="entryTime"    column="entry_time"    />
+		<result property="growingUp"    column="growing_up"    />
+		<result property="levelType"    column="level_type"    />
+		<result property="qualifications"    column="qualifications"    />
+		<result property="contactInfo"    column="contact_info"    />
+		<result property="remarkInfo"    column="remark_info"    />
+		<result property="delFlag"    column="del_flag"    />
+	</resultMap>
+
+	<resultMap type="SysUserAnnualAppraisalInfo" id="SysUserAnnualAppraisalInfoResult">
+		<result property="annualAppraisalInfoId"    column="annual_appraisal_info_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="sortNum"    column="sort_num"    />
+		<result property="assessmentYear"    column="assessment_year"    />
+		<result property="assessmentConclusions"    column="assessment_conclusions"    />
+		<result property="assessmentDesc"    column="assessment_desc"    />
+		<result property="assessmentResults"    column="assessment_results"    />
+		<result property="delFlag"    column="del_flag"    />
+	</resultMap>
+
+	<resultMap type="SysUserFamilyMemberSocialInfo" id="SysUserFamilyMemberSocialInfoResult">
+		<result property="familyMemberSocialInfoId"    column="family_member_social_info_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="sortNum"    column="sort_num"    />
+		<result property="appellation"    column="appellation"    />
+		<result property="familyMembersName"    column="family_members_name"    />
+		<result property="birthDate"    column="birth_date"    />
+		<result property="politicalOutlook"    column="political_outlook"    />
+		<result property="workUnitAndPosition"    column="work_unit_and_position"    />
+		<result property="situationDesc"    column="situation_desc"    />
+		<result property="delFlag"    column="del_flag"    />
+		<result property="contactNumber"    column="contact_number"/>
+	</resultMap>
+
+	<resultMap type="SysUserResumeInfo" id="SysUserResumeInfoResult">
+		<result property="resumeInfoId"    column="resume_info_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="startDate"    column="start_date"    />
+		<result property="endDate"    column="end_date"    />
+		<result property="workJobName"    column="work_job_name"    />
+		<result property="sortNum"    column="sort_num"    />
+		<result property="delFlag"    column="del_flag"    />
+		<result property="resumeDesc"    column="resume_desc"    />
+	</resultMap>
+
+	<resultMap type="SysUserWorkUnitAndPositionInfo" id="SysUserWorkUnitAndPositionInfoResult">
+		<result property="workUnitAndPositionInfoId"    column="work_unit_and_position_info_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="jobType"    column="job_type"    />
+		<result property="employmentOrg"    column="employment_org"    />
+		<result property="employmentOrgName"    column="employment_org_name"    />
+		<result property="leaderMember"    column="leader_member"    />
+		<result property="memberCategory"    column="member_category"    />
+		<result property="unconventionallyPromote"    column="unconventionally_promote"    />
+		<result property="selectionAndAppointment"    column="selection_and_appointment"    />
+		<result property="jobStatus"    column="job_status"    />
+		<result property="takeOfficeTime"    column="take_office_time"    />
+		<result property="takeOfficeNo"    column="take_office_no"    />
+		<result property="dismissalTime"    column="dismissal_time"    />
+		<result property="dismissalNo"    column="dismissal_no"    />
+		<result property="postFullName"    column="post_full_name"    />
+		<result property="postAbbreviation"    column="post_abbreviation"    />
+		<result property="grassrootsWorkExperience"    column="grassroots_work_experience"    />
+		<result property="relationshipUnit"    column="relationship_unit"    />
+		<result property="jobChangeReason"    column="job_change_reason"    />
+		<result property="sortNum"    column="sort_num"    />
+		<result property="delFlag"    column="del_flag"    />
+	</resultMap>
+
+	<resultMap type="SysUserCurrentPostInfo" id="SysUserCurrentPostInfoResult">
+		<result property="currentPostId"    column="current_post_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="rank"    column="rank"    />
+		<result property="postLevelStatus"    column="post_level_status"    />
+		<result property="approvalDate"    column="approval_date"    />
+		<result property="endDate"    column="end_date"    />
+		<result property="delFlag"    column="del_flag"    />
+		<result property="peerLevel"    column="peer_level"    />
+	</resultMap>
+
+	<resultMap type="SysUserGrassrootsWorkInfo" id="SysUserGrassrootsWorkInfoResult">
+		<result property="grassrootsWorkId"    column="grassroots_work_id"    />
+		<result property="userId"    column="user_id"    />
+		<result property="startDate"    column="start_date"    />
+		<result property="endDate"    column="end_date"    />
+		<result property="workplace"    column="workplace"    />
+		<result property="delFlag"    column="del_flag"    />
+	</resultMap>
+
+	<resultMap type="SysUserSecondmentWorkInfo" id="SysUserSecondmentWorkInfoResult">
+		<result property="secondmentWorkInfoId"    column="secondment_work_info_id"    />
+		<result property="borrowUnitName"    column="borrow_unit_name"    />
+		<result property="borrowUnitLevel"    column="borrow_unit_level"    />
+		<result property="borrowUnitNature"    column="borrow_unit_nature"    />
+		<result property="lendingUnitName"    column="lending_unit_name"    />
+		<result property="lendingUnitLevel"    column="lending_unit_level"    />
+		<result property="lendingUnitNature"    column="lending_unit_nature"    />
+		<result property="userId"    column="user_id"    />
+		<result property="identityCategory"    column="identity_category"    />
+		<result property="startDate"    column="start_date"    />
+		<result property="endDate"    column="end_date"    />
+		<result property="secondmentType"    column="secondment_type"    />
+		<result property="secondmentDept"    column="secondment_dept"    />
+		<result property="filingTime"    column="filing_time"    />
+		<result property="secondmentNotes"    column="secondment_notes"    />
+		<result property="createBy"    column="create_by"    />
+		<result property="createTime"    column="create_time"    />
+		<result property="updateBy"    column="update_by"    />
+		<result property="updateTime"    column="update_time"    />
+	</resultMap>
+
+	<sql id="selectUserVo">
+		select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, u.user_type,
+		u.name, u.birthday, u.nation, u.native_place, u.birth_place, u.political_identity, u.party_join_time,
+		u.second_party, u.third_party, u.start_work_time, u.health_condition, u.speciality, u.idcard, u.manage_type,
+		u.staff_type, u.identity_type, u.work_post, u.work_post_code, u.work_post_time, u.same_work_post_time,
+		u.work_title, u.work_title_code, u.work_title_time, u.same_work_title_time, u.is_enrollment,
+		u.enrollment_time, u.is_selected_student, u.selected_student_time, u.grow_place, u.level, u.qualifications,
+		u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree,u.personnel_status,u.lending_units,u.retirement_time,u.retirement_time,u.sign_img,u.is_hosting_work,
+	    u.secret_level,u.sequence,u.ability_label,u.other_label,u.recruit_lot,
+	   u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+	   u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+	   u.family_member_json_array,u.position_short,u.advantages,u.disadvantages,u.reserve_user,u.user_duty,u.user_rank,u.duty_rank_type,
+		d.dept_id, d.dept_code, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
+		r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		left join sys_user_role ur on u.user_id = ur.user_id
+		left join sys_role r on r.role_id = ur.role_id
+	</sql>
+	<sql id="selectUserVo" databaseId="kingbase">
+		select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip,
+		       u.login_date, u.create_by, u.create_time, u.remark,u.user_type,u.personnel_status,u.secret_level,
+		d.dept_id, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
+		r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
+		from "PUBLIC"."sys_user" u
+		left join sys_dept d on u.dept_id = d.dept_id
+		left join sys_user_role ur on u.user_id = ur.user_id
+		left join sys_role r on r.role_id = ur.role_id
+	</sql>
+	<!--查询退休人员信息列表-->
+	<select id="selectRetireesUserList" parameterType="SysUser" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type, u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.is_hosting_work,u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.advantages,u.disadvantages
+
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00' and u.personnel_status='3'
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		order by u.sequence asc
+	</select>
+	<!--查询在职或借调人员信息列表-->
+	<select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.advantages,u.disadvantages
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2)
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+<!--		<if test="abilityLabelId!=null and abilityLabelId !=''" >-->
+<!--			AND FIND_IN_SET(#{abilityLabelId},u."ability_label")-->
+<!--		</if>-->
+
+		<if test="abilityLabel != null and abilityLabel.length>0">
+			AND
+			<foreach item="item" collection="abilityLabelIds" open="(" close=")" separator=" and ">
+				u."ability_label" like concat('%', #{item},'%')
+			</foreach>
+		</if>
+
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''">
+			AND u.idcard like concat(#{idcard}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="sex != null and sex != ''">
+			AND u.sex = #{sex}
+		</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">
+			AND u.political_identity = #{politicalIdentity}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			AND u.office_tel like concat('%', #{officeTel}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="nativePlace != null and nativePlace != ''">
+			AND u.native_place=#{nativePlace}
+		</if>
+		<if test="birthPlace != null and birthPlace != ''">
+			AND u.birth_place=#{birthPlace}
+		</if>
+		<if test="nation != null and nation == 1">
+			AND u.nation= '汉族'
+		</if>
+		<if test="nation != null and nation == 2">
+			AND u.nation is not null AND u.nation != '汉族'
+		</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+			AND u.grassroots_work_time >= 2
+		</if>
+		<if test="workPost != null and workPost != ''">
+			AND u.work_post=#{workPost}
+		</if>
+		<if test="workTitle != null and workTitle != ''">
+			AND u.work_title=#{workTitle}
+		</if>
+		<if test="education != null and education != ''">
+			AND u.education=#{education}
+		</if>
+		<if test="degree != null and degree != ''">
+			AND u.degree=#{degree}
+		</if>
+		<if test="personnelStatus != null and personnelStatus != ''">
+			AND u.personnel_status=#{personnelStatus}
+		</if>
+		<if test="lendingUnits != null and lendingUnits != ''">
+			AND u.lending_units=#{lendingUnits}
+		</if>
+		<if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+			AND u.retirement_time = #{retirementTime}
+		</if>
+		<if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+			AND u.birthday &gt;= #{params.beginbirthday}
+		</if>
+		<if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+			AND u.birthday &lt;= #{params.endbirthday}
+		</if>
+		<if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+			AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+		</if>
+		<if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+			AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+		</if>
+		<if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+			AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+		</if>
+		<if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+			AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+		</if>
+		<if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+			AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+		</if>
+		<if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+			AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+		</if>
+		<if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+			AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+		</if>
+		<if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+			AND u.start_work_time &lt;= #{params.endstartWorkTime}
+		</if>
+		<if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+			AND u.work_post_time &gt;= #{params.beginworkPostTime}
+		</if>
+		<if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+			AND u.work_post_time &lt;= #{params.endworkPostTime}
+		</if>
+		<if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+			AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+		</if>
+		<if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+			AND u.work_title_time &lt;= #{params.endworkTitleTime}
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+				u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+			)
+		</if>
+		<if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+			)
+		</if>
+		<if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+		order by
+		u.sequence asc,
+		IF(
+			CONVERT(ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ), SIGNED),
+			CONVERT(ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ), SIGNED),99999
+		)
+		asc
+		</select>
+
+	<select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult" databaseId="dm">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.position_short,u.advantages,u.disadvantages,u.reserve_user,
+		u.user_duty,u.user_rank,u.duty_rank_type
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2)  and u.identity_type !='7'
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="abilityLabelIds != null and abilityLabelIds.length>0">
+			AND
+			<foreach item="item" collection="abilityLabelIds" open="(" close=")" separator=" and ">
+				find_in_set( #{item},u."ability_label")
+			</foreach>
+		</if>
+		<if test="reserveUsers != null and reserveUsers.length>0">
+			AND u.reserve_user  in
+			<foreach item="item" collection="reserveUsers" open="(" close=")" separator=" , ">
+				 #{item}
+			</foreach>
+		</if>
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''">
+			AND u.idcard like concat(#{idcard}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="sex != null and sex != ''">
+			AND u.sex = #{sex}
+		</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">
+			AND u.political_identity = #{politicalIdentity}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			AND u.office_tel like concat('%', #{officeTel}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="nativePlace != null and nativePlace != ''">
+			AND u.native_place=#{nativePlace}
+		</if>
+		<if test="birthPlace != null and birthPlace != ''">
+			AND u.birth_place=#{birthPlace}
+		</if>
+		<if test="nation != null and nation == 1">
+			AND u.nation= '汉族'
+		</if>
+		<if test="nation != null and nation == 2">
+			AND u.nation is not null AND u.nation != '汉族'
+		</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+			AND u.grassroots_work_time >= 2
+		</if>
+		<if test="workPost != null and workPost != ''">
+			AND u.work_post=#{workPost}
+		</if>
+		<if test="workTitle != null and workTitle != ''">
+			AND u.work_title=#{workTitle}
+		</if>
+		<if test="education != null and education != ''">
+			AND u.education=#{education}
+		</if>
+		<if test="degree != null and degree != ''">
+			AND u.degree=#{degree}
+		</if>
+		<if test="personnelStatus != null and personnelStatus != ''">
+			AND u.personnel_status=#{personnelStatus}
+		</if>
+		<if test="lendingUnits != null and lendingUnits != ''">
+			AND u.lending_units=#{lendingUnits}
+		</if>
+		<if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+			AND u.retirement_time = #{retirementTime}
+		</if>
+		<if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+			AND u.birthday &gt;= #{params.beginbirthday}
+		</if>
+		<if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+			AND u.birthday &lt;= #{params.endbirthday}
+		</if>
+		<if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+			AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+		</if>
+		<if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+			AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+		</if>
+		<if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+			AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+		</if>
+		<if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+			AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+		</if>
+		<if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+			AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+		</if>
+		<if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+			AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+		</if>
+		<if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+			AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+		</if>
+		<if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+			AND u.start_work_time &lt;= #{params.endstartWorkTime}
+		</if>
+		<if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+			AND u.work_post_time &gt;= #{params.beginworkPostTime}
+		</if>
+		<if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+			AND u.work_post_time &lt;= #{params.endworkPostTime}
+		</if>
+		<if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+			AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+		</if>
+		<if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+			AND u.work_title_time &lt;= #{params.endworkTitleTime}
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+			)
+		</if>
+		<if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+			)
+		</if>
+		<if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+		order by d."order_num" ASC, u.sequence ASC,ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ) asc nulls last
+	</select>
+
+	<select id="selectAllUserList" resultMap="SysUserResult">
+		<include refid="selectUserVo"></include>
+	</select>
+	<!--查询在职或借调人员信息列表-->
+	<select id="selectUserListByAdmin" parameterType="SysUser" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.advantages,u.disadvantages,u.reserve_user
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00'
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''">
+			AND u.idcard like concat(#{idcard}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="sex != null and sex != ''">
+			AND u.sex = #{sex}
+		</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">
+			AND u.political_identity = #{politicalIdentity}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			AND u.office_tel like concat('%', #{officeTel}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="nativePlace != null and nativePlace != ''">
+			AND u.native_place=#{nativePlace}
+		</if>
+		<if test="birthPlace != null and birthPlace != ''">
+			AND u.birth_place=#{birthPlace}
+		</if>
+		<if test="nation != null and nation == 1">
+			AND u.nation= '汉族'
+		</if>
+		<if test="nation != null and nation == 2">
+			AND u.nation is not null AND u.nation != '汉族'
+		</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+			AND u.grassroots_work_time >= 2
+		</if>
+		<if test="workPost != null and workPost != ''">
+			AND u.work_post=#{workPost}
+		</if>
+		<if test="workTitle != null and workTitle != ''">
+			AND u.work_title=#{workTitle}
+		</if>
+		<if test="education != null and education != ''">
+			AND u.education=#{education}
+		</if>
+		<if test="degree != null and degree != ''">
+			AND u.degree=#{degree}
+		</if>
+		<if test="personnelStatus != null and personnelStatus != ''">
+			AND u.personnel_status=#{personnelStatus}
+		</if>
+		<if test="isMainLeader != null and isMainLeader != ''">
+			AND u.is_main_leader=#{isMainLeader}
+		</if>
+		<if test="isHostingWork != null and isHostingWork != ''">
+			AND u.is_hosting_work=#{isHostingWork}
+		</if>
+		<if test="lendingUnits != null and lendingUnits != ''">
+			AND u.lending_units=#{lendingUnits}
+		</if>
+		<if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+			AND u.retirement_time = #{retirementTime}
+		</if>
+		<if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+			AND u.birthday &gt;= #{params.beginbirthday}
+		</if>
+		<if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+			AND u.birthday &lt;= #{params.endbirthday}
+		</if>
+		<if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+			AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+		</if>
+		<if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+			AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+		</if>
+		<if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+			AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+		</if>
+		<if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+			AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+		</if>
+		<if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+			AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+		</if>
+		<if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+			AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+		</if>
+		<if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+			AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+		</if>
+		<if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+			AND u.start_work_time &lt;= #{params.endstartWorkTime}
+		</if>
+		<if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+			AND u.work_post_time &gt;= #{params.beginworkPostTime}
+		</if>
+		<if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+			AND u.work_post_time &lt;= #{params.endworkPostTime}
+		</if>
+		<if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+			AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+		</if>
+		<if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+			AND u.work_title_time &lt;= #{params.endworkTitleTime}
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+			)
+		</if>
+		<if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+			)
+		</if>
+		<if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+		order by d."order_num" ASC,
+		u.sequence asc,
+		IF(
+		CONVERT(ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ), SIGNED),
+		CONVERT(ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ), SIGNED),99999
+		)
+		asc
+	</select>
+
+	<select id="selectUserListByAdmin" parameterType="SysUser" resultMap="SysUserResult" databaseId="dm">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array, u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.position_short,u.advantages,u.disadvantages,u.reserve_user,
+		u.user_duty, u.user_rank, u.duty_rank_type
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00'
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''">
+			AND u.idcard like concat(#{idcard}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="sex != null and sex != ''">
+			AND u.sex = #{sex}
+		</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">
+			AND u.political_identity = #{politicalIdentity}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			AND u.office_tel like concat('%', #{officeTel}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="nativePlace != null and nativePlace != ''">
+			AND u.native_place=#{nativePlace}
+		</if>
+		<if test="birthPlace != null and birthPlace != ''">
+			AND u.birth_place=#{birthPlace}
+		</if>
+		<if test="nation != null and nation == 1">
+			AND u.nation= '汉族'
+		</if>
+		<if test="nation != null and nation == 2">
+			AND u.nation is not null AND u.nation != '汉族'
+		</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+			AND u.grassroots_work_time >= 2
+		</if>
+		<if test="workPost != null and workPost != ''">
+			AND u.work_post=#{workPost}
+		</if>
+		<if test="workTitle != null and workTitle != ''">
+			AND u.work_title=#{workTitle}
+		</if>
+		<if test="education != null and education != ''">
+			AND u.education=#{education}
+		</if>
+		<if test="degree != null and degree != ''">
+			AND u.degree=#{degree}
+		</if>
+		<if test="personnelStatus != null and personnelStatus != ''">
+			AND u.personnel_status=#{personnelStatus}
+		</if>
+		<if test="isMainLeader != null and isMainLeader != ''">
+			AND u.is_main_leader=#{isMainLeader}
+		</if>
+		<if test="isHostingWork != null and isHostingWork != ''">
+			AND u.is_hosting_work=#{isHostingWork}
+		</if>
+		<if test="lendingUnits != null and lendingUnits != ''">
+			AND u.lending_units=#{lendingUnits}
+		</if>
+		<if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+			AND u.retirement_time = #{retirementTime}
+		</if>
+		<if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+			AND u.birthday &gt;= #{params.beginbirthday}
+		</if>
+		<if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+			AND u.birthday &lt;= #{params.endbirthday}
+		</if>
+		<if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+			AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+		</if>
+		<if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+			AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+		</if>
+		<if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+			AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+		</if>
+		<if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+			AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+		</if>
+		<if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+			AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+		</if>
+		<if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+			AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+		</if>
+		<if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+			AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+		</if>
+		<if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+			AND u.start_work_time &lt;= #{params.endstartWorkTime}
+		</if>
+		<if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+			AND u.work_post_time &gt;= #{params.beginworkPostTime}
+		</if>
+		<if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+			AND u.work_post_time &lt;= #{params.endworkPostTime}
+		</if>
+		<if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+			AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+		</if>
+		<if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+			AND u.work_title_time &lt;= #{params.endworkTitleTime}
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+			)
+		</if>
+		<if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+			)
+		</if>
+		<if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+
+		order by d."order_num" ASC, u.sequence asc, ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ) asc nulls last
+	</select>
+
+	<select id="selectUserListByAdminBalance" parameterType="SysUser" resultMap="SysUserResult" databaseId="dm">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array, u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.position_short,u.advantages,u.disadvantages,u.reserve_user
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00'
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''">
+			AND u.idcard like concat(#{idcard}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="sex != null and sex != ''">
+			AND u.sex = #{sex}
+		</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">
+			AND u.political_identity = #{politicalIdentity}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			AND u.office_tel like concat('%', #{officeTel}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="nativePlace != null and nativePlace != ''">
+			AND u.native_place=#{nativePlace}
+		</if>
+		<if test="birthPlace != null and birthPlace != ''">
+			AND u.birth_place=#{birthPlace}
+		</if>
+		<if test="nation != null and nation == 1">
+			AND u.nation= '汉族'
+		</if>
+		<if test="nation != null and nation == 2">
+			AND u.nation is not null AND u.nation != '汉族'
+		</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+			AND u.grassroots_work_time >= 2
+		</if>
+		<if test="workPost != null and workPost != ''">
+			AND u.work_post=#{workPost}
+		</if>
+		<if test="workTitle != null and workTitle != ''">
+			AND u.work_title=#{workTitle}
+		</if>
+		<if test="education != null and education != ''">
+			AND u.education=#{education}
+		</if>
+		<if test="degree != null and degree != ''">
+			AND u.degree=#{degree}
+		</if>
+		<if test="personnelStatus != null and personnelStatus != ''">
+			AND u.personnel_status=#{personnelStatus}
+		</if>
+		<if test="isMainLeader != null and isMainLeader != ''">
+			AND u.is_main_leader=#{isMainLeader}
+		</if>
+		<if test="isHostingWork != null and isHostingWork != ''">
+			AND u.is_hosting_work=#{isHostingWork}
+		</if>
+		<if test="lendingUnits != null and lendingUnits != ''">
+			AND u.lending_units=#{lendingUnits}
+		</if>
+		<if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+			AND u.retirement_time = #{retirementTime}
+		</if>
+		<if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+			AND u.birthday &gt;= #{params.beginbirthday}
+		</if>
+		<if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+			AND u.birthday &lt;= #{params.endbirthday}
+		</if>
+		<if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+			AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+		</if>
+		<if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+			AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+		</if>
+		<if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+			AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+		</if>
+		<if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+			AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+		</if>
+		<if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+			AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+		</if>
+		<if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+			AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+		</if>
+		<if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+			AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+		</if>
+		<if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+			AND u.start_work_time &lt;= #{params.endstartWorkTime}
+		</if>
+		<if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+			AND u.work_post_time &gt;= #{params.beginworkPostTime}
+		</if>
+		<if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+			AND u.work_post_time &lt;= #{params.endworkPostTime}
+		</if>
+		<if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+			AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+		</if>
+		<if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+			AND u.work_title_time &lt;= #{params.endworkTitleTime}
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+			)
+		</if>
+		<if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+			)
+		</if>
+		<if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<!-- 数据范围过滤 -->
+		order by d."order_num" ASC, u.sequence asc, ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ) asc nulls last
+	</select>
+
+    <!-- 各处室联络员列表 -->
+	<select id="selectLiaisonInfoList" parameterType="SysUser" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		sr.role_name, u.sequence,u.ability_label,u.advantages,u.disadvantages
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		left join sys_user_role sur on sur.user_id = u.user_id
+		left join sys_role sr on sr.role_id = sur.role_id
+		where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2) and sr.role_key = 'liaison_role'
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''">
+			AND u.idcard like concat(#{idcard}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="sex != null and sex != ''">
+			AND u.sex = #{sex}
+		</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">
+			AND u.political_identity = #{politicalIdentity}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			AND u.office_tel like concat('%', #{officeTel}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="nativePlace != null and nativePlace != ''">
+			AND u.native_place=#{nativePlace}
+		</if>
+		<if test="birthPlace != null and birthPlace != ''">
+			AND u.birth_place=#{birthPlace}
+		</if>
+		<if test="nation != null and nation == 1">
+			AND u.nation= '汉族'
+		</if>
+		<if test="nation != null and nation == 2">
+			AND u.nation is not null AND u.nation != '汉族'
+		</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+			AND u.grassroots_work_time >= 2
+		</if>
+		<if test="workPost != null and workPost != ''">
+			AND u.work_post=#{workPost}
+		</if>
+		<if test="workTitle != null and workTitle != ''">
+			AND u.work_title=#{workTitle}
+		</if>
+		<if test="education != null and education != ''">
+			AND u.education=#{education}
+		</if>
+		<if test="degree != null and degree != ''">
+			AND u.degree=#{degree}
+		</if>
+		<if test="personnelStatus != null and personnelStatus != ''">
+			AND u.personnel_status=#{personnelStatus}
+		</if>
+		<if test="lendingUnits != null and lendingUnits != ''">
+			AND u.lending_units=#{lendingUnits}
+		</if>
+		<if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+			AND u.retirement_time = #{retirementTime}
+		</if>
+		<if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+			AND u.birthday &gt;= #{params.beginbirthday}
+		</if>
+		<if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+			AND u.birthday &lt;= #{params.endbirthday}
+		</if>
+		<if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+			AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+		</if>
+		<if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+			AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+		</if>
+		<if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+			AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+		</if>
+		<if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+			AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+		</if>
+		<if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+			AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+		</if>
+		<if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+			AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+		</if>
+		<if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+			AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+		</if>
+		<if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+			AND u.start_work_time &lt;= #{params.endstartWorkTime}
+		</if>
+		<if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+			AND u.work_post_time &gt;= #{params.beginworkPostTime}
+		</if>
+		<if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+			AND u.work_post_time &lt;= #{params.endworkPostTime}
+		</if>
+		<if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+			AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+		</if>
+		<if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+			AND u.work_title_time &lt;= #{params.endworkTitleTime}
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+			)
+		</if>
+		<if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+			)
+		</if>
+		<if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+		order by d."order_num" ASC,u.sequence asc,ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ) asc nulls last
+	</select>
+
+	<!--查询在职或借调人员信息列表-->
+	<select id="listCadre" parameterType="SysUser" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type, u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.advantages,u.disadvantages
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2)
+		AND (
+			u.work_title_code in ('111','112','121','122','211','212')
+		    or u.work_post_code in ('111','112','121','122','211','212')
+		)
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''">
+			AND u.idcard like concat(#{idcard}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="sex != null and sex != ''">
+			AND u.sex = #{sex}
+		</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">
+			AND u.political_identity = #{politicalIdentity}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			AND u.office_tel like concat('%', #{officeTel}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="nativePlace != null and nativePlace != ''">
+			AND u.native_place=#{nativePlace}
+		</if>
+		<if test="birthPlace != null and birthPlace != ''">
+			AND u.birth_place=#{birthPlace}
+		</if>
+		<if test="nation != null and nation == 1">
+			AND u.nation= '汉族'
+		</if>
+		<if test="nation != null and nation == 2">
+			AND u.nation is not null AND u.nation != '汉族'
+		</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+			AND u.grassroots_work_time >= 2
+		</if>
+		<if test="workPost != null and workPost != ''">
+			AND u.work_post=#{workPost}
+		</if>
+		<if test="workTitle != null and workTitle != ''">
+			AND u.work_title=#{workTitle}
+		</if>
+		<if test="education != null and education != ''">
+			AND u.education=#{education}
+		</if>
+		<if test="degree != null and degree != ''">
+			AND u.degree=#{degree}
+		</if>
+		<if test="personnelStatus != null and personnelStatus != ''">
+			AND u.personnel_status=#{personnelStatus}
+		</if>
+		<if test="lendingUnits != null and lendingUnits != ''">
+			AND u.lending_units=#{lendingUnits}
+		</if>
+		<if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+			AND u.retirement_time = #{retirementTime}
+		</if>
+		<if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+			AND u.birthday &gt;= #{params.beginbirthday}
+		</if>
+		<if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+			AND u.birthday &lt;= #{params.endbirthday}
+		</if>
+		<if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+			AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+		</if>
+		<if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+			AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+		</if>
+		<if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+			AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+		</if>
+		<if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+			AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+		</if>
+		<if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+			AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+		</if>
+		<if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+			AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+		</if>
+		<if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+			AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+		</if>
+		<if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+			AND u.start_work_time &lt;= #{params.endstartWorkTime}
+		</if>
+		<if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+			AND u.work_post_time &gt;= #{params.beginworkPostTime}
+		</if>
+		<if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+			AND u.work_post_time &lt;= #{params.endworkPostTime}
+		</if>
+		<if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+			AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+		</if>
+		<if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+			AND u.work_title_time &lt;= #{params.endworkTitleTime}
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+			)
+		</if>
+		<if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+			)
+		</if>
+		<if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+		   order by d."order_num" ASC,u.sequence
+	</select>
+
+	<select id="selectUserListByIdentityType" parameterType="SysUser" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,
+		d.dept_name, d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment,u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array,u.advantages,u.disadvantages
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00'
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''"> AND u.idcard = #{idcard}</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+			AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+		</if>
+		<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+			AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType == 1">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="identityType != null and identityType != 1">
+			AND u.identity_type in ('2','3')
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+	</select>
+	<select id="archivesUserList" parameterType="SysUser" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.phonenumber, u.sex, d.dept_name, d.leader from "PUBLIC"."sys_user" u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0'
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+	</select>
+
+	<select id="selectUserListByLoginNames" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.del_flag != '2' and u.user_name in
+		<foreach item="item" collection="loginNames" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="selectUserListByUserIds" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.user_id in
+		<foreach item="item" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+
+	<select id="selectUserList" parameterType="SysUser" resultMap="SysUserResult" databaseId="kingbase">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, d.dept_name, d.leader from "PUBLIC"."sys_user" u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0'
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+			AND date_format(u.create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+		</if>
+		<if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+			AND date_format(u.create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+	</select>
+
+	<select id="selectUserByUserName" parameterType="String" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.del_flag = '0' and u.user_name = #{userName}
+	</select>
+	<select id="selectUserByIdcard" parameterType="String" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.del_flag = '0' and u.idcard = #{idcard}
+	</select>
+	<select id="selectUserByMobile" parameterType="String" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.del_flag = '0' and u.phonenumber = #{mobile} limit 0,1
+	</select>
+
+	<select id="selectUserById" parameterType="Long" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.user_id = #{userId}
+	</select>
+
+	<select id="checkUserNameUnique" parameterType="String" resultType="int">
+		select count(1) from sys_user where del_flag = '0' and user_name = #{userName} limit 1
+	</select>
+	<select id="checkIdcardUnique" parameterType="SysUser" resultType="int">
+		select count(1) from sys_user
+		where del_flag = '0' and idcard = #{idcard}
+		<if test="userId != null and userId != -1">
+			AND user_id != #{userId}
+		</if>
+		limit 1
+	</select>
+	<select id="checkUserNameUnique" parameterType="SysUser" resultType="int" databaseId="kingbase">
+		select count(1) from "PUBLIC"."sys_user"
+		where del_flag = '0' and user_name = #{userName}
+		<if test="userId != null and userId != -1">
+			AND user_id != #{userId}
+		</if>
+		limit 1
+	</select>
+
+	<select id="checkPhoneUnique" parameterType="SysUser" resultMap="SysUserResult">
+		select user_id, phonenumber from sys_user
+		where del_flag = '0' and phonenumber = #{phonenumber}
+		<if test="userId != null and userId != -1">
+			AND user_id != #{userId}
+		</if>
+		limit 1
+	</select>
+	<select id="checkPhoneUnique" parameterType="String" resultMap="SysUserResult" databaseId="kingbase">
+		select user_id, phonenumber from "PUBLIC"."sys_user" where del_flag = '0' and phonenumber = #{phonenumber} limit 1
+	</select>
+
+	<select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult">
+		select user_id, email from sys_user where del_flag = '0' and email = #{email} limit 1
+	</select>
+	<select id="checkEmailUnique" parameterType="String" resultMap="SysUserResult" databaseId="kingbase">
+		select user_id, email from "PUBLIC"."sys_user" where del_flag = '0' and email = #{email} limit 1
+	</select>
+
+	<insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId">
+		insert into sys_user(
+		<if test="userId != null and userId != 0">user_id,</if>
+		<if test="deptId != null and deptId != 0">dept_id,</if>
+		<if test="userName != null and userName != ''">user_name,</if>
+		<if test="nickName != null and nickName != ''">nick_name,</if>
+		<if test="email != null and email != ''">email,</if>
+		<if test="avatar != null and avatar != ''">avatar,</if>
+		<if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
+		<if test="sex != null and sex != ''">sex,</if>
+		<if test="password != null and password != ''">password,</if>
+		<if test="status != null and status != ''">status,</if>
+		<if test="createBy != null and createBy != ''">create_by,</if>
+		<if test="remark != null and remark != ''">remark,</if>
+		<if test="userType != null and userType != ''">user_type,</if>
+		<if test="secretLevel != null">secret_level,</if>
+		<!--	统计局项目新增字段 开始	-->
+		<if test="name != null and name != ''">name,</if>
+		<if test="birthday != null and birthday != ''">birthday,</if>
+		<if test="nation != null and nation != ''">nation,</if>
+		<if test="nativePlace != null and nativePlace != ''">native_place,</if>
+		<if test="birthPlace != null and birthPlace != ''">birth_place,</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">political_identity,</if>
+		<if test="partyJoinTime != null and partyJoinTime != ''">party_join_time,</if>
+		<if test="secondParty != null and secondParty != ''">second_party,</if>
+		<if test="thirdParty != null and thirdParty != ''">third_party,</if>
+		<if test="startWorkTime != null and startWorkTime != ''">start_work_time,</if>
+		<if test="healthCondition != null and healthCondition != ''">health_condition,</if>
+		<if test="speciality != null and speciality != ''">speciality,</if>
+		<if test="idcard != null and idcard != ''">idcard,</if>
+		<if test="manageType != null and manageType != ''">manage_type,</if>
+		<if test="staffType != null and staffType != ''">staff_type,</if>
+		<if test="identityType != null and identityType != ''">identity_type,</if>
+		<if test="workPost != null and workPost != ''">work_post,</if>
+		<if test="workPostCode != null and workPostCode != ''">work_post_code,</if>
+		<if test="workPostTime != null and workPostTime != ''">work_post_time,</if>
+		<if test="sameWorkPostTime != null and sameWorkPostTime != ''">same_work_post_time,</if>
+		<if test="workTitle != null and workTitle != ''">work_title,</if>
+		<if test="workTitleCode != null and workTitleCode != ''">work_title_code,</if>
+		<if test="workTitleTime != null and workTitleTime != ''">work_title_time,</if>
+		<if test="sameWorkTitleTime != null and sameWorkTitleTime != ''">same_work_title_time,</if>
+		<if test="isEnrollment != null and isEnrollment != ''">is_enrollment,</if>
+		<if test="enrollmentTime != null and enrollmentTime != ''">enrollment_time,</if>
+		<if test="isSelectedStudent != null and isSelectedStudent != ''">is_selected_student,</if>
+		<if test="selectedStudentTime != null and selectedStudentTime != ''">selected_student_time,</if>
+		<if test="growPlace != null and growPlace != ''">grow_place,</if>
+		<if test="level != null and level != ''">level,</if>
+		<if test="qualifications != null and qualifications != ''">qualifications,</if>
+		<if test="treatment != null and treatment != ''">treatment,</if>
+		<if test="officeTel != null and officeTel != ''">office_tel,</if>
+		<if test="isMainLeader != null and isMainLeader != ''">is_main_leader,</if>
+		<if test="joinOrgTime != null and joinOrgTime != ''">join_org_time,</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">grassroots_work_time,</if>
+		<if test="sectionChiefTime != null and sectionChiefTime != ''">section_chief_time,</if>
+		<if test="joinDeptTime != null and joinDeptTime != ''">join_dept_time,</if>
+		<if test="maritalStatus != null and maritalStatus != ''">marital_status,</if>
+		<if test="isVeterans != null and isVeterans != ''">is_veterans,</if>
+		<if test="education != null and education != ''">education,</if>
+		<if test="degree != null and degree != ''">is_veterans,</if>
+		<if test="personnelStatus != null and personnelStatus != ''">personnel_status,</if>
+		<if test="lendingUnits != null and lendingUnits != ''">lending_units,</if>
+		<if test="retirementTime != null and retirementTime != ''">retirement_time,</if>
+		<if test="signImg != null and signImg != ''">sign_img,</if>
+		<if test="isHostingWork != null and isHostingWork != ''">is_hosting_work,</if>
+		<!--	统计局项目新增字段 结束	-->
+		<!--	市纪委新增字段 开始	-->
+		<if test="professionalDuty != null and professionalDuty != ''">professional_duty,</if>
+		<if test="fullTimeEducationLevel != null and fullTimeEducationLevel != ''">full_time_education_level,</if>
+		<if test="fullTimeEducationSchoolAndMajor != null and fullTimeEducationSchoolAndMajor != ''">full_time_education_school_and_major,</if>
+		<if test="onJobEducationLevel != null and onJobEducationLevel != ''">on_job_education_level,</if>
+		<if test="onJobEducationSchoolAndMajor != null and onJobEducationSchoolAndMajor != ''">on_job_education_school_and_major,</if>
+		<if test="currentPosition != null and currentPosition != ''">current_position,</if>
+		<if test="proposedAppointmentPosition != null and proposedAppointmentPosition != ''">proposed_appointment_position,</if>
+		<if test="proposedRemovalPosition != null and proposedRemovalPosition != ''">proposed_removal_position,</if>
+		<if test="resumeJsonArray != null and resumeJsonArray != ''">resume_json_array,</if>
+		<if test="rewardAndPunishment != null and rewardAndPunishment != ''">reward_and_punishment,</if>
+		<if test="annualAssessment != null and annualAssessment != ''">annual_assessment,</if>
+		<if test="reasonForAppointmentOrRemoval != null and reasonForAppointmentOrRemoval != ''">reason_for_appointment_or_removal,</if>
+		<if test="familyMemberJsonArray != null and familyMemberJsonArray != ''">family_member_json_array,</if>
+		<!--	市纪委新增字段 结束	-->
+		<if test="sequence != null and sequence != ''">sequence,</if>
+		<if test="abilityLabel != null and abilityLabel != ''">ability_label,</if>
+		<if test="otherLabel != null and otherLabel != ''">other_label,</if>
+		<if test="recruitLot != null and recruitLot != ''">recruit_lot,</if>
+		<if test="advantages != null and advantages != ''">advantages,</if>
+		<if test="disadvantages != null and disadvantages != ''">disadvantages,</if>
+		create_time
+		)values(
+		<if test="userId != null and userId != ''">#{userId},</if>
+		<if test="deptId != null and deptId != ''">#{deptId},</if>
+		<if test="userName != null and userName != ''">#{userName},</if>
+		<if test="nickName != null and nickName != ''">#{nickName},</if>
+		<if test="email != null and email != ''">#{email},</if>
+		<if test="avatar != null and avatar != ''">#{avatar},</if>
+		<if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+		<if test="sex != null and sex != ''">#{sex},</if>
+		<if test="password != null and password != ''">#{password},</if>
+		<if test="status != null and status != ''">#{status},</if>
+		<if test="createBy != null and createBy != ''">#{createBy},</if>
+		<if test="remark != null and remark != ''">#{remark},</if>
+		<if test="userType != null and userType != ''">#{userType},</if>
+		<if test="secretLevel != null">#{secretLevel},</if>
+		<!--	统计局项目新增字段 开始	-->
+		<if test="name != null and name != ''">#{name},</if>
+		<if test="birthday != null and birthday != ''">#{birthday},</if>
+		<if test="nation != null and nation != ''">#{nation},</if>
+		<if test="nativePlace != null and nativePlace != ''">#{nativePlace},</if>
+		<if test="birthPlace != null and birthPlace != ''">#{birthPlace},</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">#{politicalIdentity},</if>
+		<if test="partyJoinTime != null and partyJoinTime != ''">#{partyJoinTime},</if>
+		<if test="secondParty != null and secondParty != ''">#{secondParty},</if>
+		<if test="thirdParty != null and thirdParty != ''">#{thirdParty},</if>
+		<if test="startWorkTime != null and startWorkTime != ''">#{startWorkTime},</if>
+		<if test="healthCondition != null and healthCondition != ''">#{healthCondition},</if>
+		<if test="speciality != null and speciality != ''">#{speciality},</if>
+		<if test="idcard != null and idcard != ''">#{idcard},</if>
+		<if test="manageType != null and manageType != ''">#{manageType},</if>
+		<if test="staffType != null and staffType != ''">#{staffType},</if>
+		<if test="identityType != null and identityType != ''">#{identityType},</if>
+		<if test="workPost != null and workPost != ''">#{workPost},</if>
+		<if test="workPostCode != null and workPostCode != ''">#{workPostCode},</if>
+		<if test="workPostTime != null and workPostTime != ''">#{workPostTime},</if>
+		<if test="sameWorkPostTime != null and sameWorkPostTime != ''">#{sameWorkPostTime},</if>
+		<if test="workTitle != null and workTitle != ''">#{workTitle},</if>
+		<if test="workTitleCode != null and workTitleCode != ''">#{workTitleCode},</if>
+		<if test="workTitleTime != null and workTitleTime != ''">#{workTitleTime},</if>
+		<if test="sameWorkTitleTime != null and sameWorkTitleTime != ''">#{sameWorkTitleTime},</if>
+		<if test="isEnrollment != null and isEnrollment != ''">#{isEnrollment},</if>
+		<if test="enrollmentTime != null and enrollmentTime != ''">#{enrollmentTime},</if>
+		<if test="isSelectedStudent != null and isSelectedStudent != ''">#{isSelectedStudent},</if>
+		<if test="selectedStudentTime != null and selectedStudentTime != ''">#{selectedStudentTime},</if>
+		<if test="growPlace != null and growPlace != ''">#{growPlace},</if>
+		<if test="level != null and level != ''">#{level},</if>
+		<if test="qualifications != null and qualifications != ''">#{qualifications},</if>
+		<if test="treatment != null and treatment != ''">#{treatment},</if>
+		<if test="officeTel != null and officeTel != ''">#{officeTel},</if>
+		<if test="isMainLeader != null and isMainLeader != ''">#{isMainLeader},</if>
+		<if test="joinOrgTime != null and joinOrgTime != ''">#{joinOrgTime},</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">#{grassrootsWorkTime},</if>
+		<if test="sectionChiefTime != null and sectionChiefTime != ''">#{sectionChiefTime},</if>
+		<if test="joinDeptTime != null and joinDeptTime != ''">#{joinDeptTime},</if>
+		<if test="maritalStatus != null and maritalStatus != ''">#{maritalStatus},</if>
+		<if test="isVeterans != null and isVeterans != ''">#{isVeterans},</if>
+		<if test="education != null and education != ''">#{education},</if>
+		<if test="degree != null and degree != ''">#{degree},</if>
+		<if test="personnelStatus != null and personnelStatus != ''">#{personnelStatus},</if>
+		<if test="lendingUnits != null and lendingUnits != ''">#{lendingUnits},</if>
+		<if test="retirementTime != null and retirementTime != ''">#{retirementTime},</if>
+		<if test="signImg != null and signImg != ''">#{signImg},</if>
+		<if test="isHostingWork != null and isHostingWork != ''">#{isHostingWork},</if>
+		<!--	统计局项目新增字段 结束	-->
+		<!--	市纪委新增字段 开始	-->
+		<if test="professionalDuty != null and professionalDuty != ''">#{professionalDuty},</if>
+		<if test="fullTimeEducationLevel != null and fullTimeEducationLevel != ''">#{fullTimeEducationLevel},</if>
+		<if test="fullTimeEducationSchoolAndMajor != null and fullTimeEducationSchoolAndMajor != ''">#{fullTimeEducationSchoolAndMajor},</if>
+		<if test="onJobEducationLevel != null and onJobEducationLevel != ''">#{onJobEducationLevel},</if>
+		<if test="onJobEducationSchoolAndMajor != null and onJobEducationSchoolAndMajor != ''">#{onJobEducationSchoolAndMajor},</if>
+		<if test="currentPosition != null and currentPosition != ''">#{currentPosition},</if>
+		<if test="proposedAppointmentPosition != null and proposedAppointmentPosition != ''">#{proposedAppointmentPosition},</if>
+		<if test="proposedRemovalPosition != null and proposedRemovalPosition != ''">#{proposedRemovalPosition},</if>
+		<if test="resumeJsonArray != null and resumeJsonArray != ''">#{resumeJsonArray},</if>
+		<if test="rewardAndPunishment != null and rewardAndPunishment != ''">#{rewardAndPunishment},</if>
+		<if test="annualAssessment != null and annualAssessment != ''">#{annualAssessment},</if>
+		<if test="reasonForAppointmentOrRemoval != null and reasonForAppointmentOrRemoval != ''">#{reasonForAppointmentOrRemoval},</if>
+		<if test="familyMemberJsonArray != null and familyMemberJsonArray != ''">#{familyMemberJsonArray},</if>
+		<!--	市纪委新增字段 结束	-->
+		<if test="sequence != null and sequence != ''">#{sequence},</if>
+		<if test="abilityLabel != null and abilityLabel != ''">#{abilityLabel},</if>
+		<if test="otherLabel != null and otherLabel != ''">#{otherLabel},</if>
+		<if test="recruitLot != null and recruitLot != ''">#{recruitLot},</if>
+		<if test="advantages != null and advantages != ''">#{advantages},</if>
+		<if test="disadvantages != null and disadvantages != ''">#{disadvantages},</if>
+		sysdate()
+		)
+	</insert>
+	<insert id="insertUser" parameterType="SysUser" useGeneratedKeys="true" keyProperty="userId" databaseId="kingbase">
+		insert into "PUBLIC"."sys_user"(
+		<if test="userId != null and userId != 0">user_id,</if>
+		<if test="deptId != null and deptId != 0">dept_id,</if>
+		<if test="userName != null and userName != ''">user_name,</if>
+		<if test="nickName != null and nickName != ''">nick_name,</if>
+		<if test="email != null and email != ''">email,</if>
+		<if test="avatar != null and avatar != ''">avatar,</if>
+		<if test="phonenumber != null and phonenumber != ''">phonenumber,</if>
+		<if test="sex != null and sex != ''">sex,</if>
+		<if test="password != null and password != ''">password,</if>
+		<if test="status != null and status != ''">status,</if>
+		<if test="createBy != null and createBy != ''">create_by,</if>
+		<if test="remark != null and remark != ''">remark,</if>
+		<if test="userType != null and userType != ''">user_type,</if>
+		<if test="personnelStatus != null and personnelStatus != ''">personnel_satus,</if>
+		<if test="lendingUnits != null and lendingUnits != ''">lending_units,</if>
+		<if test="retirementTime != null and retirementTime != ''">retirement_time,</if>
+		<if test="signImg != null and signImg != ''">sign_img,</if>
+		create_time
+		)values(
+		<if test="userId != null and userId != ''">#{userId},</if>
+		<if test="deptId != null and deptId != ''">#{deptId},</if>
+		<if test="userName != null and userName != ''">#{userName},</if>
+		<if test="nickName != null and nickName != ''">#{nickName},</if>
+		<if test="email != null and email != ''">#{email},</if>
+		<if test="avatar != null and avatar != ''">#{avatar},</if>
+		<if test="phonenumber != null and phonenumber != ''">#{phonenumber},</if>
+		<if test="sex != null and sex != ''">#{sex},</if>
+		<if test="password != null and password != ''">#{password},</if>
+		<if test="status != null and status != ''">#{status},</if>
+		<if test="createBy != null and createBy != ''">#{createBy},</if>
+		<if test="remark != null and remark != ''">#{remark},</if>
+		<if test="userType != null and userType != ''">#{userType},</if>
+		<if test="personnelStatus != null and personnelStatus != ''">#{personnelStatus},</if>
+		<if test="lendingUnits != null and lendingUnits != ''">#{lendingUnits},</if>
+		<if test="retirementTime != null and retirementTime != ''">#{retirementTime},</if>
+		<if test="signImg != null and signImg != ''">#{signImg},</if>
+		sysdate
+		)
+	</insert>
+
+	<update id="updateUser" parameterType="SysUser">
+		update sys_user
+		<set>
+			<if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
+			<if test="userName != null and userName != ''">user_name = #{userName},</if>
+			<if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+			<if test="email != null ">email = #{email},</if>
+			<if test="phonenumber != null ">phonenumber = #{phonenumber},</if>
+			<if test="sex != null and sex != ''">sex = #{sex},</if>
+			<if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+			<if test="password != null and password != ''">password = #{password},</if>
+			<if test="status != null and status != ''">status = #{status},</if>
+			<if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
+			<if test="loginDate != null">login_date = #{loginDate},</if>
+			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+			<if test="remark != null">remark = #{remark},</if>
+			<if test="userType != null and userType != ''">user_type =#{userType},</if>
+			<if test="secretLevel != null">secret_level = #{secretLevel},</if>
+			<!--	统计局项目新增字段 开始	-->
+			<if test="name != null and name != ''">name = #{name},</if>
+			<if test="birthday != null and birthday != ''">birthday = #{birthday},</if>
+			<if test="nation != null and nation != ''">nation = #{nation},</if>
+			<if test="nativePlace != null and nativePlace != ''">native_place = #{nativePlace},</if>
+			<if test="birthPlace != null and birthPlace != ''">birth_place = #{birthPlace},</if>
+			<if test="politicalIdentity != null and politicalIdentity != ''">political_identity = #{politicalIdentity},</if>
+			<if test="partyJoinTime != null and partyJoinTime != ''">party_join_time = #{partyJoinTime},</if>
+			<if test="secondParty != null and secondParty != ''">second_party = #{secondParty},</if>
+			<if test="thirdParty != null and thirdParty != ''">third_party = #{thirdParty},</if>
+			<if test="startWorkTime != null and startWorkTime != ''">start_work_time = #{startWorkTime},</if>
+			<if test="healthCondition != null and healthCondition != ''">health_condition = #{healthCondition},</if>
+			<if test="speciality != null and speciality != ''">speciality = #{speciality},</if>
+			<if test="idcard != null and idcard != ''">idcard = #{idcard},</if>
+			<if test="manageType != null and manageType != ''">manage_type = #{manageType},</if>
+			<if test="staffType != null and staffType != ''">staff_type = #{staffType},</if>
+			<if test="identityType != null and identityType != ''">identity_type = #{identityType},</if>
+			<if test="workPost != null">work_post = #{workPost},</if>
+			<if test="workPostCode != null">work_post_code = #{workPostCode},</if>
+			<if test="workPostTime != null">work_post_time = #{workPostTime},</if>
+			<if test="sameWorkPostTime != null">same_work_post_time = #{sameWorkPostTime},</if>
+			<if test="workTitle != null and workTitle != ''">work_title = #{workTitle},</if>
+			<if test="workTitleCode != null and workTitleCode != ''">work_title_code = #{workTitleCode},</if>
+			<if test="workTitleTime != null and workTitleTime != ''">work_title_time = #{workTitleTime},</if>
+			<if test="sameWorkTitleTime != null and sameWorkTitleTime != ''">same_work_title_time = #{sameWorkTitleTime},</if>
+			<if test="isEnrollment != null and isEnrollment != ''">is_enrollment = #{isEnrollment},</if>
+			<if test="enrollmentTime != null and enrollmentTime != ''">enrollment_time = #{enrollmentTime},</if>
+			<if test="isSelectedStudent != null and isSelectedStudent != ''">is_selected_student = #{isSelectedStudent},</if>
+			<if test="selectedStudentTime != null and selectedStudentTime != ''">selected_student_time = #{selectedStudentTime},</if>
+			<if test="growPlace != null and growPlace != ''">grow_place = #{growPlace},</if>
+			<if test="level != null and level != ''">level = #{level},</if>
+			<if test="qualifications != null and qualifications != ''">qualifications = #{qualifications},</if>
+			<if test="treatment != null and treatment != ''">treatment = #{treatment},</if>
+			<if test="officeTel != null and officeTel != ''">office_tel = #{officeTel},</if>
+			<if test="isMainLeader != null and isMainLeader != ''">is_main_leader = #{isMainLeader},</if>
+			<if test="joinOrgTime != null and joinOrgTime != ''">join_org_time = #{joinOrgTime},</if>
+			<if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">grassroots_work_time = #{grassrootsWorkTime},</if>
+			<if test="sectionChiefTime != null and sectionChiefTime != ''">section_chief_time = #{sectionChiefTime},</if>
+			<if test="joinDeptTime != null and joinDeptTime != ''">join_dept_time = #{joinDeptTime},</if>
+			<if test="maritalStatus != null and maritalStatus != ''">marital_status = #{maritalStatus},</if>
+			<if test="isVeterans != null and isVeterans != ''">is_veterans = #{isVeterans},</if>
+			<if test="education != null and education != ''">education = #{education},</if>
+			<if test="degree != null and degree != ''">degree = #{degree},</if>
+			<if test="personnelStatus != null and personnelStatus != ''">personnel_status = #{personnelStatus},</if>
+			<if test="lendingUnits != null and lendingUnits != ''">lending_units = #{lendingUnits},</if>
+			<if test="retirementTime != null and retirementTime != ''">retirement_time = #{retirementTime},</if>
+			<if test="signImg != null and signImg != ''">sign_img = #{signImg},</if>
+			<if test="isHostingWork != null and isHostingWork != ''">is_hosting_work = #{isHostingWork},</if>
+			<!--	统计局项目新增字段 结束	-->
+			<!--	市纪委新增字段 开始	-->
+			<if test="professionalDuty != null and professionalDuty != ''">professional_duty = #{professionalDuty},</if>
+			<if test="fullTimeEducationLevel != null and fullTimeEducationLevel != ''">full_time_education_level = #{fullTimeEducationLevel},</if>
+			<if test="fullTimeEducationSchoolAndMajor != null and fullTimeEducationSchoolAndMajor != ''">full_time_education_school_and_major = #{fullTimeEducationSchoolAndMajor},</if>
+			<if test="onJobEducationLevel != null and onJobEducationLevel != ''">on_job_education_level = #{onJobEducationLevel},</if>
+			<if test="onJobEducationSchoolAndMajor != null and onJobEducationSchoolAndMajor != ''">on_job_education_school_and_major = #{onJobEducationSchoolAndMajor},</if>
+			<if test="currentPosition != null and currentPosition != ''">current_position = #{currentPosition},</if>
+			<if test="proposedAppointmentPosition != null and proposedAppointmentPosition != ''">proposed_appointment_position = #{proposedAppointmentPosition},</if>
+			<if test="proposedRemovalPosition != null and proposedRemovalPosition != ''">proposed_removal_position = #{proposedRemovalPosition},</if>
+			<if test="resumeJsonArray != null and resumeJsonArray != ''">resume_json_array = #{resumeJsonArray},</if>
+			<if test="rewardAndPunishment != null and rewardAndPunishment != ''">reward_and_punishment = #{rewardAndPunishment},</if>
+			<if test="annualAssessment != null and annualAssessment != ''">annual_assessment = #{annualAssessment},</if>
+			<if test="reasonForAppointmentOrRemoval != null and reasonForAppointmentOrRemoval != ''">reason_for_appointment_or_removal = #{reasonForAppointmentOrRemoval},</if>
+			<if test="familyMemberJsonArray != null and familyMemberJsonArray != ''">family_member_json_array = #{familyMemberJsonArray},</if>
+			<!--	市纪委新增字段 结束	-->
+			update_time = sysdate(),
+			<if test="sequence != null and sequence != ''">sequence = #{sequence},</if>
+			<if test="abilityLabel != null and abilityLabel != ''">ability_label = #{abilityLabel},</if>
+			<if test="advantages != null and advantages != ''">advantages = #{advantages},</if>
+			<if test="disadvantages != null and disadvantages != ''">disadvantages = #{disadvantages},</if>
+			<if test="reserveUser != null and reserveUser != ''">reserve_user = #{reserveUser},</if>
+			user_duty = #{userDuty},
+			user_rank = #{userRank},
+		    duty_rank_type = #{dutyRankType},
+			recruit_lot = #{recruitLot},
+		    other_label = #{otherLabel}
+
+		</set>
+		where user_id = #{userId}
+	</update>
+	<update id="updateUser" parameterType="SysUser" databaseId="kingbase">
+		update "PUBLIC"."sys_user"
+		<set>
+			<if test="deptId != null and deptId != 0">dept_id = #{deptId},</if>
+			<if test="userName != null and userName != ''">user_name = #{userName},</if>
+			<if test="nickName != null and nickName != ''">nick_name = #{nickName},</if>
+			<if test="email != null ">email = #{email},</if>
+			<if test="phonenumber != null ">phonenumber = #{phonenumber},</if>
+			<if test="sex != null and sex != ''">sex = #{sex},</if>
+			<if test="avatar != null and avatar != ''">avatar = #{avatar},</if>
+			<if test="password != null and password != ''">password = #{password},</if>
+			<if test="status != null and status != ''">status = #{status},</if>
+			<if test="loginIp != null and loginIp != ''">login_ip = #{loginIp},</if>
+			<if test="loginDate != null">login_date = #{loginDate},</if>
+			<if test="updateBy != null and updateBy != ''">update_by = #{updateBy},</if>
+			<if test="remark != null">remark = #{remark},</if>
+			<if test="userType != null and userType != ''">user_type =#{userType},</if>
+			update_time = sysdate
+		</set>
+		where user_id = #{userId}
+	</update>
+
+	<update id="updateUserStatus" parameterType="SysUser">
+		update sys_user set status = #{status} where user_id = #{userId}
+	</update>
+	<update id="updateUserStatus" parameterType="SysUser" databaseId="kingbase">
+		update "PUBLIC"."sys_user" set status = #{status} where user_id = #{userId}
+	</update>
+
+	<update id="updateUserAvatar" parameterType="SysUser">
+		update sys_user set avatar = #{avatar} where user_name = #{userName}
+	</update>
+	<update id="updateUserAvatar" parameterType="SysUser" databaseId="kingbase">
+		update "PUBLIC"."sys_user" set avatar = #{avatar} where user_name = #{userName}
+	</update>
+
+	<update id="resetUserPwd" parameterType="SysUser">
+		update sys_user set password = #{password} where user_name = #{userName}
+	</update>
+	<update id="resetUserPwd" parameterType="SysUser" databaseId="kingbase">
+		update "PUBLIC"."sys_user" set password = #{password} where user_name = #{userName}
+	</update>
+
+	<delete id="deleteUserById" parameterType="Long" >
+		delete from sys_user where user_id = #{userId}
+	</delete>
+	<delete id="deleteUserById" parameterType="Long" databaseId="kingbase">
+		delete from "PUBLIC"."sys_user" where user_id = #{userId}
+	</delete>
+
+	<delete id="deleteUserByIds" parameterType="Long">
+		update sys_user set del_flag = '2' where user_id in
+		<foreach collection="array" item="userId" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+	<delete id="deleteUserByIds" parameterType="Long" databaseId="kingbase">
+		update "PUBLIC"."sys_user" set del_flag = '2' where user_id in
+		<foreach collection="array" item="userId" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+
+	<select id="selectUserByUserNameAndPassword" resultMap="SysUserResult">
+		select  * from sys_user
+		where del_flag = '0'
+		  and user_name = #{userName} and password = #{password}
+		limit 1
+	</select>
+
+	<select id="selectUserListByRoleKey" parameterType="String" resultMap="SysUserResult">
+		select * from sys_user where user_id in ( select user_id from sys_user_role where role_id = ( select role_id from sys_role where role_key = #{roleKey} ) )
+		and del_flag = '0'
+	</select>
+	<update id="updateDeptId">
+		update sys_user set dept_id = #{deptId} where user_id = #{userId}
+	</update>
+
+	<select id="userSelectorList" resultMap="SysUserResult">
+		select u.user_id, u.dept_id , u.nick_name , u.user_name ,d.dept_name, u.name,
+		       u.work_post, u.work_title
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and user_type = '00'
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="nickName != null and nickName != ''">
+			AND u.nick_name like concat('%', #{nickName}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId},
+			ancestors) ))
+		</if>
+	</select>
+	<select id="selectorUserList" resultMap="SysUserResult">
+		select u.user_id, u.nick_name  from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and user_type = '00'
+	</select>
+
+	<select id="selectTechnicalPositionInfoByUserId" resultMap="SysUserTechnicalPositionInfoResult">
+		select tpi.technical_position_info_id, tpi.user_id, tpi.technical_qualification_code, tpi.technical_qualification_name,
+		tpi.qualification_date, tpi.qualification_road, tpi.jury_or_exam_name, tpi.del_flag
+		from sys_user_technical_position_info tpi
+		where tpi.user_id = #{userId}
+	</select>
+
+	<select id="selectEducationAndDegreeInfoByUserId" resultMap="SysUserEducationAndDegreeInfoResult">
+		select edi.education_and_degree_info_id, edi.user_id, edi.education_category, edi.education, edi.educational_name,
+		edi.educational_system,edi.degree, edi.degree_name, edi.school_and_department, edi.professional_category, edi.professional_name,
+		edi.enrollment_date, edi.completion_date,edi.degree_award_date, edi.del_flag
+		from sys_user_education_and_degree_info edi
+		where edi.user_id = #{userId}
+	</select>
+
+	<select id="selectEducationAndDegreeInfoByUserIds" resultMap="SysUserEducationAndDegreeInfoResult">
+		select edi.education_and_degree_info_id, edi.user_id, edi.education_category, edi.education, edi.educational_name,
+			   edi.educational_system,edi.degree, edi.degree_name, edi.school_and_department, edi.professional_category, edi.professional_name,
+			   edi.enrollment_date, edi.completion_date,edi.degree_award_date, edi.del_flag
+		from sys_user_education_and_degree_info edi
+		where edi.user_id in
+		<foreach item="userId" collection="userIds" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</select>
+
+
+	<select id="selectRewardsAndPenaltiesInfoByUserId" resultMap="SysUserRewardsAndPenaltiesInfoResult">
+		select rpi.rewards_and_penalties_info_id, rpi.user_id, rpi.rewards_and_penalties_name_code, rpi.rewards_and_penalties_name, rpi.approval_date,
+		rpi.approval_authority, rpi.approval_authority_level, rpi.position_hierarchy, rpi.rank_level, rpi.revocation_date, rpi.approval_authority_nature,
+		rpi.reward_and_penalties_desc, rpi.del_flag, rpi.sort_num
+		from sys_user_rewards_and_penalties_info rpi
+		where rpi.user_id = #{userId}
+	</select>
+
+	<select id="selectOtherInfoByUserId" resultMap="SysUserOtherInfoResult">
+		select oi.other_info_id, user_id, oi.sort_num, oi.admission, oi.employment_time, oi.selected_students,
+		oi.entry_time, oi.growing_up, oi.level_type, oi.qualifications, oi.contact_info, oi.remark_info, oi.del_flag
+		from sys_user_other_info oi
+		where oi.user_id = #{userId}
+	</select>
+
+	<select id="selectAnnualAppraisalInfoByUserId" resultMap="SysUserAnnualAppraisalInfoResult">
+		select nai.annual_appraisal_info_id, nai.user_id, nai.sort_num, nai.assessment_year, nai.assessment_conclusions,
+		nai.assessment_desc, nai.assessment_results, nai.del_flag
+		from sys_user_annual_appraisal_info nai
+		where nai.user_id = #{userId}
+	</select>
+
+	<select id="selectFamilyMemberSocialInfoByUserId" resultMap="SysUserFamilyMemberSocialInfoResult">
+		select fmci.family_member_social_info_id, fmci.user_id, fmci.sort_num, fmci.appellation, fmci.family_members_name, fmci.birth_date,
+		fmci.political_outlook, fmci.work_unit_and_position, fmci.situation_desc, fmci.del_flag,fmci.contact_number
+		from sys_user_family_member_social_info fmci
+		where fmci.user_id = #{userId}
+	</select>
+
+	<select id="selectResumeInfoByUserId" resultMap="SysUserResumeInfoResult">
+		select ri.resume_info_id, ri.user_id, ri.start_date, ri.end_date, ri.work_job_name, ri.sort_num, ri.del_flag, ri.resume_desc
+		from sys_user_resume_info ri
+		where ri.user_id = #{userId}
+	</select>
+
+	<select id="selectWorkUnitAndPositionInfoByUserId" resultMap="SysUserWorkUnitAndPositionInfoResult">
+		select wupi.work_unit_and_position_info_id, wupi.user_id, wupi.job_type, wupi.employment_org, wupi.employment_org_name, wupi.leader_member,
+		wupi.member_category, wupi.unconventionally_promote, wupi.selection_and_appointment, wupi.job_status, wupi.take_office_time, wupi.take_office_no,
+		wupi.dismissal_time, wupi.dismissal_no, wupi.post_full_name, wupi.post_abbreviation, wupi.grassroots_work_experience, wupi.relationship_unit,
+		wupi.job_change_reason, wupi.sort_num, wupi.del_flag
+		from sys_user_work_unit_and_position_info wupi
+		where wupi.user_id = #{userId}
+	</select>
+
+	<select id="selectSecondmentWorkInfoByUserId" resultMap="SysUserSecondmentWorkInfoResult">
+		select swi.secondment_work_info_id, swi.borrow_unit_name, swi.borrow_unit_level, swi.borrow_unit_nature,
+			swi.lending_unit_name, swi.lending_unit_level, swi.lending_unit_nature, swi.user_id, swi.identity_category,
+			swi.start_date, swi.end_date, swi.secondment_type, swi.secondment_dept, swi.filing_time, swi.secondment_notes, swi.create_by,
+			swi.create_time, swi.update_by, swi.update_time
+		from sys_user_secondment_work_info swi
+		where swi.user_id = #{userId}
+	</select>
+
+	<select id="selectCurrentPostInfoByUserId" resultMap="SysUserCurrentPostInfoResult">
+		select cpi.current_post_id, cpi.user_id, cpi.rank, cpi.post_level_status, cpi.approval_date, cpi.end_date, cpi.del_flag, cpi.peer_level
+		from sys_user_current_post_info cpi
+		where cpi.user_id = #{userId}
+	</select>
+
+	<select id="selectGrassrootsWorkInfoByUserId" resultMap="SysUserGrassrootsWorkInfoResult">
+		select gwi.grassroots_work_id, gwi.user_id, gwi.start_date, gwi.end_date, gwi.workplace, gwi.del_flag
+		from sys_user_grassroots_work_info gwi
+		where gwi.user_id = #{userId}
+	</select>
+
+	<delete id="deleteSysUserTechnicalPositionInfoByUserIds" parameterType="Long">
+		delete from sys_user_technical_position_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserTechnicalPositionInfoByUserId" parameterType="Long">
+		delete from sys_user_technical_position_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserTechnicalPositionInfo">
+		insert into sys_user_technical_position_info( technical_position_info_id, user_id, technical_qualification_code, technical_qualification_name, qualification_date, qualification_road, jury_or_exam_name, del_flag ) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.technicalPositionInfoId}, #{item.userId}, #{item.technicalQualificationCode}, #{item.technicalQualificationName}, #{item.qualificationDate}, #{item.qualificationRoad}, #{item.juryOrExamName}, #{item.delFlag} )
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserEducationAndDegreeInfoByUserIds" parameterType="Long">
+		delete from sys_user_education_and_degree_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserEducationAndDegreeInfoByUserId" parameterType="Long">
+		delete from sys_user_education_and_degree_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserEducationAndDegreeInfo">
+		insert into sys_user_education_and_degree_info( education_and_degree_info_id, user_id, education_category, education, educational_name, educational_system, degree, degree_name, school_and_department, professional_category, professional_name, enrollment_date, completion_date, degree_award_date, del_flag) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.educationAndDegreeInfoId}, #{item.userId}, #{item.educationCategory}, #{item.education}, #{item.educationalName}, #{item.educationalSystem}, #{item.degree}, #{item.degreeName}, #{item.schoolAndDepartment}, #{item.professionalCategory}, #{item.professionalName}, #{item.enrollmentDate}, #{item.completionDate}, #{item.degreeAwardDate}, #{item.delFlag})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserRewardsAndPenaltiesInfoByUserIds" parameterType="Long">
+		delete from sys_user_rewards_and_penalties_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserRewardsAndPenaltiesInfoByUserId" parameterType="Long">
+		delete from sys_user_rewards_and_penalties_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserRewardsAndPenaltiesInfo">
+		insert into sys_user_rewards_and_penalties_info( rewards_and_penalties_info_id, user_id, rewards_and_penalties_name_code, rewards_and_penalties_name, approval_date, approval_authority, approval_authority_level, position_hierarchy, rank_level, revocation_date, approval_authority_nature, reward_and_penalties_desc, del_flag, sort_num) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.rewardsAndPenaltiesInfoId}, #{item.userId}, #{item.rewardsAndPenaltiesNameCode}, #{item.rewardsAndPenaltiesName}, #{item.approvalDate}, #{item.approvalAuthority}, #{item.approvalAuthorityLevel}, #{item.positionHierarchy}, #{item.rankLevel}, #{item.revocationDate}, #{item.approvalAuthorityNature}, #{item.rewardAndPenaltiesDesc}, #{item.delFlag}, #{item.sortNum})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserOtherInfoByUserIds" parameterType="Long">
+		delete from sys_user_other_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserOtherInfoByUserId" parameterType="Long">
+		delete from sys_user_other_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserOtherInfo">
+		insert into sys_user_other_info( other_info_id, user_id, sort_num, admission, employment_time, selected_students, entry_time, growing_up, level_type, qualifications, contact_info, remark_info, del_flag) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.otherInfoId}, #{item.userId}, #{item.sortNum}, #{item.admission}, #{item.employmentTime}, #{item.selectedStudents}, #{item.entryTime}, #{item.growingUp}, #{item.levelType}, #{item.qualifications}, #{item.contactInfo}, #{item.remarkInfo}, #{item.delFlag})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserAnnualAppraisalInfoByUserIds" parameterType="Long">
+		delete from sys_user_annual_appraisal_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserAnnualAppraisalInfoByUserId" parameterType="Long">
+		delete from sys_user_annual_appraisal_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserAnnualAppraisalInfo">
+		insert into sys_user_annual_appraisal_info( annual_appraisal_info_id, user_id, sort_num, assessment_year, assessment_conclusions, assessment_desc, assessment_results, del_flag) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.annualAppraisalInfoId}, #{item.userId}, #{item.sortNum}, #{item.assessmentYear}, #{item.assessmentConclusions}, #{item.assessmentDesc}, #{item.assessmentResults}, #{item.delFlag})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserFamilyMemberSocialInfoByUserIds" parameterType="Long">
+		delete from sys_user_family_member_social_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserFamilyMemberSocialInfoByUserId" parameterType="Long">
+		delete from sys_user_family_member_social_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserFamilyMemberSocialInfo">
+		insert into sys_user_family_member_social_info( family_member_social_info_id, user_id, sort_num, appellation, family_members_name, birth_date, political_outlook, work_unit_and_position, situation_desc, del_flag, contact_number) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.familyMemberSocialInfoId}, #{item.userId}, #{item.sortNum}, #{item.appellation}, #{item.familyMembersName}, #{item.birthDate}, #{item.politicalOutlook}, #{item.workUnitAndPosition}, #{item.situationDesc}, #{item.delFlag}, #{item.contactNumber})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserResumeInfoByUserIds" parameterType="Long">
+		delete from sys_user_resume_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserResumeInfoByUserId" parameterType="Long">
+		delete from sys_user_resume_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserResumeInfo">
+		insert into sys_user_resume_info( resume_info_id, user_id, start_date, end_date, work_job_name, sort_num, del_flag, resume_desc) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.resumeInfoId}, #{item.userId}, #{item.startDate}, #{item.endDate}, #{item.workJobName}, #{item.sortNum}, #{item.delFlag}, #{item.resumeDesc})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserWorkUnitAndPositionInfoByUserIds" parameterType="Long">
+		delete from sys_user_work_unit_and_position_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserWorkUnitAndPositionInfoByUserId" parameterType="Long">
+		delete from sys_user_work_unit_and_position_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserWorkUnitAndPositionInfo">
+		insert into sys_user_work_unit_and_position_info( work_unit_and_position_info_id, user_id, job_type, employment_org, employment_org_name, leader_member, member_category, unconventionally_promote, selection_and_appointment, job_status, take_office_time, take_office_no, dismissal_time, dismissal_no, post_full_name, post_abbreviation, grassroots_work_experience, relationship_unit, job_change_reason, sort_num, del_flag) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.workUnitAndPositionInfoId}, #{item.userId}, #{item.jobType}, #{item.employmentOrg}, #{item.employmentOrgName}, #{item.leaderMember}, #{item.memberCategory}, #{item.unconventionallyPromote}, #{item.selectionAndAppointment}, #{item.jobStatus}, #{item.takeOfficeTime}, #{item.takeOfficeNo}, #{item.dismissalTime}, #{item.dismissalNo}, #{item.postFullName}, #{item.postAbbreviation}, #{item.grassrootsWorkExperience}, #{item.relationshipUnit}, #{item.jobChangeReason}, #{item.sortNum}, #{item.delFlag})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserCurrentPostInfoByUserIds" parameterType="Long">
+		delete from sys_user_current_post_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserCurrentPostInfoByUserId" parameterType="Long">
+		delete from sys_user_current_post_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserCurrentPostInfo">
+		insert into sys_user_current_post_info( current_post_id, user_id, rank, post_level_status, approval_date, end_date, del_flag, peer_level) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.currentPostId}, #{item.userId}, #{item.rank}, #{item.postLevelStatus}, #{item.approvalDate}, #{item.endDate}, #{item.delFlag}, #{item.peerLevel})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserGrassrootsWorkInfoByUserIds" parameterType="Long">
+		delete from sys_user_grassroots_work_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserGrassrootsWorkInfoByUserId" parameterType="Long">
+		delete from sys_user_grassroots_work_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserGrassrootsWorkInfo">
+		insert into sys_user_grassroots_work_info( grassroots_work_id, user_id, start_date, end_date, workplace, del_flag) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.grassrootsWorkId}, #{item.userId}, #{item.startDate}, #{item.endDate}, #{item.workplace}, #{item.delFlag})
+		</foreach>
+	</insert>
+
+	<delete id="deleteSysUserSecondmentWorkInfoByUserIds" parameterType="Long">
+		delete from sys_user_secondment_work_info where user_id in
+		<foreach item="userId" collection="array" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<delete id="deleteSysUserSecondmentWorkInfoByUserId" parameterType="Long">
+		delete from sys_user_secondment_work_info where user_id = #{userId}
+	</delete>
+
+	<insert id="batchSysUserSecondmentWorkInfo">
+		insert into sys_user_secondment_work_info( secondment_work_info_id, borrow_unit_name, borrow_unit_level, borrow_unit_nature, lending_unit_name, lending_unit_level, lending_unit_nature, user_id, identity_category, start_date, end_date, secondment_type, secondment_dept, filing_time, secondment_notes, create_by, create_time, update_by, update_time) values
+		<foreach item="item" index="index" collection="list" separator=",">
+			( #{item.secondmentWorkInfoId}, #{item.borrowUnitName}, #{item.borrowUnitLevel}, #{item.borrowUnitNature}, #{item.lendingUnitName}, #{item.lendingUnitLevel}, #{item.lendingUnitNature}, #{item.userId}, #{item.identityCategory}, #{item.startDate}, #{item.endDate}, #{item.secondmentType}, #{item.secondmentDept}, #{item.filingTime}, #{item.secondmentNotes}, #{item.createBy}, #{item.createTime}, #{item.updateBy}, #{item.updateTime})
+		</foreach>
+	</insert>
+
+	<select id="selectUserIdsByIdentityTypeAndPost" resultType="java.lang.Long">
+		select distinct u.user_id from sys_user u left join sys_user_dept_post dp on u.user_id = dp.user_id
+		where u.status = '0' and u.del_flag = '0' and u.user_type ='00'
+		<if test="deptIds != null and deptIds.size > 0">
+			and dp.dept_id in
+			<foreach item="item" collection="deptIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="types != null and types.size > 0">
+			and u.identity_type in
+			<foreach item="item" collection="types" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="selectUserListByCondition" parameterType="String" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time,  u.staff_type,
+		d.dept_name,d.dept_code, d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree, u.same_work_title_time, u.work_post_code, u.work_title_code,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array,u.advantages,u.disadvantages
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00'
+		<if test="deptIds != null and deptIds.size > 0">
+			and u.dept_id in
+			<foreach item="item" collection="deptIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+		</if>
+		<if test="condition != null and condition != ''">
+			AND exists (
+				select 1 from sys_user u2
+					where u2.user_id = u.user_id
+					and (${condition})
+			)
+		</if>
+	</select>
+	<select id="selectAll" resultMap="SysUserResult">
+		select u.user_id,  u.nick_name, u.name,d.dept_id,d.dept_name from sys_user u left join sys_dept d on u.dept_id = d.dept_id
+	</select>
+
+	<!--根据姓名查询人员信息列表-->
+	<select id="selectUserListByName" parameterType="SysUser" resultMap="SysUserResult">
+	select u.*
+	from sys_user u
+	where u.del_flag = '0' and u.user_type = '00'
+	<if test="name != null and name != ''">
+		AND u.name = #{name}
+	</if>
+	</select>
+	<select id="selectUserListByNames"  resultMap="SysUserResult">
+	select u.*
+	from sys_user u
+	where u.del_flag = '0' and u.user_type = '00'
+	and u.user_name in
+	  <foreach collection="userNames" item="name" open="(" separator="," close=")">
+		#{name}
+	</foreach>
+	</select>
+	<resultMap type="VSysUser" id="VSysUserResult">
+		<id property="userId" column="user_id"/>
+		<result property="deptId" column="dept_id"/>
+		<result property="deptName" column="dept_name"/>
+		<result property="userName" column="user_name"/>
+		<result property="nickName" column="nick_name"/>
+		<result property="name" column="name"/>
+		<result property="phonenumber" column="phonenumber"/>
+		<result property="status" column="status"/>
+		<result property="delFlag" column="del_flag"/>
+		<result property="userType" column="user_type"/>
+		<result property="identityType" column="identity_type"/>
+		<result property="isMainLeader" column="is_main_leader"/>
+		<result property="isHostingWork" column="is_hosting_work"/>
+		<result property="workLevelCode" column="work_level_code"/>
+		<result property="personnelStatus" column="personnel_status"/>
+		<result property="deptIdentityType" column="dept_identity_type"/>
+		<result property="levelType" column="level_type"/>
+		<result property="age" column="age"/>
+		<result property="postTime" column="post_time"/>
+	</resultMap>
+	<sql id="VSysUserVo">
+		SELECT
+			user_id,
+			dept_id,
+			dept_name,
+			user_name,
+			nick_name,
+			name,
+			phonenumber,
+			status,
+			del_flag,
+			user_type,
+			identity_type,
+			is_main_leader,
+			is_hosting_work,
+			work_title_code as work_level_code,
+			personnel_status,
+			dept_identity_type,
+		    age,
+		    post_time
+		FROM
+			v_sys_user u
+	</sql>
+
+    <select id="selectVSysUserList" resultMap="VSysUserResult">
+		SELECT T.*,
+		case
+			when T.identity_type in('1','2') and ( T.is_main_leader = '1' or T.is_hosting_work = '1' or T.work_level_code in ('121', '212')) then 'civil_servant_special'
+			when T.identity_type in('1','2') and T.is_main_leader = '0' and T.is_hosting_work = '0' and T.work_level_code not in ('111', '112', '121', '211', '212')  then 'civil_servant_other'
+			when T.identity_type ='3' and (T.is_main_leader = '1' or T.is_hosting_work = '1' or T.work_level_code in ('121', '212')) then 'institution_special'
+			when T.identity_type ='3' and T.is_main_leader = '0' and T.is_hosting_work = '0' and T.work_level_code not in ('111', '112', '121', '211', '212')  then 'institution_other'
+		else 'additional' end as level_type
+		from(<include refid="VSysUserVo"></include>) as T
+		where T.del_flag = '0' and T.user_type = '00'
+		<if test="deptId !=null"> and T.dept_id = #{deptId}</if>
+		<if test="status !=null and status != ''"> and T.status = #{status}</if>
+	</select>
+	<select id="selectAllVSysUserList" resultType="com.cb.common.core.domain.vo.VSysUser">
+		<include refid="VSysUserVo"></include>
+		where del_flag = '0' and user_type = '00' and status ='0'
+	</select>
+
+	<select id="selectMainLeaderByDeptId" parameterType="long" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.del_flag = '0' and u.is_main_leader = '1'
+			and u.dept_id = #{deptId}
+	</select>
+
+	<select id="selectUserListByDeptId" resultMap="SysUserResult">
+		select u.*
+		from sys_user u
+		where u.del_flag = '0' and u.user_type = '00'
+		  and u.dept_id = #{deptId}
+	</select>
+
+	<select id="selectDeptLeaderChargeUserId" resultType="long">
+		select t.user_id
+		from (
+		select to_number(leader_charge) as user_id
+		from sys_dept
+		where leader_charge is not null
+		start with dept_id = #{deptId}
+		connect by prior parent_id = dept_id
+		<if test="startTop">
+			order by length(ancestors) asc
+		</if>
+		<if test="!startTop">
+			order by length(ancestors) desc
+		</if>
+		limit 1
+		) t
+		<if test="roleIds != null and roleIds.size() > 0">
+			where exists(
+			select user_id,role_id
+			from sys_user_role ur
+			where ur.user_id = t.user_id
+			and ur.role_id in
+			<foreach item="item" collection="roleIds" open="(" separator="," close=")">
+				#{item}
+			</foreach>
+			)
+		</if>
+	</select>
+
+
+	<select id="selectVSysUserListByRoles" resultMap="VSysUserResult">
+		SELECT T.*,
+		CASE
+		WHEN T.identity_type IN('1', '2')
+		AND (T.is_main_leader = '1' OR T.is_hosting_work = '1' OR T.work_level_code IN ('121', '212'))
+		THEN 'civil_servant_special'
+		WHEN T.identity_type IN('1', '2')
+		AND T.is_main_leader = '0'
+		AND T.is_hosting_work = '0'
+		AND T.work_level_code NOT IN ('111', '112', '121', '211', '212')
+		THEN 'civil_servant_other'
+		WHEN T.identity_type = '3'
+		AND (T.is_main_leader = '1' OR T.is_hosting_work = '1' OR T.work_level_code IN ('121', '212'))
+		THEN 'institution_special'
+		WHEN T.identity_type = '3'
+		AND T.is_main_leader = '0'
+		AND T.is_hosting_work = '0'
+		AND T.work_level_code NOT IN ('111', '112', '121', '211', '212')
+		THEN 'institution_other'
+		ELSE 'additional'
+		END AS level_type
+		FROM (<include refid="VSysUserVo"></include>) AS T
+		LEFT JOIN sys_user_role SUR ON T.user_id = SUR.user_id  <!-- 使用 sys_user_role 中间表关联用户和角色 -->
+		WHERE T.del_flag = '0'
+		AND T.user_type = '00'
+		<if test="deptId != null"> AND T.dept_id = #{deptId}</if>
+		<if test="status != null and status != ''"> AND T.status = #{status}</if>
+		<if test="roleIds != null and roleIds.length > 0">  <!-- 使用 length 替代 size -->
+			AND SUR.role_id IN
+			<foreach item="roleId" index="index" collection="roleIds" open="(" separator="," close=")">
+				#{roleId}
+			</foreach>
+		</if>
+	</select>
+
+	<select id="listUserByRoleKey"  parameterType="String" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.del_flag = '0' and r.role_key = #{roleKey}
+		order by ifnull(d.order_num, 99999) ASC,
+		ifnull(u.SEQUENCE, 99999) ASC
+	</select>
+
+	<update id="updateDeptByUserIds" >
+		update sys_user set dept_id = #{deptId} where user_id in
+		<foreach item="userId" collection="userIds" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</update>
+	<update id="updateUserByUserId">
+		update sys_user set position_short = #{positionShort} where user_id = #{userId}
+	</update>
+
+	<select id="selectUserByUserNameAndDeptName" parameterType="String" resultMap="SysUserResult">
+		select  u.*,d.dept_name
+		 from sys_user u LEFT JOIN  sys_dept d
+         ON u.dept_id =d.dept_id WHERE u.del_flag = '0' AND u.user_name = #{userName}  AND d.dept_name = #{deptName}
+	</select>
+
+	<select id="selectUserByAbilityLabel" parameterType="String" resultMap="SysUserResult">
+		SELECT  u.*, d.dept_name  FROM "sys_user" u
+		LEFT JOIN  sys_dept d
+        ON u.dept_id = d.dept_id
+		WHERE  FIND_IN_SET(#{abilityLabelId},u."ability_label") AND u.del_flag = '0'
+	</select>
+	<select id="selectUserByNickName" parameterType="String" resultMap="SysUserResult">
+		select  u.*,d.dept_name
+		 from sys_user u LEFT JOIN  sys_dept d
+         ON u.dept_id =d.dept_id WHERE u.del_flag = '0' AND u.nick_name = #{nickName}
+	</select>
+
+	<select id="selectUserByNickNameAndDeptId" resultMap="SysUserResult">
+		select  u.*,d.dept_name
+		 from sys_user u LEFT JOIN  sys_dept d
+         ON u.dept_id =d.dept_id WHERE u.del_flag = '0' AND u.nick_name = #{nickName} and u.dept_id = #{deptId}
+	</select>
+
+	<select id="selectMainLeaderList" parameterType="long" resultMap="SysUserResult">
+		<include refid="selectUserVo"/>
+		where u.del_flag = '0' and u.is_main_leader = '1'
+		order by ifnull(d.order_num, 99999) ASC,
+		ifnull(u.SEQUENCE, 99999) ASC
+	</select>
+	<select id="selectUserByUserId" resultMap="SysUserResult">
+        select user_id,position_short,current_position
+        from sys_user
+        where user_id = #{userId} and del_flag = '0'
+    </select>
+
+	<select id="exportUserInfoData" parameterType="map" resultMap="SysUserResult">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.update_by, u.update_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.advantages,u.disadvantages,u.reserve_user
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2)
+		<if test="id != null and id != ''" >
+			<choose>
+				<when test="isUpdate">
+					<if test="historyId != null and historyId != ''">
+						and u.user_id <![CDATA[>]]> #{historyId}
+					</if>
+					and u.user_id <![CDATA[<=]]> #{id}
+				</when>
+				<otherwise>
+					and u.user_id <![CDATA[>]]> #{id}
+				</otherwise>
+			</choose>
+		</if>
+		<if test="lastExportTime != null and lastExportTime != ''">
+			and TO_TIMESTAMP(u.update_time, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[>=]]> TO_TIMESTAMP(#{lastExportTime}, 'YYYY-MM-DD HH24:MI:SS')
+		</if>
+		order by u.user_id asc
+		<if test="orderBy != null and orderBy != ''">
+			, #{orderBy}
+		</if>
+		<if test="limit != null and limit != ''">
+			limit #{limit}
+		</if>
+	</select>
+
+	<select id="selectUserAvatars" resultType="string">
+		select u.avatar
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2) and u.avatar is not null
+		order by u.user_id asc
+	</select>
+
+	<select id="selectDeleteUserListByAdmin" parameterType="SysUser" resultMap="SysUserResult" databaseId="dm">
+		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
+		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
+		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
+		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
+		u.secret_level,
+		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.family_member_json_array, u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.position_short,u.advantages,u.disadvantages
+		from sys_user u
+		left join sys_dept d on u.dept_id = d.dept_id
+		where u.del_flag = '2'  and u.user_type = '00'
+		<if test="name != null and name != ''">
+			AND u.name like concat('%', #{name}, '%')
+		</if>
+		<if test="userName != null and userName != ''">
+			AND u.user_name like concat('%', #{userName}, '%')
+		</if>
+		<if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
+		<if test="manageType != null  and manageType != ''"> AND u.manage_type = #{manageType}</if>
+		<if test="idcard != null  and idcard != ''">
+			AND u.idcard like concat(#{idcard}, '%')
+		</if>
+		<if test="status != null and status != ''">
+			AND u.status = #{status}
+		</if>
+		<if test="sex != null and sex != ''">
+			AND u.sex = #{sex}
+		</if>
+		<if test="politicalIdentity != null and politicalIdentity != ''">
+			AND u.political_identity = #{politicalIdentity}
+		</if>
+		<if test="phonenumber != null and phonenumber != ''">
+			AND u.phonenumber like concat('%', #{phonenumber}, '%')
+		</if>
+		<if test="officeTel != null and officeTel != ''">
+			AND u.office_tel like concat('%', #{officeTel}, '%')
+		</if>
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type=#{identityType}
+		</if>
+		<if test="nativePlace != null and nativePlace != ''">
+			AND u.native_place=#{nativePlace}
+		</if>
+		<if test="birthPlace != null and birthPlace != ''">
+			AND u.birth_place=#{birthPlace}
+		</if>
+		<if test="nation != null and nation == 1">
+			AND u.nation= '汉族'
+		</if>
+		<if test="nation != null and nation == 2">
+			AND u.nation is not null AND u.nation != '汉族'
+		</if>
+		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
+			AND u.grassroots_work_time >= 2
+		</if>
+		<if test="workPost != null and workPost != ''">
+			AND u.work_post=#{workPost}
+		</if>
+		<if test="workTitle != null and workTitle != ''">
+			AND u.work_title=#{workTitle}
+		</if>
+		<if test="education != null and education != ''">
+			AND u.education=#{education}
+		</if>
+		<if test="degree != null and degree != ''">
+			AND u.degree=#{degree}
+		</if>
+		<if test="personnelStatus != null and personnelStatus != ''">
+			AND u.personnel_status=#{personnelStatus}
+		</if>
+		<if test="isMainLeader != null and isMainLeader != ''">
+			AND u.is_main_leader=#{isMainLeader}
+		</if>
+		<if test="isHostingWork != null and isHostingWork != ''">
+			AND u.is_hosting_work=#{isHostingWork}
+		</if>
+		<if test="lendingUnits != null and lendingUnits != ''">
+			AND u.lending_units=#{lendingUnits}
+		</if>
+		<if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+			AND u.retirement_time = #{retirementTime}
+		</if>
+		<if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
+			AND u.birthday &gt;= #{params.beginbirthday}
+		</if>
+		<if test="params.endbirthday != null and params.endbirthday != ''"><!-- 结束时间检索 -->
+			AND u.birthday &lt;= #{params.endbirthday}
+		</if>
+		<if test="params.beginselectedStudentTime != null and params.beginselectedStudentTime != ''"><!-- 开始时间检索 -->
+			AND u.selected_student_time &gt;= #{params.beginselectedStudentTime}
+		</if>
+		<if test="params.endselectedStudentTime != null and params.endselectedStudentTime != ''"><!-- 结束时间检索 -->
+			AND u.selected_student_time &lt;= #{params.endselectedStudentTime}
+		</if>
+		<if test="params.beginjoinOrgTime != null and params.beginjoinOrgTime != ''"><!-- 开始时间检索 -->
+			AND u.join_org_time &gt;= #{params.beginjoinOrgTime}
+		</if>
+		<if test="params.endjoinOrgTime != null and params.endjoinOrgTime != ''"><!-- 结束时间检索 -->
+			AND u.join_org_time &lt;= #{params.endjoinOrgTime}
+		</if>
+		<if test="params.beginpartyJoinTime != null and params.beginpartyJoinTime != ''"><!-- 开始时间检索 -->
+			AND u.party_join_time &gt;= #{params.beginpartyJoinTime}
+		</if>
+		<if test="params.endpartyJoinTime != null and params.endpartyJoinTime != ''"><!-- 结束时间检索 -->
+			AND u.party_join_time &lt;= #{params.endpartyJoinTime}
+		</if>
+		<if test="params.beginstartWorkTime != null and params.beginstartWorkTime != ''"><!-- 开始时间检索 -->
+			AND u.start_work_time &gt;= #{params.beginstartWorkTime}
+		</if>
+		<if test="params.endstartWorkTime != null and params.endstartWorkTime != ''"><!-- 结束时间检索 -->
+			AND u.start_work_time &lt;= #{params.endstartWorkTime}
+		</if>
+		<if test="params.beginworkPostTime != null and params.beginworkPostTime != ''"><!-- 开始时间检索 -->
+			AND u.work_post_time &gt;= #{params.beginworkPostTime}
+		</if>
+		<if test="params.endworkPostTime != null and params.endworkPostTime != ''"><!-- 结束时间检索 -->
+			AND u.work_post_time &lt;= #{params.endworkPostTime}
+		</if>
+		<if test="params.beginworkTitleTime != null and params.beginworkTitleTime != ''"><!-- 开始时间检索 -->
+			AND u.work_title_time &gt;= #{params.beginworkTitleTime}
+		</if>
+		<if test="params.endworkTitleTime != null and params.endworkTitleTime != ''"><!-- 结束时间检索 -->
+			AND u.work_title_time &lt;= #{params.endworkTitleTime}
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and params.workUnitAndPosition != null and params.workUnitAndPosition != ''"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%') and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+		<if test="params.familyMembersName != null and params.familyMembersName != '' and (params.workUnitAndPosition == null or params.workUnitAndPosition == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.family_members_name like concat('%', #{params.familyMembersName}, '%')
+			)
+		</if>
+		<if test="params.workUnitAndPosition != null and params.workUnitAndPosition != '' and (params.familyMembersName == null or params.familyMembersName == '')"><!-- 家庭成员信息 -->
+			AND exists(
+			select 1 from sys_user_family_member_social_info f
+			where
+			u.user_id = f.user_id and f.work_unit_and_position like concat('%', #{params.workUnitAndPosition}, '%')
+			)
+		</if>
+
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and params.professionalName != null and params.professionalName != ''"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%') and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<if test="params.schoolAndDepartment != null and params.schoolAndDepartment != '' and (params.professionalName == null or params.professionalName == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.school_and_department like concat('%', #{params.schoolAndDepartment}, '%')
+			)
+		</if>
+		<if test="params.professionalName != null and params.professionalName != '' and (params.schoolAndDepartment == null or params.schoolAndDepartment == '')"><!-- 学历信息 -->
+			AND exists(
+			select 1 from sys_user_education_and_degree_info e
+			where
+			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
+			)
+		</if>
+		<!-- 数据范围过滤 -->
+		${params.dataScope}
+
+		order by  u.sequence asc, ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ) asc nulls last
+	</select>
+
+	<update id="recoverUserByIds" parameterType="Long">
+		update sys_user set del_flag = '0' where user_id in
+		<foreach collection="array" item="userId" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</update>
+
+	<delete id="completelyDeleteUserByIds" parameterType="Long">
+		delete from sys_user  where user_id in
+		<foreach collection="array" item="userId" open="(" separator="," close=")">
+			#{userId}
+		</foreach>
+	</delete>
+
+	<update id="recoverAllUserByIds" >
+		update sys_user u  set u.del_flag = '0' where u.del_flag = '2'
+	</update>
+
+	<delete id="completelyDeleteAllUser">
+		delete from sys_user   where del_flag = '2'
+	</delete>
+
+</mapper>

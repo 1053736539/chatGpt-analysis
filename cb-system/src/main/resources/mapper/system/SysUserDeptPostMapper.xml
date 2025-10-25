@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysUserDeptPostMapper">
+
+    <resultMap type="UserDeptPost" id="UserDeptPostResult">
+        <result property="userId"    column="user_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="postId"    column="post_id"    />
+    </resultMap>
+
+    <sql id="selectSysUserDeptVo">
+        select user_id, dept_id from sys_user_dept_post
+    </sql>
+    <select id="selectByUserId" resultMap="UserDeptPostResult">
+        select user_id, dept_id,post_id from sys_user_dept_post where user_id = #{userId}
+    </select>
+    <select id="selectAssociationInfo" resultType="com.cb.system.domain.vo.DeptPostVo">
+        <!--select a.user_id   as deptId,
+               a.dept_id   as deptId,
+               d.dept_name as deptName,
+               a.post_id as postId,
+               p.post_name as postName,
+               false as online
+        from sys_user_dept_post AS a
+                 join sys_dept as d on a.dept_id = d.dept_id
+                 left join sys_post as p on a.post_id = p.post_id
+        where a.user_id = #{userId}-->
+
+        select a.user_id   as deptId,
+               a.dept_id   as deptId,
+               d.dept_name as deptName,
+               a.post_id as postId,
+               p.post_name as postName,
+               false as online,
+               u.work_post as workPost,
+               u.work_title as workTitle
+        from sys_user as  u
+                 left join sys_user_dept_post AS a on u.user_id = a.user_id
+                 join sys_dept as d on a.dept_id = d.dept_id
+                 left join sys_post as p on a.post_id = p.post_id
+        where u.user_id = #{userId}
+    </select>
+
+    <insert id="batchDeptPost">
+        insert into sys_user_dept_post(user_id, dept_id,post_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.userId},#{item.deptId},#{item.postId})
+        </foreach>
+    </insert>
+
+    <insert id="insertDeptPost" parameterType="SysUserDeptPost">
+        insert into sys_user_dept_post
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null">user_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="postId != null">post_id,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null">#{userId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="postId != null">#{postId},</if>
+        </trim>
+    </insert>
+
+    <delete id="deleteByUserId">
+        delete from sys_user_dept_post where user_id=#{userId}
+    </delete>
+
+    <delete id="deleteByUserIds" parameterType="Long">
+        delete from sys_user_dept_post where user_id in
+        <foreach collection="array" item="userId" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+</mapper>

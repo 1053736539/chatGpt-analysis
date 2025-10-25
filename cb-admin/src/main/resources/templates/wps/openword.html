@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!-- Head -->
+<head>
+<meta charset="utf-8" />
+<title></title>
+<meta name="description" content="Dashboard" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<head>
+<script type="text/javascript" src="../static/wps/jquery.min.js" th:src="@{../wps/jquery.min.js}"></script>
+<script src="../static/wps/wps_sdk.js" th:src="@{../wps/wps_sdk.js}"></script>
+<script src="../static/wps/env_check.js" th:src="@{../wps/env_check.js}"></script>
+<script th:inline="javascript">
+        var openModeType = "4";
+        var serverUrl = [[${mServerUrl}]]; //服务器地址
+        var fileUrl = serverUrl + "/filemanage/attach/downloadFile?id=" + [[${fileId}]];
+        var uploadPath = serverUrl + "/wps/saveFile?fileId=" + [[${fileId}]] + "&userKey=" + [[${userKey}]];
+        var notifyUrl = serverUrl + "";
+        var redHeadsPath = serverUrl + "";
+        var sealDataPath = serverUrl + "";
+        var sealValidatePath = serverUrl + "";
+        var sealFilePath = serverUrl + "";
+        var getRedHeadPath = serverUrl + "";
+</script>
+
+</head>
+<body>
+	<div id="officediv" style="display: inline-block; float: left;"></div>
+	<form action="">
+		<input type="hidden" name="attachId" id="attachId" value="${attach.attachId}">
+	</form>
+</body>
+<script type="text/javascript">
+    $(function(){
+    	setOfficeWH();
+    	initAddsOn(serverUrl, openDoc);
+    });
+    window.onresize=function(){
+    	setOfficeWH();
+	    }
+    function setOfficeWH(){
+        $("#officediv").css("height",document.documentElement.clientHeight);
+        $("#officediv").css("width",document.documentElement.clientWidth);
+    }
+    function openDoc(){
+    	var options = {
+             "docId": "${parameter.attachId}", // 文档ID
+             "uploadPath": uploadPath, // 保存文档上传路径
+             "redHeadsPath": redHeadsPath, // 获取红头文件列表路径
+             "getRedHeadPath": getRedHeadPath, // 获取红头文件附件路径
+             "fileName": fileUrl,
+             "userName": ""
+         };
+    	if(openModeType == 4) {//编辑
+    		// options.notifyUrl = notifyUrl;
+    		// options.sealDataPath = sealDataPath;
+    		// options.sealValidatePath = sealValidatePath;
+    		// options.sealFilePath = sealFilePath;
+    		//屏蔽功能按钮
+    		// options.buttonGroups = 'btnInsertRedHeader';
+    	} else if(openModeType == 5){//套红头
+    		options.sealDataPath = sealDataPath;
+    		options.notifyUrl = notifyUrl;
+    	} else {//查看，打印
+    		//屏蔽功能按钮
+    		options.buttonGroups = 'grpWPSClound,grpWPSWork,grpOAExtend,grpRevision,grpFreqUsed';
+    	}
+    	_WpsInvoke([{
+            "OnlineEditDoc": options
+        }]) // OpenDoc方法对应于OA助手dispatcher支持的方法名
+    }
+    </script>
+</html>

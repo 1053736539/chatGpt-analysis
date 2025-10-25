@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.system.mapper.SysCommonConfigMapper">
+
+    <resultMap type="com.cb.system.domain.SysCommonConfig" id="SysCommonConfigResult">
+        <result property="id"    column="id"    />
+        <result property="enableThreeMember"    column="enable_three_member"    />
+        <result property="enablePasswordPolicy"    column="enable_password_policy"    />
+        <result property="passwordPolicy"    column="password_policy"    />
+        <result property="passwordLength"    column="password_length"    />
+        <result property="enablePasswordExpiration"    column="enable_password_expiration"    />
+        <result property="passwordExpiration"    column="password_expiration"    />
+        <result property="passwordReminderTime"    column="password_reminder_time"    />
+        <result property="enablePasswordLock"    column="enable_password_lock"    />
+        <result property="passwordErrorsNo"    column="password_errors_no"    />
+        <result property="passwordLockTime"    column="password_lock_time"    />
+        <result property="enableAutoMessage"    column="enable_auto_message"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectSysCommonConfigVo">
+        select id, enable_three_member, enable_password_policy, password_policy, password_length,enable_password_expiration, password_expiration,password_reminder_time,enable_password_lock, password_errors_no, password_lock_time,  enable_auto_message, create_by, create_time, update_by, update_time from sys_common_config
+    </sql>
+
+    <select id="selectSysCommonConfigList" parameterType="SysCommonConfig" resultMap="SysCommonConfigResult">
+        <include refid="selectSysCommonConfigVo"/>
+        <where>
+            <if test="enableThreeMember != null "> and enable_three_member = #{enableThreeMember}</if>
+            <if test="enablePasswordPolicy != null "> and enable_password_policy = #{enablePasswordPolicy}</if>
+            <if test="passwordPolicy != null "> and password_policy = #{passwordPolicy}</if>
+            <if test="passwordLength != null "> and password_length = #{passwordLength}</if>
+            <if test="enablePasswordExpiration != null "> and enable_password_expiration = #{enablePasswordExpiration}</if>
+            <if test="passwordExpiration != null "> and password_expiration = #{passwordExpiration}</if>
+            <if test="passwordReminderTime != null "> and password_reminder_time = #{passwordReminderTime}</if>
+            <if test="enablePasswordLock != null "> and enable_password_lock = #{enablePasswordLock}</if>
+            <if test="passwordErrorsNo != null "> and password_errors_no = #{passwordErrorsNo}</if>
+            <if test="passwordLockTime != null "> and password_lock_time = #{passwordLockTime}</if>
+            <if test="enableAutoMessage != null "> and enable_auto_message = #{enableAutoMessage}</if>
+        </where>
+    </select>
+
+    <select id="selectSysCommonConfigById" parameterType="Long" resultMap="SysCommonConfigResult">
+        <include refid="selectSysCommonConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertSysCommonConfig" parameterType="SysCommonConfig" useGeneratedKeys="true" keyProperty="id">
+        insert into sys_common_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="enableThreeMember != null">enable_three_member,</if>
+            <if test="enablePasswordPolicy != null">enable_password_policy,</if>
+            <if test="passwordPolicy != null">password_policy,</if>
+            <if test="passwordLength != null">password_length,</if>
+            <if test="enablePasswordExpiration != null ">enable_password_expiration,</if>
+            <if test="passwordExpiration != null">password_expiration,</if>
+            <if test="passwordReminderTime != null">password_reminder_time,</if>
+            <if test="enablePasswordLock != null ">enable_password_lock,</if>
+            <if test="passwordErrorsNo != null">password_errors_no,</if>
+            <if test="passwordLockTime != null">password_lock_time,</if>
+            <if test="enableAutoMessage != null">enable_auto_message,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="enableThreeMember != null">#{enableThreeMember},</if>
+            <if test="enablePasswordPolicy != null">#{enablePasswordPolicy},</if>
+            <if test="passwordPolicy != null">#{passwordPolicy},</if>
+            <if test="passwordLength != null">#{passwordLength},</if>
+            <if test="enablePasswordExpiration != null ">#{enablePasswordExpiration},</if>
+            <if test="passwordExpiration != null">#{passwordExpiration},</if>
+            <if test="passwordReminderTime != null">#{passwordReminderTime},</if>
+            <if test="enablePasswordLock != null ">#{enablePasswordLock},</if>
+            <if test="passwordErrorsNo != null">#{passwordErrorsNo},</if>
+            <if test="passwordLockTime != null">#{passwordLockTime},</if>
+            <if test="enableAutoMessage != null">#{enableAutoMessage},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateSysCommonConfig" parameterType="SysCommonConfig">
+        update sys_common_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="enableThreeMember != null">enable_three_member = #{enableThreeMember},</if>
+            <if test="enablePasswordPolicy != null">enable_password_policy = #{enablePasswordPolicy},</if>
+            <if test="passwordPolicy != null">password_policy = #{passwordPolicy},</if>
+            <if test="passwordLength != null">password_length = #{passwordLength},</if>
+            <if test="enablePasswordExpiration != null">enable_password_expiration = #{enablePasswordExpiration},</if>
+            <if test="passwordExpiration != null">password_expiration = #{passwordExpiration},</if>
+            <if test="passwordReminderTime != null">password_reminder_time = #{passwordReminderTime},</if>
+            <if test="enablePasswordLock != null">enable_password_lock = #{enablePasswordLock},</if>
+            <if test="passwordErrorsNo != null">password_errors_no = #{passwordErrorsNo},</if>
+            <if test="passwordLockTime != null">password_lock_time = #{passwordLockTime},</if>
+            <if test="enableAutoMessage != null">enable_auto_message = #{enableAutoMessage},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysCommonConfigById" parameterType="Long">
+        delete from sys_common_config where id = #{id}
+    </delete>
+
+    <delete id="deleteSysAppConfigByIds" parameterType="String">
+        delete from sys_common_config where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
