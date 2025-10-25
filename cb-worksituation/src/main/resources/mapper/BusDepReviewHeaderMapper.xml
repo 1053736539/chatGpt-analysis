@@ -11,6 +11,8 @@
         <result property="headType"    column="HEAD_TYPE"    />
         <result property="headScore"    column="HEAD_SCORE"    />
         <result property="busDepReviewId"    column="BUS_DEP_REVIEW_ID"    />
+        <result property="filePath"    column="FILE_PATH"    />
+        <result property="attachId"    column="ATTACH_ID"    />
         <result property="createBy"    column="CREATE_BY"    />
         <result property="createTime"    column="CREATE_TIME"    />
         <result property="updateBy"    column="UPDATE_BY"    />
@@ -59,6 +61,8 @@
             <if test="headType != null">HEAD_TYPE,</if>
             <if test="headScore != null">HEAD_SCORE,</if>
             <if test="busDepReviewId != null">BUS_DEP_REVIEW_ID,</if>
+            <if test="filePath != null">FILE_PATH,</if>
+            <if test="attachId != null">ATTACH_ID,</if>
             <if test="createBy != null">CREATE_BY,</if>
             <if test="createTime != null">CREATE_TIME,</if>
             <if test="updateBy != null">UPDATE_BY,</if>
@@ -75,6 +79,8 @@
             <if test="headType != null">#{headType},</if>
             <if test="headScore != null">#{headScore},</if>
             <if test="busDepReviewId != null">#{busDepReviewId},</if>
+            <if test="filePath != null">#{filePath},</if>
+            <if test="attachId != null">#{attachId},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
@@ -95,6 +101,8 @@
             HEAD_TYPE,
             HEAD_SCORE,
             BUS_DEP_REVIEW_ID,
+            FILE_PATH,
+            ATTACH_ID,
             CREATE_BY,
             CREATE_TIME,
             UPDATE_BY,
@@ -113,6 +121,8 @@
                 #{entity.headType},
                 #{entity.headScore},
                 #{entity.busDepReviewId},
+                #{entity.filePath},
+                #{entity.attachId},
                 #{entity.createBy},
                 #{entity.createTime},
                 #{entity.updateBy},
@@ -133,6 +143,8 @@
             <if test="headType != null">HEAD_TYPE = #{headType},</if>
             <if test="headScore != null">HEAD_SCORE = #{headScore},</if>
             <if test="busDepReviewId != null">BUS_DEP_REVIEW_ID = #{busDepReviewId},</if>
+            <if test="filePath != null">FILE_PATH = #{filePath},</if>
+            <if test="attachId != null">ATTACH_ID = #{attachId},</if>
             <if test="createBy != null">CREATE_BY = #{createBy},</if>
             <if test="createTime != null">CREATE_TIME = #{createTime},</if>
             <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>

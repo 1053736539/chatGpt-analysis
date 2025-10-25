@@ -46,6 +46,13 @@ public class BusDepReview extends BaseEntity {
     @Excel(name = "评价对象")
     private String evaluationTarget;
 
+
+    /**
+     * 状态（0 待发布 1 已发布 2 已下架）
+     */
+    @Excel(name = "状态")
+    private String busStatus;
+
     /**
      * 备注
      */

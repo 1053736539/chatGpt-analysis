@@ -5,6 +5,7 @@ import com.cb.common.core.controller.BaseController;
 import com.cb.common.core.domain.AjaxResult;
 import com.cb.common.core.page.TableDataInfo;
 import com.cb.common.enums.BusinessType;
+import com.cb.common.utils.StringUtils;
 import com.cb.common.utils.poi.ExcelUtil;
 import com.cb.worksituation.domain.BusDepReview;
 import com.cb.worksituation.service.IBusDepReviewService;
@@ -96,4 +97,23 @@ public class BusDepReviewController extends BaseController {
     public AjaxResult remove(@PathVariable String[] ids) {
         return toAjax(busDepReviewService.deleteBusDepReviewByIds(ids));
     }
+
+
+
+    /**
+     * 获取评分表表格配置信息
+     */
+    @GetMapping("/getReviewTableConfig")
+    public AjaxResult getReviewTableConfig(@RequestParam("id") String id) {
+        if (StringUtils.isBlank(id)) {
+            return AjaxResult.error("评分表ID不能为空");
+        }
+        BusDepReview busDepReview = busDepReviewService.getReviewTableConfig(id);
+        if (busDepReview == null) {
+            return AjaxResult.error("未查询到评分表信息");
+        }
+        return AjaxResult.success(busDepReview);
+    }
+
+
 }

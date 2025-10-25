@@ -1,16 +1,26 @@
 package com.cb.worksituation.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.cb.common.utils.DateUtils;
 import com.cb.common.utils.SecurityUtils;
 import com.cb.common.utils.StringUtils;
 import com.cb.common.utils.uuid.IdUtils;
+import com.cb.worksituation.domain.BusDepExpl;
 import com.cb.worksituation.domain.BusDepReview;
+import com.cb.worksituation.domain.BusDepReviewData;
+import com.cb.worksituation.domain.BusDepReviewHeader;
+import com.cb.worksituation.mapper.BusDepReviewDataMapper;
+import com.cb.worksituation.mapper.BusDepReviewHeaderMapper;
 import com.cb.worksituation.mapper.BusDepReviewMapper;
+import com.cb.worksituation.service.IBusDepExplService;
 import com.cb.worksituation.service.IBusDepReviewService;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -25,6 +35,15 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
 {
     @Autowired
     private BusDepReviewMapper busDepReviewMapper;
+
+    @Autowired
+    private BusDepReviewHeaderMapper busDepReviewHeaderMapper;
+
+    @Autowired
+    private BusDepReviewDataMapper busDepReviewDataMapper;
+
+    @Autowired
+    private IBusDepExplService busDepExplService;
 
     /**
      * 查询部门评分
@@ -149,4 +168,46 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
     {
         return busDepReviewMapper.deleteBusDepReviewById(id);
     }
+
+
+    /**
+     * 获取评分表表格配置信息
+     *
+     * @param id 评分表ID
+     * @return 包含表头和数据的评分表
+     */
+    @Override
+    public BusDepReview getReviewTableConfig(String id) {
+        if (StringUtils.isBlank(id)) {
+            return null;
+        }
+        BusDepReview busDepReview = busDepReviewMapper.selectBusDepReviewById(id);
+        if (busDepReview == null) {
+            return null;
+        }
+
+        BusDepReviewHeader headerQuery = new BusDepReviewHeader();
+        headerQuery.setBusDepReviewId(id);
+        List<BusDepReviewHeader> headerList = busDepReviewHeaderMapper.selectBusDepReviewHeaderList(headerQuery);
+        if (!CollectionUtils.isEmpty(headerList)) {
+            headerList.forEach(header -> {
+                if (StringUtils.isNotBlank(header.getBusDepExplId())) {
+                    BusDepExpl busDepExpl = busDepExplService.selectBusDepExplById(header.getBusDepExplId());
+                    header.setBusDepExpl(busDepExpl);
+                } else {
+                    header.setBusDepExpl(null);
+                }
+            });
+            headerList.sort(Comparator.comparing(BusDepReviewHeader::getHeadOrder,
+                    Comparator.nullsLast(Comparator.naturalOrder())));
+        }
+        busDepReview.setBusDepReviewHeaderList(headerList);
+
+        BusDepReviewData dataQuery = new BusDepReviewData();
+        dataQuery.setBusDepReviewId(id);
+        List<BusDepReviewData> dataList = busDepReviewDataMapper.selectBusDepReviewDataList(dataQuery);
+        busDepReview.setBusDepReviewDataList(dataList);
+        return busDepReview;
+    }
+
 }

@@ -75,4 +75,13 @@ public interface IBusDepReviewService {
      * @return 结果
      */
     public int deleteBusDepReviewById(String id);
+
+    /**
+     * 获取评分表表格配置信息
+     *
+     * @param id 评分表ID
+     * @return 包含表头和数据的评分表
+     */
+    public BusDepReview getReviewTableConfig(String id);
+
 }

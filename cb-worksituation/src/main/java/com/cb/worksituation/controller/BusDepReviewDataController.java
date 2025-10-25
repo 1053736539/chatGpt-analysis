@@ -213,8 +213,17 @@ public class BusDepReviewDataController extends BaseController {
     @Log(title = "评分数据", businessType = BusinessType.INSERT)
     @PostMapping
     public AjaxResult add(@RequestBody List<BusDepReviewData> busDepReviewDatas) {
-        return null;
-//        return toAjax(busDepReviewDataService.insertBusDepReviewData(busDepReviewDatas));
+        if (CollectionUtils.isEmpty(busDepReviewDatas)) {
+            return AjaxResult.error("新增数据不能为空");
+        }
+        int rows = 0;
+        for (BusDepReviewData busDepReviewData : busDepReviewDatas) {
+            if (busDepReviewData == null || StringUtils.isEmpty(busDepReviewData.getEvaluatTarget())) {
+                return AjaxResult.error("评价对象不能为空");
+            }
+            rows += busDepReviewDataService.insertBusDepReviewData(busDepReviewData);
+        }
+        return toAjax(rows);
     }
 
     /**

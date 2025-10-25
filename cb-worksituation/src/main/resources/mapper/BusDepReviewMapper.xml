@@ -10,6 +10,7 @@
         <result property="busName" column="BUS_NAME"/>
         <result property="divisionDept" column="DIVISION_DEPT"/>
         <result property="evaluationTarget" column="EVALUATION_TARGET"/>
+        <result property="busStatus" column="BUS_STATUS"/>
         <result property="remarks" column="REMARKS"/>
         <result property="createBy" column="CREATE_BY"/>
         <result property="createTime" column="CREATE_TIME"/>
@@ -24,6 +25,7 @@
         <result property="divisionDept" column="bdrDIVISION_DEPT"/>
         <result property="evaluationTarget" column="bdrEVALUATION_TARGET"/>
         <result property="remarks" column="bdrREMARKS"/>
+        <result property="busStatus" column="BUS_STATUS"/>
         <collection property="busDepReviewHeaderList" ofType="com.cb.worksituation.domain.BusDepReviewHeader">
             <id column="bdrhID" property="id"/>
             <result property="headCode" column="bdrhHEAD_CODE"/>
@@ -75,6 +77,7 @@
                 #{evaluationTarget}
             </if>
             <if test="remarks != null  and remarks != ''">and REMARKS = #{remarks}</if>
+            <if test="busStatus != null  and busStatus != ''">and BUS_STATUS = #{busStatus}</if>
             <if test="createBy != null  and createBy != ''">and CREATE_BY = #{createBy}</if>
             <if test="createTime != null ">and CREATE_TIME = #{createTime}</if>
             <if test="updateBy != null  and updateBy != ''">and UPDATE_BY = #{updateBy}</if>
@@ -90,6 +93,7 @@
                bdr.BUS_NAME           bdrBUS_NAME,
                bdr.DIVISION_DEPT      bdrDIVISION_DEPT,
                bdr.EVALUATION_TARGET  bdrEVALUATION_TARGET,
+               bdr.BUS_STATUS         bdrBUS_STATUS,
                bdr.REMARKS            bdrREMARKS,
                bdrh.ID                bdrhID,
                bdrh.HEAD_CODE         bdrhHEAD_CODE,
@@ -127,6 +131,7 @@
             <if test="busName != null">BUS_NAME,</if>
             <if test="divisionDept != null">DIVISION_DEPT,</if>
             <if test="evaluationTarget != null">EVALUATION_TARGET,</if>
+            <if test="busStatus != null">BUS_STATUS,</if>
             <if test="remarks != null">REMARKS,</if>
             <if test="createBy != null">CREATE_BY,</if>
             <if test="createTime != null">CREATE_TIME,</if>
@@ -155,6 +160,7 @@
             BUS_NAME,
             DIVISION_DEPT,
             EVALUATION_TARGET,
+            BUS_STATUS,
             REMARKS,
             CREATE_BY,
             CREATE_TIME,
@@ -169,6 +175,7 @@
                 #{entity.busName},
                 #{entity.divisionDept},
                 #{entity.evaluationTarget},
+                #{entity.busStatus},
                 #{entity.remarks},
                 #{entity.createBy},
                 #{entity.createTime},
@@ -185,6 +192,7 @@
             <if test="busName != null">BUS_NAME = #{busName},</if>
             <if test="divisionDept != null">DIVISION_DEPT = #{divisionDept},</if>
             <if test="evaluationTarget != null">EVALUATION_TARGET = #{evaluationTarget},</if>
+            <if test="busStatus != null">BUS_STATUS = #{busStatus},</if>
             <if test="remarks != null">REMARKS = #{remarks},</if>
             <if test="createBy != null">CREATE_BY = #{createBy},</if>
             <if test="createTime != null">CREATE_TIME = #{createTime},</if>

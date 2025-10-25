@@ -69,7 +69,6 @@ public class BusDepReviewHeader extends BaseEntity {
     private String busDepExplId;
 
 
-
     /**
      * 是否多部门打分（1-是，2-否）
      */
@@ -77,6 +76,17 @@ public class BusDepReviewHeader extends BaseEntity {
     private Integer multDeptScore;
 
 
+    /**
+     * 文件路径
+     */
+    @Excel(name = "文件路径")
+    private String filePath;
+
+    /**
+     * 文件索引id
+     */
+    @Excel(name = "文件索引id")
+    private String attachId;
     /**
      * 评分说明
      */
@@ -171,5 +181,20 @@ public class BusDepReviewHeader extends BaseEntity {
         this.multDeptScore = multDeptScore;
     }
 
+    public String getFilePath() {
+        return filePath;
+    }
+
+    public void setFilePath(String filePath) {
+        this.filePath = filePath;
+    }
+
+    public String getAttachId() {
+        return attachId;
+    }
+
+    public void setAttachId(String attachId) {
+        this.attachId = attachId;
+    }
 
 }

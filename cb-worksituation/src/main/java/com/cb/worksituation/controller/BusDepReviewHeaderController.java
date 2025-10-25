@@ -13,10 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -39,6 +36,10 @@ public class BusDepReviewHeaderController extends BaseController {
     public TableDataInfo list(BusDepReviewHeader busDepReviewHeader) {
         startPage();
         List<BusDepReviewHeader> list = busDepReviewHeaderService.selectBusDepReviewHeaderList(busDepReviewHeader);
+        if (!CollectionUtils.isEmpty(list)) {
+            list.sort(Comparator.comparing(BusDepReviewHeader::getHeadOrder,
+                    Comparator.nullsLast(Comparator.naturalOrder())));
+        }
         return getDataTable(list);
     }
 
