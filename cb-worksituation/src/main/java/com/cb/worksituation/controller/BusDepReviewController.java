@@ -115,5 +115,27 @@ public class BusDepReviewController extends BaseController {
         return AjaxResult.success(busDepReview);
     }
 
+    /**
+     * 查询当前用户可操作的部门评分列表
+     */
+    @GetMapping("/isOptionalFill")
+    public TableDataInfo listForCurrentUser(BusDepReview busDepReview) {
+        startPage();
+        List<BusDepReview> list = busDepReviewService.selectBusDepReviewListForCurrentUser(busDepReview);
+        return getDataTable(list);
+    }
+
+    /**
+     * 判断是否配置了表头数据
+     */
+    @GetMapping("/hasHeader")
+    public AjaxResult hasHeader(@RequestParam("id") String id) {
+        if (StringUtils.isBlank(id)) {
+            return AjaxResult.error("评分表ID不能为空");
+        }
+        boolean hasHeader = busDepReviewService.existsReviewHeaders(id);
+        return AjaxResult.success(hasHeader);
+    }
+
 
 }

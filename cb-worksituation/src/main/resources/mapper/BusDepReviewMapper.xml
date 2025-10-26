@@ -59,6 +59,7 @@
                BUS_NAME,
                DIVISION_DEPT,
                EVALUATION_TARGET,
+               BUS_STATUS,
                REMARKS,
                CREATE_BY,
                CREATE_TIME,
@@ -214,4 +215,71 @@
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectBusDepReviewListByEvaluatTargets" resultMap="BusDepReviewResult">
+        SELECT bdr.ID,
+        bdr.BUS_YEAR,
+        bdr.BUS_NAME,
+        bdr.DIVISION_DEPT,
+        bdr.EVALUATION_TARGET,
+        bdr.BUS_STATUS,
+        bdr.REMARKS,
+        bdr.CREATE_BY,
+        bdr.CREATE_TIME,
+        bdr.UPDATE_BY,
+        bdr.UPDATE_TIME
+        FROM BUS_DEP_REVIEW bdr
+        <where>
+            <if test="busDepReview != null and busDepReview.busYear != null  and busDepReview.busYear != ''">
+                AND bdr.BUS_YEAR = #{busDepReview.busYear}
+            </if>
+            <if test="busDepReview != null and busDepReview.busName != null  and busDepReview.busName != ''">
+                AND bdr.BUS_NAME like concat('%', #{busDepReview.busName}, '%')
+            </if>
+            <if test="busDepReview != null and busDepReview.divisionDept != null  and busDepReview.divisionDept != ''">
+                AND bdr.DIVISION_DEPT = #{busDepReview.divisionDept}
+            </if>
+            <if test="busDepReview != null and busDepReview.remarks != null  and busDepReview.remarks != ''">
+                AND bdr.REMARKS = #{busDepReview.remarks}
+            </if>
+            <if test="busDepReview != null and busDepReview.busStatus != null  and busDepReview.busStatus != ''">
+                AND bdr.BUS_STATUS = #{busDepReview.busStatus}
+            </if>
+            <if test="busDepReview != null and busDepReview.createBy != null  and busDepReview.createBy != ''">
+                AND bdr.CREATE_BY = #{busDepReview.createBy}
+            </if>
+            <if test="busDepReview != null and busDepReview.createTime != null ">
+                AND bdr.CREATE_TIME = #{busDepReview.createTime}
+            </if>
+            <if test="busDepReview != null and busDepReview.updateBy != null  and busDepReview.updateBy != ''">
+                AND bdr.UPDATE_BY = #{busDepReview.updateBy}
+            </if>
+            <if test="busDepReview != null and busDepReview.updateTime != null ">
+                AND bdr.UPDATE_TIME = #{busDepReview.updateTime}
+            </if>
+            <if test="busDepReview != null and busDepReview.params != null and busDepReview.params.dataScope != null">
+                ${busDepReview.params.dataScope}
+            </if>
+            <if test="evaluatTargets != null and evaluatTargets.size() > 0">
+                AND EXISTS (
+                SELECT 1
+                FROM BUS_DEP_REVIEW_HEADER hdr
+                JOIN BUS_DEP_EXPL e
+                ON e.ID = hdr.BUS_DEP_EXPL_ID
+                WHERE hdr.BUS_DEP_REVIEW_ID = bdr.ID
+                AND e.EVALUATION_DEPT IN
+                <foreach collection="evaluatTargets" item="target" open="(" separator="," close=")">
+                    #{target}
+                </foreach>
+                )
+            </if>
+        </where>
+    </select>
+
+    <select id="countHeadersByReviewId" parameterType="String" resultType="int">
+        SELECT COUNT(1)
+        FROM BUS_DEP_REVIEW_HEADER
+        WHERE BUS_DEP_REVIEW_ID = #{reviewId}
+    </select>
+
 </mapper>

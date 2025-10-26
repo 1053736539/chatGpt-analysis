@@ -77,4 +77,24 @@ public interface BusDepReviewMapper
      * @return 结果
      */
     public int deleteBusDepReviewByIds(String[] ids);
+
+
+    /**
+     * 根据评价对象筛选部门评分列表
+     *
+     * @param busDepReview   部门评分查询条件
+     * @param evaluatTargets 评价对象集合
+     * @return 部门评分集合
+     */
+    public List<BusDepReview> selectBusDepReviewListByEvaluatTargets(@Param("busDepReview") BusDepReview busDepReview, @Param("evaluatTargets") List<String> evaluatTargets);
+
+
+    /**
+     * 统计评分表的表头数量
+     *
+     * @param reviewId 评分表ID
+     * @return 表头数量
+     */
+    int countHeadersByReviewId(@Param("reviewId") String reviewId);
+
 }

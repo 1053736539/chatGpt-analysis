@@ -2,10 +2,13 @@ package com.cb.worksituation.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.cb.common.core.domain.entity.SysDept;
+import com.cb.common.core.domain.model.LoginUser;
 import com.cb.common.utils.DateUtils;
 import com.cb.common.utils.SecurityUtils;
 import com.cb.common.utils.StringUtils;
 import com.cb.common.utils.uuid.IdUtils;
+import com.cb.system.service.ISysDeptService;
 import com.cb.worksituation.domain.BusDepExpl;
 import com.cb.worksituation.domain.BusDepReview;
 import com.cb.worksituation.domain.BusDepReviewData;
@@ -19,10 +22,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 部门评分Service业务层处理
@@ -44,6 +44,9 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
 
     @Autowired
     private IBusDepExplService busDepExplService;
+
+    @Autowired
+    private ISysDeptService sysDeptService;
 
     /**
      * 查询部门评分
@@ -209,5 +212,60 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
         busDepReview.setBusDepReviewDataList(dataList);
         return busDepReview;
     }
+
+    @Override
+    public List<BusDepReview> selectBusDepReviewListForCurrentUser(BusDepReview busDepReview) {
+        if (busDepReview == null) {
+            busDepReview = new BusDepReview();
+        }
+        busDepReview.setBusStatus("1");
+
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        Long userId = loginUser.getUser().getUserId();
+        if (SecurityUtils.isAdmin(userId)) {
+            String originalEvaluationTarget = busDepReview.getEvaluationTarget();
+            try {
+                busDepReview.setEvaluationTarget(null);
+                return busDepReviewMapper.selectBusDepReviewList(busDepReview);
+            } finally {
+                busDepReview.setEvaluationTarget(originalEvaluationTarget);
+            }
+        }
+
+        Set<String> targetDeptNames = new HashSet<>();
+        SysDept dept = loginUser.getUser().getDept();
+        if (dept != null && StringUtils.isNotBlank(dept.getDeptName())) {
+            targetDeptNames.add(dept.getDeptName());
+        }
+        if (StringUtils.isNotBlank(loginUser.getUser().getDeptName())) {
+            targetDeptNames.add(loginUser.getUser().getDeptName());
+        }
+
+        List<SysDept> chargeDepts = sysDeptService.selectChargeDeptList(userId);
+        if (CollectionUtils.isNotEmpty(chargeDepts)) {
+            chargeDepts.stream()
+                    .map(SysDept::getDeptName)
+                    .filter(StringUtils::isNotBlank)
+                    .forEach(targetDeptNames::add);
+        }
+
+        if (targetDeptNames.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        return busDepReviewMapper.selectBusDepReviewListByEvaluatTargets(busDepReview, new ArrayList<>(targetDeptNames));
+    }
+
+
+
+    @Override
+    public boolean existsReviewHeaders(String reviewId) {
+        if (StringUtils.isBlank(reviewId)) {
+            return false;
+        }
+        return busDepReviewMapper.countHeadersByReviewId(reviewId) > 0;
+    }
+
+
 
 }

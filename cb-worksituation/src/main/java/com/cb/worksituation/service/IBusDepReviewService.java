@@ -2,6 +2,7 @@ package com.cb.worksituation.service;
 
 
 import com.cb.worksituation.domain.BusDepReview;
+import io.lettuce.core.dynamic.annotation.Param;
 
 import java.util.List;
 
@@ -83,5 +84,21 @@ public interface IBusDepReviewService {
      * @return 包含表头和数据的评分表
      */
     public BusDepReview getReviewTableConfig(String id);
+
+    /**
+     * 查询当前登录用户可操作的部门评分列表
+     *
+     * @param busDepReview 部门评分查询条件
+     * @return 部门评分集合
+     */
+    public List<BusDepReview> selectBusDepReviewListForCurrentUser(BusDepReview busDepReview);
+
+    /**
+     * 判断评分表是否配置了表头数据
+     *
+     * @param reviewId 评分表ID
+     * @return true 表示存在表头数据
+     */
+    boolean existsReviewHeaders(String reviewId);
 
 }
