@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.leave.calendar.mapper.CalendarMapper">
+
+    <resultMap type="Calendar" id="CalendarResult">
+        <result property="id"    column="ID"    />
+        <result property="year"    column="YEAR"    />
+        <result property="month"    column="MONTH"    />
+        <result property="day"    column="DAY"    />
+        <result property="lunarYear"    column="LUNAR_YEAR"    />
+        <result property="lunarMonth"    column="LUNAR_MONTH"    />
+        <result property="lunarDate"    column="LUNAR_DATE"    />
+        <result property="lMonth"    column="L_MONTH"    />
+        <result property="lDate"    column="L_DATE"    />
+        <result property="gzYear"    column="GZ_YEAR"    />
+        <result property="gzMonth"    column="GZ_MONTH"    />
+        <result property="gzDate"    column="GZ_DATE"    />
+        <result property="animal"    column="ANIMAL"    />
+        <result property="cnDay"    column="CN_DAY"    />
+        <result property="isBigMonth"    column="IS_BIG_MONTH"    />
+        <result property="term"    column="TERM"    />
+        <result property="status"    column="STATUS"    />
+        <result property="type"    column="TYPE"    />
+        <result property="yjFrom"    column="YJ_FROM"    />
+    </resultMap>
+
+    <sql id="selectCalendarVo">
+        select ID, YEAR, MONTH, DAY, LUNAR_YEAR, LUNAR_MONTH, LUNAR_DATE,
+               L_MONTH, L_DATE, GZ_YEAR, GZ_MONTH, GZ_DATE, ANIMAL, CN_DAY, IS_BIG_MONTH, TERM, STATUS, TYPE, YJ_FROM from calendar
+    </sql>
+
+    <select id="selectCalendarList" parameterType="Calendar" resultMap="CalendarResult">
+        <include refid="selectCalendarVo"/>
+        <where>
+            <if test="year != null "> and YEAR= #{year}</if>
+            <if test="month != null "> and MONTH = #{month}</if>
+            <if test="day != null "> and DAY = #{day}</if>
+            <if test="lunarYear != null  and lunarYear != ''"> and LUNAR_YEAR = #{lunarYear}</if>
+            <if test="lunarMonth != null  and lunarMonth != ''"> and LUNAR_MONTH = #{lunarMonth}</if>
+            <if test="lunarDate != null  and lunarDate != ''"> and LUNAR_DATE = #{lunarDate}</if>
+            <if test="lMonth != null  and lMonth != ''"> and L_MONTH = #{lMonth}</if>
+            <if test="lDate != null  and lDate != ''"> and L_DATE = #{lDate}</if>
+            <if test="gzYear != null  and gzYear != ''"> and GZ_YEAR = #{gzYear}</if>
+            <if test="gzMonth != null  and gzMonth != ''"> and GZ_MONTH = #{gzMonth}</if>
+            <if test="gzDate != null  and gzDate != ''"> and GZ_DATE = #{gzDate}</if>
+            <if test="animal != null  and animal != ''"> and ANIMAL = #{animal}</if>
+            <if test="cnDay != null  and cnDay != ''"> and CN_DAY = #{cnDay}</if>
+            <if test="isBigMonth != null  and isBigMonth != ''"> and IS_BIG_MONTH = #{isBigMonth}</if>
+            <if test="term != null  and term != ''"> and TERM = #{term}</if>
+            <if test="status != null  and status != ''"> and STATUS = #{status}</if>
+            <if test="type != null  and type != ''"> and TYPE = #{type}</if>
+            <if test="yjFrom != null  and yjFrom != ''"> and YJ_FROM = #{yjFrom}</if>
+        </where>
+    </select>
+    <select id="selectCalendarListByInterval" parameterType="Calendar" resultMap="CalendarResult">
+        <include refid="selectCalendarVo"/>
+        <where>
+            <if test="start != null "> and id >= #{start}</if>
+            <if test="end != null "> and #{end} >= id  </if>
+        </where>
+    </select>
+
+    <select id="selectCalendarById" parameterType="Integer" resultMap="CalendarResult">
+        <include refid="selectCalendarVo"/>
+        where ID = #{id}
+    </select>
+
+    <insert id="insertCalendar" parameterType="Calendar">
+        insert into calendar
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">ID,</if>
+            <if test="year != null">YEAR,</if>
+            <if test="month != null">MONTH,</if>
+            <if test="day != null">DAY,</if>
+            <if test="lunarYear != null">LUNAR_YEAR,</if>
+            <if test="lunarMonth != null">LUNAR_MONTH,</if>
+            <if test="lunarDate != null">LUNAR_DATE,</if>
+            <if test="lMonth != null">L_MONTH,</if>
+            <if test="lDate != null">L_DATE,</if>
+            <if test="gzYear != null">GZ_YEAR,</if>
+            <if test="gzMonth != null">GZ_MONTH,</if>
+            <if test="gzDate != null">GZ_DATE,</if>
+            <if test="animal != null">ANIMAL,</if>
+            <if test="cnDay != null">CN_DAY,</if>
+            <if test="isBigMonth != null">IS_BIG_MONTH,</if>
+            <if test="term != null">TERM,</if>
+            <if test="status != null">STATUS,</if>
+            <if test="type != null">TYPE,</if>
+            <if test="yjFrom != null">YJ_FROM,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="year != null">#{year},</if>
+            <if test="month != null">#{month},</if>
+            <if test="day != null">#{day},</if>
+            <if test="lunarYear != null">#{lunarYear},</if>
+            <if test="lunarMonth != null">#{lunarMonth},</if>
+            <if test="lunarDate != null">#{lunarDate},</if>
+            <if test="lMonth != null">#{lMonth},</if>
+            <if test="lDate != null">#{lDate},</if>
+            <if test="gzYear != null">#{gzYear},</if>
+            <if test="gzMonth != null">#{gzMonth},</if>
+            <if test="gzDate != null">#{gzDate},</if>
+            <if test="animal != null">#{animal},</if>
+            <if test="cnDay != null">#{cnDay},</if>
+            <if test="isBigMonth != null">#{isBigMonth},</if>
+            <if test="term != null">#{term},</if>
+            <if test="status != null">#{status},</if>
+            <if test="type != null">#{type},</if>
+            <if test="yjFrom != null">#{yjFrom},</if>
+        </trim>
+    </insert>
+    <insert id="insertCalendarBatch">
+        MERGE INTO calendar T1
+        USING (
+        <foreach collection="list" item="calendar" index="index" separator="UNION ALL">
+            SELECT
+            #{calendar.id} id,
+            #{calendar.year} year,
+            #{calendar.month} month,
+            #{calendar.day} day,
+            #{calendar.lunarYear} lunar_year,
+            #{calendar.lunarMonth} lunar_month,
+            #{calendar.lunarDate} lunar_date,
+            #{calendar.lMonth} l_month,
+            #{calendar.lDate} l_date,
+            #{calendar.gzYear} gz_year,
+            #{calendar.gzMonth} gz_month,
+            #{calendar.gzDate} gz_date,
+            #{calendar.animal} animal,
+            #{calendar.cnDay} cn_day,
+            #{calendar.isBigMonth} is_big_month,
+            #{calendar.term} term,
+            #{calendar.status} status,
+            #{calendar.type} type,
+            #{calendar.yjFrom} yj_from
+            FROM dual
+        </foreach>
+        ) T2 ON (T1.id = T2.id )
+        WHEN NOT MATCHED THEN INSERT
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            ID,YEAR,MONTH,DAY,LUNAR_YEAR,LUNAR_MONTH,LUNAR_DATE,L_MONTH,L_DATE,GZ_YEAR,GZ_MONTH,GZ_DATE,ANIMAL,
+            CN_DAY,IS_BIG_MONTH,TERM,STATUS,TYPE,YJ_FROM
+        </trim>
+        values (T2.id,T2.year,T2.month,T2.day,T2.lunar_year,T2.lunar_month,T2.lunar_date,T2.l_month,T2.l_date,T2.gz_year,T2.gz_month,T2.gz_date,T2.animal,
+            T2.cn_day,T2.is_big_month,T2.term,T2.status,T2.type,T2.yj_from)
+        WHEN MATCHED THEN UPDATE SET
+         T1.YEAR = T2.year,
+            T1.MONTH = T2.month,
+            T1.DAY = T2.day,
+            T1.LUNAR_YEAR = T2.lunar_year,
+            T1.LUNAR_MONTH = T2.lunar_month,
+            T1.LUNAR_DATE = T2.lunar_date,
+            T1.L_MONTH = T2.l_month,
+            T1.L_DATE = T2.l_date,
+            T1.GZ_YEAR = T2.gz_year,
+            T1.GZ_MONTH = T2.gz_month,
+            T1.GZ_DATE = T2.gz_date,
+            T1.ANIMAL = T2.animal,
+            T1.CN_DAY = T2.cn_day,
+            T1.IS_BIG_MONTH = T2.is_big_month,
+            T1.TERM = T2.term,
+            T1.STATUS = T2.status,
+            T1.TYPE = T2.type,
+            T1.YJ_FROM = T2.yj_from
+
+    </insert>
+
+    <select id="countCalendar"  resultType="int">
+        select count(1)
+        from calendar
+        where YEAR = #{year}
+        <if test="month != null">
+            and MONTH = #{month}
+        </if>
+    </select>
+
+    <update id="updateCalendar" parameterType="Calendar">
+        update calendar
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="year != null">YEAR = #{year},</if>
+            <if test="month != null">MONTH = #{month},</if>
+            <if test="day != null">DAY = #{day},</if>
+            <if test="lunarYear != null">LUNAR_YEAR = #{lunarYear},</if>
+            <if test="lunarMonth != null">LUNAR_MONTH = #{lunarMonth},</if>
+            <if test="lunarDate != null">LUNAR_DATE = #{lunarDate},</if>
+            <if test="lMonth != null">L_MONTH = #{lMonth},</if>
+            <if test="lDate != null">L_DATE = #{lDate},</if>
+            <if test="gzYear != null">GZ_YEAR = #{gzYear},</if>
+            <if test="gzMonth != null">GZ_MONTH = #{gzMonth},</if>
+            <if test="gzDate != null">GZ_DATE = #{gzDate},</if>
+            <if test="animal != null">ANIMAL = #{animal},</if>
+            <if test="cnDay != null">CN_DAY = #{cnDay},</if>
+            <if test="isBigMonth != null">IS_BIG_MONTH = #{isBigMonth},</if>
+            <if test="term != null">TERM = #{term},</if>
+            <if test="status != null">STATUS = #{status},</if>
+            <if test="type != null">TYPE = #{type},</if>
+            <if test="yjFrom != null">YJ_FROM = #{yjFrom},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteCalendarById" parameterType="Integer">
+        delete from calendar where ID = #{id}
+    </delete>
+
+    <delete id="deleteCalendarByIds" parameterType="String">
+        delete from calendar where ID in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

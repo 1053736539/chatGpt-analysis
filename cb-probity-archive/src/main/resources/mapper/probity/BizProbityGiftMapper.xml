@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityGiftMapper">
+
+    <resultMap type="BizProbityGift" id="BizProbityGiftResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="rejectionSubmitAmount" column="rejection_submit_amount"/>
+        <result property="giftName" column="gift_name"/>
+        <result property="giftNum" column="gift_num"/>
+        <result property="giftEquivalentValue" column="gift_equivalent_value"/>
+        <result property="giftTime" column="gift_time"/>
+        <result property="submitDept" column="submit_dept"/>
+    </resultMap>
+
+    <sql id="selectBizProbityGiftVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               rejection_submit_amount,
+               gift_name,
+               gift_num,
+               gift_equivalent_value,
+               gift_time,
+               submit_dept
+        from biz_probity_gift
+    </sql>
+
+    <select id="selectBizProbityGiftList" parameterType="BizProbityGift" resultMap="BizProbityGiftResult">
+        <include refid="selectBizProbityGiftVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="rejectionSubmitAmount != null  and rejectionSubmitAmount != ''">and rejection_submit_amount =
+                #{rejectionSubmitAmount}
+            </if>
+            <if test="giftName != null  and giftName != ''">and gift_name like concat('%', #{giftName}, '%')</if>
+            <if test="giftNum != null  and giftNum != ''">and gift_num = #{giftNum}</if>
+            <if test="giftEquivalentValue != null  and giftEquivalentValue != ''">and gift_equivalent_value =
+                #{giftEquivalentValue}
+            </if>
+            <if test="giftTime != null  and giftTime != ''">and gift_time = #{giftTime}</if>
+            <if test="submitDept != null  and submitDept != ''">and submit_dept = #{submitDept}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityGiftById" parameterType="String" resultMap="BizProbityGiftResult">
+        <include refid="selectBizProbityGiftVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityGift" parameterType="BizProbityGift">
+        insert into biz_probity_gift
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="rejectionSubmitAmount != null">rejection_submit_amount,</if>
+            <if test="giftName != null">gift_name,</if>
+            <if test="giftNum != null">gift_num,</if>
+            <if test="giftEquivalentValue != null">gift_equivalent_value,</if>
+            <if test="giftTime != null">gift_time,</if>
+            <if test="submitDept != null">submit_dept,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="rejectionSubmitAmount != null">#{rejectionSubmitAmount},</if>
+            <if test="giftName != null">#{giftName},</if>
+            <if test="giftNum != null">#{giftNum},</if>
+            <if test="giftEquivalentValue != null">#{giftEquivalentValue},</if>
+            <if test="giftTime != null">#{giftTime},</if>
+            <if test="submitDept != null">#{submitDept},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_gift
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            rejection_submit_amount,
+            gift_name,
+            gift_num,
+            gift_equivalent_value,
+            gift_time,
+            submit_dept,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.rejectionSubmitAmount},
+                #{entity.giftName},
+                #{entity.giftNum},
+                #{entity.giftEquivalentValue},
+                #{entity.giftTime},
+                #{entity.submitDept},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityGift" parameterType="BizProbityGift">
+        update biz_probity_gift
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="rejectionSubmitAmount != null">rejection_submit_amount = #{rejectionSubmitAmount},</if>
+            <if test="giftName != null">gift_name = #{giftName},</if>
+            <if test="giftNum != null">gift_num = #{giftNum},</if>
+            <if test="giftEquivalentValue != null">gift_equivalent_value = #{giftEquivalentValue},</if>
+            <if test="giftTime != null">gift_time = #{giftTime},</if>
+            <if test="submitDept != null">submit_dept = #{submitDept},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityGiftById" parameterType="String">
+        delete
+        from biz_probity_gift
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityGiftByIds" parameterType="String">
+        delete from biz_probity_gift where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

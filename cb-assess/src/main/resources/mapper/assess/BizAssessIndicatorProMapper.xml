@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessIndicatorProMapper">
+
+    <resultMap type="BizAssessIndicatorPro" id="BizAssessIndicatorProResult">
+        <result property="proId" column="pro_id"/>
+        <result property="proName" column="pro_name"/>
+        <result property="dutyUnit" column="duty_unit"/>
+        <result property="proIsmId" column="pro_ism_id"/>
+        <result property="special" column="special"/>
+        <result property="personnelType" column="personnel_type"/>
+        <result property="proCycle" column="pro_cycle"/>
+        <result property="proYear" column="pro_year"/>
+        <result property="score" column="score"/>
+        <result property="proDesc" column="pro_desc"/>
+        <result property="status" column="status"/>
+        <result property="auditOption" column="audit_option"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="proFileId" column="pro_file_id"/>
+        <result property="proWorkTipFileId" column="pro_work_tip_file_id"/>
+        <association property="ism" javaType="BizAssessIndicatorIsm">
+            <result property="ismName" column="ism_name"/>
+        </association>
+    </resultMap>
+    <resultMap id="BizAssessIndicatorProRelatedResult" type="BizAssessIndicatorPro" extends="BizAssessIndicatorProResult">
+        <collection property="dutyList"  column="{proId=pro_id}" select="selectDutyByProId"/>
+        <collection property="ratGroupList"  column="{proId=pro_id}" select="selectRatGroupByProId"/>
+        <collection property="procedureList" column="{proId=pro_id}" select="selectProcedureByProId"/>
+        <collection property="assessors" column="{proId=pro_id}" select="selectAssessorsByProId"/>
+    </resultMap>
+    <select id="selectDutyByProId" resultMap="BizAssessIndicatorProDutyResult">
+        select  b.type,b.dept_id,
+               (select dept_name from sys_dept where dept_id = b.dept_id) as dept_name,
+               b.user_id
+        from biz_assess_indicator_pro_duty b
+                 left join biz_assess_indicator_pro a on b.pro_id = a.pro_id
+        where a.pro_id = #{proId}
+    </select>
+    <select id="selectRatGroupByProId" resultMap="BizAssessIndicatorProRatGroupResult">
+        select  c.group_id, c.name, c.dept_assess, c.weight
+        from biz_assess_indicator_pro_rat_group c
+                 left join biz_assess_indicator_pro a on c.pro_id = a.pro_id
+        where a.pro_id = #{proId}
+    </select>
+    <select id="selectProcedureByProId" resultMap="BizAssessIndicatorProProcedureResult">
+        select d.procedure_id, d.name, d.step, d.enforce, d.describe
+        from biz_assess_indicator_pro_procedure d
+                 left join biz_assess_indicator_pro a on d.pro_id = a.pro_id
+        where a.pro_id = #{proId}
+    </select>
+
+    <select id="selectAssessorsByProId" resultMap="BizAssessIndicatorProAssessorsResult">
+        select d.pro_id, d.user_id
+        from biz_assess_indicator_pro_assessors d
+                 left join biz_assess_indicator_pro a on d.pro_id = a.pro_id
+        where a.pro_id = #{proId}
+    </select>
+    <!--责任部门-->
+    <resultMap type="BizAssessIndicatorProDuty" id="BizAssessIndicatorProDutyResult">
+        <result property="type"    column="type"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="userId" column="user_id"/>
+    </resultMap>
+    <!--分值权重配置-->
+    <resultMap type="BizAssessIndicatorProRatGroup" id="BizAssessIndicatorProRatGroupResult">
+        <result property="groupId" column="group_id"/>
+        <result property="name" column="name"/>
+        <result property="deptAssess" column="dept_assess"/>
+        <result property="weight" column="weight"/>
+    </resultMap>
+
+    <!--考评程序配置-->
+    <resultMap type="BizAssessIndicatorProProcedure" id="BizAssessIndicatorProProcedureResult">
+        <result property="procedureId" column="procedure_id"/>
+        <result property="name" column="name"/>
+        <result property="step" column="step"/>
+        <result property="enforce" column="enforce"/>
+        <result property="describe" column="describe"/>
+    </resultMap>
+    <resultMap type="BizAssessIndicatorProAssessors" id="BizAssessIndicatorProAssessorsResult">
+        <result property="proId" column="pro_id"/>
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <sql id="selectBizAssessIndicatorProVo">
+        select a.pro_id,
+               a.pro_name,
+               a.duty_unit,
+               a.pro_ism_id,
+               a.special,
+               a.personnel_type,
+               a.pro_cycle,
+               a.pro_year,
+               a.score,
+               a.pro_desc,
+               a.status,
+               a.audit_option,
+               a.del_flag,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.pro_file_id,
+               a.pro_work_tip_file_id,
+               b.ism_name
+        from biz_assess_indicator_pro a
+                 join biz_assess_indicator_ism b on a.pro_ism_id = b.ism_id
+    </sql>
+
+    <select id="selectBizAssessIndicatorProList" parameterType="BizAssessIndicatorPro"
+            resultMap="BizAssessIndicatorProResult">
+        <include refid="selectBizAssessIndicatorProVo"/>
+        <where>
+            <if test="proName != null  and proName != ''">and a.pro_name like concat('%', #{proName}, '%')</if>
+            <if test="dutyUnit != null ">and a.duty_unit = #{dutyUnit}</if>
+            <if test="proIsmId != null  and proIsmId != ''">and a.pro_ism_id = #{proIsmId}</if>
+            <if test="proCycle != null  and proCycle != ''">and a.pro_cycle = #{proCycle}</if>
+            <if test="proYear != null  and proYear != ''">and a.pro_year = #{proYear}</if>
+            <if test="score != null ">and a.score = #{score}</if>
+            <if test="proDesc != null  and proDesc != ''">and a.pro_desc = #{proDesc}</if>
+            <if test="status != null  and status != ''">and a.status = #{status}</if>
+            and a.del_flag = '1'
+        </where>
+        order by a.create_time desc
+    </select>
+
+    <select id="selectBizAssessIndicatorProById" parameterType="String" resultMap="BizAssessIndicatorProRelatedResult">
+        select a.pro_id,
+               a.pro_name,
+               a.duty_unit,
+               a.pro_ism_id,
+               a.special,
+               a.personnel_type,
+               a.pro_cycle,
+               a.pro_year,
+               a.score,
+               a.pro_desc,
+               a.status,
+               a.audit_option,
+               a.del_flag,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.pro_file_id,
+               a.pro_work_tip_file_id
+        from biz_assess_indicator_pro a
+        where a.pro_id = #{proId}
+    </select>
+    <select id="querySelectorList" resultMap="BizAssessIndicatorProResult">
+        <include refid="selectBizAssessIndicatorProVo"/>
+        <where>
+            <if test="special !=null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        and a.pro_cycle = #{proCycle} and a.special ='0'
+                    </when>
+                    <otherwise>
+                        and a.special ='1'
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="status != null  and status != ''">and a.status = #{status}</if>
+            and a.del_flag = '1'
+        </where>
+        order by create_time desc
+    </select>
+    <select id="selectAllProList" resultMap="BizAssessIndicatorProResult">
+        <include refid="selectBizAssessIndicatorProVo"/>
+    </select>
+
+    <insert id="insertBizAssessIndicatorPro" parameterType="BizAssessIndicatorPro">
+        insert into biz_assess_indicator_pro
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="proId != null and proId != ''">pro_id,</if>
+            <if test="proName != null and proName != ''">pro_name,</if>
+            <if test="dutyUnit != null">duty_unit,</if>
+            <if test="proIsmId != null">pro_ism_id,</if>
+            <if test="special != null and special != ''">special,</if>
+            <if test="personnelType != null and personnelType != ''">personnel_type,</if>
+            <if test="proCycle != null and proCycle != ''">pro_cycle,</if>
+            <if test="proYear != null and proYear != ''">pro_year,</if>
+            <if test="score != null">score,</if>
+            <if test="proDesc != null">pro_desc,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="auditOption != null">audit_option,</if>
+            <if test="proFileId != null">pro_file_id,</if>
+            <if test="proWorkTipFileId != null">pro_work_tip_file_id,</if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="proId != null and proId != ''">#{proId},</if>
+            <if test="proName != null and proName != ''">#{proName},</if>
+            <if test="dutyUnit != null">#{dutyUnit},</if>
+            <if test="proIsmId != null">#{proIsmId},</if>
+            <if test="special != null and special!= ''">#{special},</if>
+            <if test="personnelType != null and personnelType != ''">#{personnelType},</if>
+            <if test="proCycle != null and proCycle != ''">#{proCycle},</if>
+            <if test="proYear != null and proYear != ''">#{proYear},</if>
+            <if test="score != null">#{score},</if>
+            <if test="proDesc != null">#{proDesc},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="auditOption != null">#{auditOption},</if>
+            <if test="proFileId != null">#{proFileId},</if>
+            <if test="proWorkTipFileId != null">#{proWorkTipFileId},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssessIndicatorPro" parameterType="BizAssessIndicatorPro">
+        update biz_assess_indicator_pro
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="proName != null and proName != ''">pro_name = #{proName},</if>
+            <if test="dutyUnit != null">duty_unit = #{dutyUnit},</if>
+            <if test="proIsmId != null">pro_ism_id = #{proIsmId},</if>
+            <if test="special != null and special != ''">special = #{special},</if>
+            <if test="personnelType != null and personnelType != ''">personnel_type = #{personnelType},</if>
+            <if test="proCycle != null and proCycle != ''">pro_cycle = #{proCycle},</if>
+            <if test="proYear != null and proYear != ''">pro_year = #{proYear},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="proDesc != null">pro_desc = #{proDesc},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="auditOption != null">audit_option = #{auditOption},</if>
+            <if test="proFileId != null">pro_file_id = #{proFileId},</if>
+            <if test="proWorkTipFileId != null">pro_work_tip_file_id = #{proWorkTipFileId},</if>
+        </trim>
+        where pro_id = #{proId}
+    </update>
+    <update id="changeStatus">
+        update biz_assess_indicator_pro
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="auditOption != null">audit_option = #{auditOption},</if>
+        </trim>
+        where pro_id = #{proId}
+    </update>
+    <update id="logicDeleteBizAssessIndicatorProById">
+        update biz_assess_indicator_pro
+        set del_flag = '2'
+        where pro_id = #{proId}
+    </update>
+    <update id="logicDeleteBizAssessIndicatorProByIds">
+        update biz_assess_indicator_pro set del_flag = '2' where pro_id in
+        <foreach item="proId" collection="array" open="(" separator="," close=")">
+            #{proId}
+        </foreach>
+    </update>
+
+    <delete id="deleteBizAssessIndicatorProById" parameterType="String">
+        delete
+        from biz_assess_indicator_pro
+        where pro_id = #{proId}
+    </delete>
+
+    <delete id="deleteBizAssessIndicatorProByIds" parameterType="String">
+        delete from biz_assess_indicator_pro where pro_id in
+        <foreach item="proId" collection="array" open="(" separator="," close=")">
+            #{proId}
+        </foreach>
+    </delete>
+</mapper>

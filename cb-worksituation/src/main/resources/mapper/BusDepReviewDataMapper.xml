@@ -12,14 +12,33 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="dataJson"    column="DATA_JSON"    />
         <result property="reviewScore"    column="REVIEW_SCORE"    />
         <result property="dataStatus"    column="DATA_STATUS"    />
+        <result property="filePath"    column="FILE_PATH"    />
+        <result property="attachId"    column="ATTACH_ID"    />
         <result property="createBy"    column="CREATE_BY"    />
         <result property="createTime"    column="CREATE_TIME"    />
         <result property="updateBy"    column="UPDATE_BY"    />
         <result property="updateTime"    column="UPDATE_TIME"    />
+        <result property="subtotalQuanScore"    column="SUBTOTAL_QUAN_SCORE"    />
+        <result property="bonusSubtotal"    column="BONUS_SUBTOTAL"    />
     </resultMap>
 
     <sql id="selectBusDepReviewDataVo">
-        select ID, BUS_DEP_REVIEW_ID, EVALUAT_TARGET, ROLE_POSIT, DATA_JSON, REVIEW_SCORE, DATA_STATUS, CREATE_BY, CREATE_TIME, UPDATE_BY, UPDATE_TIME from BUS_DEP_REVIEW_DATA
+        select ID,
+               BUS_DEP_REVIEW_ID,
+               EVALUAT_TARGET,
+               ROLE_POSIT,
+               DATA_JSON,
+               FILE_PATH,
+               ATTACH_ID,
+               REVIEW_SCORE,
+               DATA_STATUS,
+               CREATE_BY,
+               CREATE_TIME,
+               UPDATE_BY,
+               UPDATE_TIME,
+               SUBTOTAL_QUAN_SCORE,
+               BONUS_SUBTOTAL
+        from BUS_DEP_REVIEW_DATA
     </sql>
 
     <select id="selectBusDepReviewDataList" parameterType="BusDepReviewData" resultMap="BusDepReviewDataResult">
@@ -35,6 +54,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
             <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
             <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+            <if test="subtotalQuanScore != null and subtotalQuanScore != ''"> and SUBTOTAL_QUAN_SCORE = #{subtotalQuanScore}</if>
+            <if test="bonusSubtotal != null and bonusSubtotal != ''"> and BONUS_SUBTOTAL = #{bonusSubtotal}</if>
         </where>
     order by REVIEW_SCORE
     </select>
@@ -45,12 +66,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="selectBusDepReviewMemberUnits" parameterType="String" resultMap="BusDepReviewDataResult">
-        SELECT ID,EVALUAT_TARGET, REVIEW_SCORE,DATA_JSON FROM BUS_DEP_REVIEW_DATA
-        WHERE BUS_DEP_REVIEW_ID=#{busDepReviewId} AND EVALUAT_TARGET in
-        <foreach item="evaluatTarget" collection="evaluatTargets" open="(" separator="," close=")">
-            #{evaluatTarget}
-        </foreach>
-
+        SELECT ID,EVALUAT_TARGET, REVIEW_SCORE,DATA_JSON,SUBTOTAL_QUAN_SCORE,BONUS_SUBTOTAL FROM BUS_DEP_REVIEW_DATA
+        WHERE BUS_DEP_REVIEW_ID=#{busDepReviewId}
+        <if test="evaluatTargets != null and !evaluatTargets.isEmpty()">
+            AND EVALUAT_TARGET IN
+            <foreach collection="evaluatTargets" item="target" open="(" separator="," close=")">
+                #{target}
+            </foreach>
+        </if>
     </select>
 
     <insert id="insertBusDepReviewData" parameterType="BusDepReviewData">
@@ -63,11 +86,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="dataJson != null">DATA_JSON,</if>
             <if test="reviewScore != null">REVIEW_SCORE,</if>
             <if test="dataStatus != null">DATA_STATUS,</if>
+            <if test="filePath != null">FILE_PATH,</if>
+            <if test="attachId != null">ATTACH_ID,</if>
             <if test="createBy != null">CREATE_BY,</if>
             <if test="createTime != null">CREATE_TIME,</if>
             <if test="updateBy != null">UPDATE_BY,</if>
             <if test="updateTime != null">UPDATE_TIME,</if>
-         </trim>
+            <if test="subtotalQuanScore != null">SUBTOTAL_QUAN_SCORE,</if>
+            <if test="bonusSubtotal != null">BONUS_SUBTOTAL,</if>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null and id != ''">#{id},</if>
             <if test="busDepReviewId != null">#{busDepReviewId},</if>
@@ -76,10 +103,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="dataJson != null">#{dataJson},</if>
             <if test="reviewScore != null">#{reviewScore},</if>
             <if test="dataStatus != null">#{dataStatus},</if>
+            <if test="filePath != null">#{filePath},</if>
+            <if test="attachId != null">#{attachId},</if>
             <if test="createBy != null">#{createBy},</if>
             <if test="createTime != null">#{createTime},</if>
             <if test="updateBy != null">#{updateBy},</if>
             <if test="updateTime != null">#{updateTime},</if>
+            <if test="subtotalQuanScore != null">#{subtotalQuanScore},</if>
+            <if test="bonusSubtotal != null">#{bonusSubtotal},</if>
          </trim>
     </insert>
 
@@ -93,10 +124,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                             DATA_JSON,
                             REVIEW_SCORE,
                             DATA_STATUS,
+                            FILE_PATH,
+                            ATTACH_ID,
                             CREATE_BY,
                             CREATE_TIME,
                             UPDATE_BY,
                             UPDATE_TIME,
+                            SUBTOTAL_QUAN_SCORE,
+                            BONUS_SUBTOTAL,
                     </trim>
         values
         <foreach collection="entities" item="entity" separator=",">
@@ -108,10 +143,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                                     #{entity.dataJson},
                                     #{entity.reviewScore},
                                     #{entity.dataStatus},
+                                    #{entity.filePath},
+                                     #{entity.attachId},
                                     #{entity.createBy},
                                     #{entity.createTime},
                                     #{entity.updateBy},
                                     #{entity.updateTime},
+                                    #{entity.subtotalQuanScore},
+                                    #{entity.bonusSubtotal},
                             </trim>
         </foreach>
     </insert>
@@ -125,10 +164,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="dataJson != null">DATA_JSON = #{dataJson},</if>
             <if test="reviewScore != null">REVIEW_SCORE = #{reviewScore},</if>
             <if test="dataStatus != null">DATA_STATUS = #{dataStatus},</if>
+            <if test="filePath != null">FILE_PATH = #{filePath},</if>
+            <if test="attachId != null">ATTACH_ID = #{attachId},</if>
             <if test="createBy != null">CREATE_BY = #{createBy},</if>
             <if test="createTime != null">CREATE_TIME = #{createTime},</if>
             <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
             <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="subtotalQuanScore != null">SUBTOTAL_QUAN_SCORE = #{subtotalQuanScore},</if>
+            <if test="bonusSubtotal != null">BONUS_SUBTOTAL = #{bonusSubtotal},</if>
         </trim>
         where ID = #{id}
     </update>
@@ -143,4 +186,34 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             #{id}
         </foreach>
     </delete>
+
+    <select id="selectDataStatusByReviewId" parameterType="String" resultType="String">
+        SELECT DISTINCT DATA_STATUS
+        FROM BUS_DEP_REVIEW_DATA
+        WHERE BUS_DEP_REVIEW_ID = #{reviewId}
+    </select>
+
+
+
+    <delete id="deleteByReviewIdAndCreator">
+        delete from BUS_DEP_REVIEW_DATA
+        where BUS_DEP_REVIEW_ID = #{reviewId}
+    </delete>
+
+    <select id="selectDataStatusByReviewIdAndCreator" resultType="String">
+        SELECT DISTINCT DATA_STATUS
+        FROM BUS_DEP_REVIEW_DATA
+        WHERE BUS_DEP_REVIEW_ID = #{reviewId}
+          AND CREATE_BY = #{creator}
+    </select>
+
+    <update id="updateDataStatusByReviewIdAndCreator">
+        UPDATE BUS_DEP_REVIEW_DATA
+        SET DATA_STATUS = #{dataStatus},
+            UPDATE_BY = #{updateBy},
+            UPDATE_TIME = #{updateTime}
+        WHERE BUS_DEP_REVIEW_ID = #{reviewId}
+          AND CREATE_BY = #{creator}
+    </update>
+
 </mapper>

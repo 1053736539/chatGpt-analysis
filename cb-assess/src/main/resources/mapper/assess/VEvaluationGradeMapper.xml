@@ -1,0 +1,1187 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.VEvaluationGradeMapper">
+
+    <resultMap id="VEvaluationResult" type="com.cb.assess.domain.VEvaluationGrade">
+        <result property="taskId" column="task_id"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="belongYear" column="belong_year"/>
+        <result property="special" column="special"/>
+        <result property="publicityStatus" column="publicity_status"/>
+    </resultMap>
+
+    <sql id="selectVEvaluationGrade">
+        SELECT DISTINCT
+            null AS task_id,
+            null AS title,
+            veg.belong_year,
+            veg.cycle,
+            veg.cycle_desc,
+            veg.special,
+            ifnull( p.finish_status, '-1' ) AS publicity_status
+        FROM
+            v_evaluation_grade veg
+                LEFT JOIN biz_assess_promulgate p ON p.quarter = veg.cycle_desc
+        where veg.special ='0'
+        UNION ALL
+        SELECT DISTINCT
+            veg.task_id,
+            veg.task_name AS title,
+            veg.belong_year,
+            NULL cycle,
+            NULL cycle_desc,
+            veg.special,
+            ifnull( p.finish_status, '-1' ) AS publicity_status
+        FROM
+            v_evaluation_grade veg
+                LEFT JOIN biz_assess_promulgate p ON p.task_id = veg.task_id
+        where veg.special ='1'
+    </sql>
+    <select id="selectVEvaluationGradeList" resultMap="VEvaluationResult">
+        SELECT * from(
+              <include refid="selectVEvaluationGrade"></include>
+        ) AS T
+        <where>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        <if test="cycle != null and cycle != ''">and T.cycle =#{cycle}</if>
+                        <if test="belongYear != null and belongYear != ''">and T.belong_year =#{belongYear}</if>
+                        <if test="cycleDesc != null and cycleDesc != ''">and T.cycle_desc =#{cycleDesc}</if>
+                    </when>
+                </choose>
+                and T.special = #{special}
+            </if>
+        </where>
+    </select>
+
+    <resultMap id="VEvaluationGradeResult" type="com.cb.assess.domain.VEvaluationGrade$Grade">
+        <result property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="proId" column="pro_id"/>
+        <result property="personnelType" column="personnel_type"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="belongYear" column="belong_year"/>
+        <result property="special" column="special"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="identityType" column="identity_type"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="deptScore" column="dept_score"/>
+        <result property="leaderScore" column="leader_score"/>
+        <result property="unusualScore" column="unusual_score"/>
+        <result property="disciplineScore" column="discipline_score"/>
+        <result property="attendanceNum" column="attendance_num"/>
+        <result property="attendanceScore" column="attendance_score"/>
+        <result property="score" column="score"/>
+        <result property="compositeScore" column="composite_score"/>
+        <result property="modified" column="modified"/>
+        <result property="grade" column="grade"/>
+        <result property="rscOpinion" column="rsc_opinion"/>
+        <result property="dzhOpinion" column="dzh_opinion"/>
+        <result property="step" column="step"/>
+        <result property="isFillRegular" column="is_Fill_Regular"/>
+    </resultMap>
+    <select id="selectGradeList" resultMap="VEvaluationGradeResult">
+        SELECT
+        a.id,
+        a.task_id,
+        a.task_name,
+        a.pro_id,
+        a.personnel_type,
+        a.cycle,
+        a.cycle_desc,
+        a.belong_year,
+        a.special,
+        a.user_id,
+        a.name as user_name,
+        u.identity_type,
+        cf.dept_id,
+        cf.dept_name,
+        a.modified,
+        a.dept_score,
+        a.leader_score,
+        a.unusual_score,
+        a.discipline_score,
+        a.score,
+        a.grade,
+        a.rsc_opinion,
+        a.dzh_opinion,
+        a.step,
+        (select count(0)from  biz_assess_task_user_tag t join biz_assess_regular_info ri on ri.user_tag_id = t.id
+        where t.user_id = a.user_id and t.task_id = a.task_id) as is_fill_regular
+        FROM
+        v_evaluation_grade a
+         join v_sys_user u on u.user_id = a.user_id
+         join v_task_assess_user_confirm cf on cf.task_id = a.task_id and cf.user_id = a.user_id and cf.confirm_status ='1'
+        <where>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        and a.special =#{special}
+                        <if test="cycle != null and cycle != ''">and a.cycle =#{cycle}</if>
+                        <if test="cycleDesc != null and cycleDesc != ''">and a.cycle_desc =#{cycleDesc}</if>
+                        <if test="belongYear != null and belongYear != ''">and a.belong_year =#{belongYear}</if>
+                        <if test="deptId != null and deptId != ''">and cf.dept_id =#{deptId}</if>
+                        <if test="personnelType != null and personnelType != ''">
+                            <choose>
+                                <when test="personnelType == 'civil_servant_special'">
+                                    and u.identity_type in('1','2')
+                                    and (
+                                    u.is_main_leader = '1'
+                                    or u.is_hosting_work = '1'
+                                    or u.work_title_code in ('121', '212')
+                                    )
+                                </when>
+                                <when test="personnelType == 'civil_servant_other'">
+                                    and u.identity_type in('1','2')
+                                    and u.work_title_code  not in ('111', '112', '121', '211', '212')
+                                    and u.is_main_leader = '0'
+                                    and u.is_hosting_work = '0'
+                                </when>
+                                <when test="personnelType == 'institution_special'">
+                                    and u.identity_type ='3'
+                                    and (
+                                    u.is_main_leader = '1'
+                                    or u.is_hosting_work = '1'
+                                    or u.work_title_code in ('121', '212')
+                                    )
+                                </when>
+                                <when test="personnelType == 'institution_other'">
+                                    and u.identity_type ='3'
+                                    and u.work_title_code  not in ('111', '112', '121', '211', '212')
+                                    and u.is_main_leader = '0'
+                                    and u.is_hosting_work = '0'
+                                </when>
+                            </choose>
+                            <!--and a.personnel_type =#{personnelType}-->
+                        </if>
+                    </when>
+                    <otherwise>
+                        and a.special =#{special} and a.task_id = #{taskId}
+                        <if test="deptId != null and deptId != ''">and cf.dept_id =#{deptId}</if>
+                    </otherwise>
+                </choose>
+            </if>
+
+        </where>
+        order by a.dept_id asc, a.score desc
+    </select>
+    <resultMap id="VEvaluationVoterResult" type="com.cb.assess.domain.VEvaluationGrade$Voter">
+        <result property="taskId" column="task_id"/>
+        <result property="evaluateTagId" column="evaluate_tag_id"/>
+        <result property="voter" column="voter"/>
+        <result property="userId" column="user_id"/>
+        <result property="voteType" column="vote_type"/>
+        <result property="weight" column="weight"/>
+        <result property="status" column="status"/>
+        <result property="score" column="score"/>
+        <result property="special" column="special"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="proId" column="pro_id"/>
+        <result property="personnelType" column="personnel_type"/>
+    </resultMap>
+
+    <select id="selectVoterList" resultMap="VEvaluationVoterResult">
+        select T.* from (
+        SELECT
+        vs.*,
+        m.special,
+        m.assess_cycle as "cycle",
+        CASE
+        m.assess_cycle
+        WHEN '1' THEN
+        m.task_moth
+        WHEN '2' THEN
+        m.task_quarter
+        WHEN '3' THEN
+        m.task_year ELSE 'special'
+        END AS cycle_desc,
+        p.pro_id,
+        p.personnel_type
+        FROM
+        v_evaluate_score vs
+        join v_sys_user u on u.user_id = vs.user_id
+        join sys_dept d on d.dept_id =u.dept_id
+        JOIN biz_assess_task_manage m ON m.task_id = vs.task_id
+        join biz_assess_indicator_pro p on p.pro_id = m.pro_id
+        order by d.order_num asc
+        ) as T
+        <where>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        <if test="personnelType != null and personnelType != ''">and find_in_set(T.personnel_type,#{personnelType})</if>
+                        <if test="cycle != null and cycle != ''">and T.cycle =#{cycle}</if>
+                        <if test="cycleDesc != null and cycleDesc != ''">and T.cycle_desc =#{cycleDesc}</if>
+                    </when>
+                    <otherwise>
+                        and T.task_id = #{taskId}
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+    <select id="selectVoterListByUserId" resultMap="VEvaluationVoterResult">
+    select * from v_evaluate_score where user_id =#{userId} and task_id = #{taskId}
+    </select>
+    <resultMap id="CompositeResult" type="com.cb.assess.domain.VEvaluationGrade$Composite">
+        <result property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="name" column="name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="scoringJson" column="scoring_json"></result>
+        <result property="deptScore" column="dept_score"/>
+        <result property="leaderScore" column="leader_score"/>
+        <result property="unusualScore" column="unusual_score"/>
+        <result property="discipline" column="discipline"/>
+        <result property="attendanceNum" column="attendance_num"/>
+        <result property="attendanceScore" column="attendance_score"/>
+        <result property="sourceGrade" column="source_grade"></result>
+        <result property="organGrade" column="organ_grade"></result>
+        <result property="partyWillGrade" column="party_will_grade"></result>
+        <result property="personnelType" column="personnel_type"></result>
+    </resultMap>
+    <select id="selectCompositeList" resultMap="CompositeResult">
+        SELECT
+            a.id,
+            a.task_id,
+            a.user_id,
+            u.name,
+            cf.dept_id,
+            cf.dept_name,
+            a.scoring_mirror as scoring_json,
+            a.dept_score,
+            a.leader_score,
+            a.unusual_score,
+            a.discipline_score as discipline,
+            ifnull(fi.absenteeism_num,0) as attendance_num,
+            a.attendance_score,
+            a.grade as source_grade,
+            a.rsc_opinion as organ_grade,
+            a.dzh_opinion as party_will_grade,
+            ifnull(p.personnel_type,'4') as personnel_type
+        FROM v_evaluation_grade as a
+            join biz_assess_indicator_pro p on p.pro_id = a.pro_id
+            join v_sys_user u on u.user_id = a.user_id
+            join v_task_assess_user_confirm cf on cf.task_id = a.task_id and cf.user_id = a.user_id and cf.confirm_status = '1'
+            left join v_regular_fill_info fi on fi.task_id = a.task_id and fi.user_id = a.user_id
+        <where>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        and a.special =#{special}
+                        <if test="cycle != null and cycle != ''">and a.cycle =#{cycle}</if>
+                        <if test="cycleDesc != null and cycleDesc != ''">and a.cycle_desc =#{cycleDesc}</if>
+                        <if test="belongYear != null and belongYear != ''">and a.belong_year =#{belongYear}</if>
+                        <if test="personnelType != null and personnelType != ''">
+                            <choose>
+                                <when test="personnelType == 'civil_servant_special'">
+                                    and u.identity_type in('1','2')
+                                    and (
+                                        u.is_main_leader = '1'
+                                        or u.is_hosting_work = '1'
+                                        or u.work_title_code in ('121', '212')
+                                    )
+                                </when>
+                                <when test="personnelType == 'institution_special'">
+                                    and u.identity_type ='3'
+                                    and (
+                                        u.is_main_leader = '1'
+                                        or u.is_hosting_work = '1'
+                                        or u.work_title_code in ('121', '212')
+                                    )
+                                </when>
+                                <when test="personnelType == 'civil_servant_other'">
+                                    and u.identity_type in('1','2')
+                                    and u.work_title_code  not in ('111', '112', '121', '211', '212')
+                                    and u.is_main_leader = '0'
+                                    and u.is_hosting_work = '0'
+                                </when>
+                                <when test="personnelType == 'institution_other'">
+                                    and u.identity_type ='3'
+                                    and u.work_title_code  not in ('111', '112', '121', '211', '212')
+                                    and u.is_main_leader = '0'
+                                    and u.is_hosting_work = '0'
+                                </when>
+                                <when test="personnelType == 'civil_servant_other,institution_other'">
+                                    and u.work_title_code  not in ('111', '112', '121', '211', '212')
+                                    and u.is_main_leader = '0'
+                                    and u.is_hosting_work = '0'
+                                </when>
+                            </choose>
+                            <!--and find_in_set(p.personnel_type,#{personnelType})-->
+                        </if>
+                    </when>
+                    <otherwise>
+                        and a.special =#{special} and a.task_id = #{taskId}
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+    <select id="selectExportLevelGradeList" resultType="com.cb.assess.domain.VEvaluationGrade$ExportLevelGrade">
+        SELECT
+            a.task_id as taskId,
+            a.user_id AS userId,
+            u.NAME AS userName,
+            u.identity_type AS identityType,
+            cf.dept_name AS deptName,
+            a.dept_score AS deptScore,
+            a.leader_score AS deptScore,
+            a.unusual_score AS unusualScore,
+            a.discipline_score AS disciplineScore,
+            a.final_option AS finalOption,
+            a.belong_year AS  belongYear,
+            a.cycle,
+            a.cycle_desc AS cycleDesc,
+            a.dzh_opinion  as grade
+        FROM
+            v_evaluation_grade a
+            JOIN biz_assess_indicator_pro p ON p.pro_id = a.pro_id
+            JOIN v_task_assess_user_confirm cf ON cf.task_id = a.task_id and cf.user_id= a.user_id and cf.confirm_status ='1'
+            JOIN v_sys_user u ON u.user_id = a.user_id
+        <where>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        and a.special =#{special}
+                        <if test="cycleDesc != null and cycleDesc != ''">and a.cycle_desc =#{cycleDesc}</if>
+                        <if test="belongYear != null and belongYear != ''">and a.belong_year =#{belongYear}</if>
+                        <if test="deptId != null and deptId != ''">and cf.dept_id =#{deptId}</if>
+                        <if test="personnelType != null and personnelType != ''">
+                            <choose>
+                                <when test="personnelType == 'civil_servant_special'">
+                                    and u.identity_type in('1','2')
+                                    and (
+                                    u.is_main_leader = '1'
+                                    or u.is_hosting_work = '1'
+                                    or u.work_title_code in ('121', '212')
+                                    )
+                                </when>
+                                <when test="personnelType == 'civil_servant_other'">
+                                    and u.identity_type in('1','2')
+                                    and u.work_title_code  not in ('111', '112', '121', '211', '212')
+                                    and u.is_main_leader = '0'
+                                    and u.is_hosting_work = '0'
+                                </when>
+                                <when test="personnelType == 'institution_special'">
+                                    and u.identity_type ='3'
+                                    and (
+                                    u.is_main_leader = '1'
+                                    or u.is_hosting_work = '1'
+                                    or u.work_title_code in ('121', '212')
+                                    )
+                                </when>
+                                <when test="personnelType == 'institution_other'">
+                                    and u.identity_type ='3'
+                                    and u.work_title_code  not in ('111', '112', '121', '211', '212')
+                                    and u.is_main_leader = '0'
+                                    and u.is_hosting_work = '0'
+                                </when>
+                            </choose>
+                        </if>
+                    </when>
+                    <otherwise>
+                        and a.special =#{special} and a.task_id = #{taskId}
+                        <if test="deptId != null and deptId != ''">and cf.dept_id =#{deptId}</if>
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+
+    <sql id="selectDisciplineVEvaluationGrade">
+        SELECT DISTINCT
+            null task_id,
+            null AS title,
+            veg.belong_year,
+            veg.cycle,
+            veg.cycle_desc,
+            veg.special,
+            veg.step
+        FROM
+            v_evaluation_grade AS veg
+        WHERE
+            NOT EXISTS ( SELECT * FROM biz_assess_promulgate p WHERE p.QUARTER = veg.cycle_desc )
+          AND EXISTS (SELECT *  FROM biz_assess_evaluation_grade_save_mark sm  WHERE sm.year = veg.belong_year  AND sm.cycle_desc = veg.cycle_desc  AND sm.escalation_flag = '2')
+          AND special = '0'
+        UNION ALL
+        SELECT DISTINCT
+            veg.task_id,
+            veg.task_name AS title,
+            veg.belong_year,
+            NULL cycle,
+            NULL cycle_desc,
+            veg.special,
+            veg.step
+        FROM
+            v_evaluation_grade veg
+        where
+            NOT EXISTS ( SELECT * FROM biz_assess_promulgate p WHERE p.task_id = veg.task_id )
+          AND EXISTS (SELECT * FROM biz_assess_evaluation_grade_save_mark sm  WHERE sm.task_id = veg.task_id  AND sm.escalation_flag = '2')
+          AND veg.special = '1'
+    </sql>
+
+    <select id="selectDisciplineVEvaluationGradeList" resultMap="VEvaluationResult">
+        select T.* from(
+                <include refid="selectDisciplineVEvaluationGrade"></include>
+        ) as T
+        <where>
+            <choose>
+                <when test="isScoring">
+                    and T.step = '1'
+                </when>
+                <otherwise>
+                    and T.step = '0'
+                </otherwise>
+            </choose>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        <if test="cycle != null and cycle != ''">and cycle =#{cycle}</if>
+                        <if test="belongYear != null and belongYear != ''">and belong_year =#{belongYear}</if>
+                        <if test="cycleDesc != null and cycleDesc != ''">and cycle_desc =#{cycleDesc}</if>
+                    </when>
+                </choose>
+                and T.special = #{special}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectToBeEvaluatedList" resultMap="VEvaluationGradeResult">
+        SELECT
+        a.id,
+        a.task_id,
+        a.task_name,
+        a.pro_id,
+        p.personnel_type,
+        a.cycle,
+        a.cycle_desc,
+        a.belong_year,
+        a.special,
+        a.user_id,
+        u.name as user_name,
+        a.dept_id,
+        d.dept_name,
+        a.modified,
+        a.dept_score,
+        a.leader_score,
+        a.unusual_score,
+        ifnull((CASE WHEN #{isScoring} THEN a.discipline_score ELSE 5 END),5) as discipline_score,
+        ifnull(fi.absenteeism_num,0) as attendance_num,
+        a.attendance_score,
+        a.score,
+        a.grade
+        FROM
+        v_evaluation_grade as a
+        left join v_regular_fill_info fi on fi.task_id = a.task_id and fi.user_id = a.user_id
+        join biz_assess_indicator_pro p on p.pro_id = a.pro_id
+                                               and p.personnel_type in('civil_servant_special','institution_special')
+        join sys_user u on u.user_id = a.user_id
+        join sys_dept d on u.dept_id = d.dept_id
+        join biz_assess_evaluation_grade_save_mark sm on sm.id=a.escalation_id
+        <where>
+            and sm.escalation_flag = '2'
+            <choose>
+                <when test="isScoring">
+                   and CAST(a.step AS UNSIGNED) >=1
+                </when>
+                <otherwise>
+                    and a.step = '0'
+                </otherwise>
+            </choose>
+            <if test="et.special != null and et.special != ''">
+                <choose>
+                    <when test="et.special == '0'.toString()">
+                        and a.special =#{et.special}
+                        <if test="et.cycle != null and et.cycle != ''">and a.cycle =#{et.cycle}</if>
+                        <if test="et.cycleDesc != null and et.cycleDesc != ''">and a.cycle_desc =#{et.cycleDesc}</if>
+                        <if test="et.belongYear != null and et.belongYear != ''">and a.belong_year =#{et.belongYear}</if>
+                        <if test="et.deptId != null and et.deptId != ''">and a.dept_id =#{et.deptId}</if>
+                        <if test="et.personnelType != null and et.personnelType != ''">and p.personnel_type =#{et.personnelType}</if>
+                    </when>
+                    <otherwise>
+                        and a.special =#{et.special} and a.task_id = #{et.taskId}
+                        <if test="et.deptId != null and et.deptId != ''">and a.dept_id =#{et.deptId}</if>
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by a.score desc
+    </select>
+
+    <select id="selectToBeEvaluatedList" resultMap="VEvaluationGradeResult" databaseId="dm">
+        SELECT
+        a.id,
+        a.task_id,
+        a.task_name,
+        a.pro_id,
+        p.personnel_type,
+        a.cycle,
+        a.cycle_desc,
+        a.belong_year,
+        a.special,
+        a.user_id,
+        u.name as user_name,
+        a.dept_id,
+        d.dept_name,
+        a.modified,
+        a.dept_score,
+        a.leader_score,
+        a.unusual_score,
+        ifnull((CASE WHEN #{isScoring} THEN a.discipline_score ELSE 5 END),5) as discipline_score,
+        ifnull(fi.absenteeism_num,0) as attendance_num,
+        a.attendance_score,
+        a.score,
+        a.grade
+        FROM
+        v_evaluation_grade as a
+        left join v_regular_fill_info fi on fi.task_id = a.task_id and fi.user_id = a.user_id
+        join biz_assess_indicator_pro p on p.pro_id = a.pro_id
+        and p.personnel_type in('civil_servant_special','institution_special')
+        join sys_user u on u.user_id = a.user_id
+        join sys_dept d on u.dept_id = d.dept_id
+        join biz_assess_evaluation_grade_save_mark sm on sm.id=a.escalation_id
+        <where>
+            and sm.escalation_flag = '2'
+            <choose>
+                <when test="isScoring">
+                    and CAST(a.step AS INT) >=1
+                </when>
+                <otherwise>
+                    and a.step = '0'
+                </otherwise>
+            </choose>
+            <if test="et.special != null and et.special != ''">
+                <choose>
+                    <when test="et.special == '0'.toString()">
+                        and a.special =#{et.special}
+                        <if test="et.cycle != null and et.cycle != ''">and a.cycle =#{et.cycle}</if>
+                        <if test="et.cycleDesc != null and et.cycleDesc != ''">and a.cycle_desc =#{et.cycleDesc}</if>
+                        <if test="et.belongYear != null and et.belongYear != ''">and a.belong_year =#{et.belongYear}</if>
+                        <if test="et.deptId != null and et.deptId != ''">and a.dept_id =#{et.deptId}</if>
+                        <if test="et.personnelType != null and et.personnelType != ''">and p.personnel_type =#{et.personnelType}</if>
+                    </when>
+                    <otherwise>
+                        and a.special =#{et.special} and a.task_id = #{et.taskId}
+                        <if test="et.deptId != null and et.deptId != ''">and a.dept_id =#{et.deptId}</if>
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+        order by a.score desc
+    </select>
+
+    <select id="selectMainChargeVEvaluationGradeList" resultMap="VEvaluationResult">
+        SELECT DISTINCT veg.belong_year,
+        veg.cycle,
+        veg.cycle_desc,
+        veg.special
+        FROM v_evaluation_grade as veg
+        <where>
+            and not EXISTS(
+                select * from biz_assess_promulgate p where p.quarter = veg.cycle_desc
+            )
+            and EXISTS(
+                select * FROM biz_assess_evaluation_grade_save_mark sm
+                where sm.year = veg.belong_year and sm.cycle_desc = veg.cycle_desc
+                and sm.escalation_flag='2'
+            )
+            <choose>
+                <when test="et.isScoring">
+                    and find_in_set(veg.personnel_type,#{personnelTypeStr}) and veg.grade is not null and CAST(veg.step AS UNSIGNED) >=2
+                </when>
+                <otherwise>
+                    and find_in_set(veg.personnel_type,#{personnelTypeStr}) and veg.grade is null and CAST(veg.step AS UNSIGNED) =1
+                </otherwise>
+            </choose>
+
+            and veg.dept_id in
+            <foreach item="deptId" collection="deptIds" open="(" close=")" separator=",">
+                #{deptId}
+            </foreach>
+            <if test="et.cycle != null and et.cycle != ''">and cycle =#{et.cycle}</if>
+            <if test="et.belongYear != null and et.belongYear != ''">and belong_year =#{et.belongYear}</if>
+            <if test="et.cycleDesc != null and et.cycleDesc != ''">and cycle_desc =#{et.cycleDesc}</if>
+            and veg.special = '0'
+        </where>
+    </select>
+
+    <select id="selectMainChargeVEvaluationGradeList" resultMap="VEvaluationResult" databaseId="dm">
+        SELECT DISTINCT veg.belong_year,
+        veg.cycle,
+        veg.cycle_desc,
+        veg.special
+        FROM v_evaluation_grade as veg
+        <where>
+            and not EXISTS(
+            select * from biz_assess_promulgate p where p.quarter = veg.cycle_desc
+            )
+            and EXISTS(
+            select * FROM biz_assess_evaluation_grade_save_mark sm
+            where sm.year = veg.belong_year and sm.cycle_desc = veg.cycle_desc
+            and sm.escalation_flag='2'
+            )
+            <choose>
+                <when test="et.isScoring">
+                    and find_in_set(veg.personnel_type,#{personnelTypeStr}) and veg.grade is not null and CAST(veg.step AS INT) >=2
+                </when>
+                <otherwise>
+                    and find_in_set(veg.personnel_type,#{personnelTypeStr}) and veg.grade is null and CAST(veg.step AS INT) =1
+                </otherwise>
+            </choose>
+
+            and veg.dept_id in
+            <foreach item="deptId" collection="deptIds" open="(" close=")" separator=",">
+                #{deptId}
+            </foreach>
+            <if test="et.cycle != null and et.cycle != ''">and cycle =#{et.cycle}</if>
+            <if test="et.belongYear != null and et.belongYear != ''">and belong_year =#{et.belongYear}</if>
+            <if test="et.cycleDesc != null and et.cycleDesc != ''">and cycle_desc =#{et.cycleDesc}</if>
+            and veg.special = '0'
+        </where>
+    </select>
+    <select id="toBeOrderGradeList" resultMap="VEvaluationGradeResult">
+        SELECT distinct
+            a.id,
+            a.task_id,
+            a.task_name,
+            a.pro_id,
+            a.cycle,
+            a.cycle_desc,
+            a.belong_year,
+            a.special,
+            a.user_id,
+            cf.name as user_name,
+            a.dept_id,
+            cf.dept_name,
+            a.dept_score,
+            a.leader_score,
+            a.unusual_score,
+            a.score,
+            a.modified,
+            a.discipline_score,
+            fi.absenteeism_num,
+            a.attendance_score,
+            a.grade,
+            a.escalation_id,
+            a.personnel_type
+        FROM
+        v_evaluation_grade a
+        left join v_regular_fill_info fi on fi.task_id = a.task_id and fi.user_id = a.user_id
+        join  v_task_assess_user_confirm cf on cf.task_id = a.task_id and cf.user_id=a.user_id and cf.confirm_status ='1'
+        join biz_assess_evaluation_grade_save_mark sm on sm.id=a.escalation_id
+        <where>
+            and sm.escalation_flag = '2'
+            <choose>
+                <when test="isScoring">
+                    and find_in_set(a.personnel_type,#{personnelTypeStr}) and a.grade is not null
+                </when>
+                <otherwise>
+                    and find_in_set(a.personnel_type,#{personnelTypeStr}) and a.grade is null
+                </otherwise>
+            </choose>
+            and a.dept_id in
+            <foreach item="deptId" collection="deptIds" open="(" close=")" separator=",">
+                #{deptId}
+            </foreach>
+            and a.special ='0'
+            <if test="et.taskId != null and et.taskId != ''">and a.task_id =#{et.taskId}</if>
+            <if test="et.cycle != null and et.cycle != ''">and a.cycle =#{et.cycle}</if>
+            <if test="et.cycleDesc != null and et.cycleDesc != ''">and a.cycle_desc =#{et.cycleDesc}</if>
+            <if test="et.belongYear != null and et.belongYear != ''">and a.belong_year =#{et.belongYear}</if>
+        </where>
+        order by a.score desc
+    </select>
+
+    <sql id="selectOrganVEvaluationGrade">
+        SELECT DISTINCT
+            null task_id,
+            null as title,
+            veg.belong_year,
+            veg.cycle,
+            veg.cycle_desc,
+            veg.special,
+            veg.step
+        FROM
+            v_evaluation_grade AS veg
+        WHERE
+            NOT EXISTS ( SELECT * FROM biz_assess_promulgate p WHERE p.QUARTER = veg.cycle_desc )
+          AND EXISTS (SELECT * FROM biz_assess_evaluation_grade_save_mark sm WHERE sm.YEAR = veg.belong_year AND sm.cycle_desc = veg.cycle_desc AND sm.escalation_flag = '2')
+          AND veg.special = '0'
+        UNION ALL
+        SELECT DISTINCT
+            veg.task_id,
+            veg.task_name AS title,
+            veg.belong_year,
+            NULL cycle,
+            NULL cycle_desc,
+            veg.special,
+            veg.step
+        FROM
+            v_evaluation_grade veg
+        WHERE
+            NOT EXISTS ( SELECT * FROM biz_assess_promulgate p WHERE p.task_id = veg.task_id )
+          AND EXISTS ( SELECT * FROM biz_assess_evaluation_grade_save_mark sm WHERE sm.task_id = veg.task_id  AND sm.escalation_flag = '2')
+          AND veg.special = '1'
+    </sql>
+    <sql id="OrganVEvaluationGrade">
+        SELECT L.*,
+            if(L.task_id is null,
+                (select count(0) from (<include refid="toBeOrganGrade"></include>) AS k
+                <where>
+                    and K.belong_year = L.belong_year
+                    and K.special = L.special
+                    and K.cycle_desc = L.cycle_desc
+                    <choose>
+                        <when test="isScoring">
+                            and k.step = '3'
+                        </when>
+                        <otherwise>
+                            and k.step = '2' and K.grade is not null
+                        </otherwise>
+                    </choose>
+                </where>
+                ),
+                (select count(0) from (<include refid="toBeOrganGrade"></include>) AS k
+                <where>
+                    and K.task_id = L.task_id
+                    <choose>
+                        <when test="isScoring">
+                            and k.step = '3'
+                        </when>
+                        <otherwise>
+                            and k.step = '2' and K.grade is not null
+                        </otherwise>
+                    </choose>
+                </where>
+                )
+            )  as counts
+        FROM(
+        <include refid="selectOrganVEvaluationGrade"></include>
+        ) AS L
+    </sql>
+    <select id="selectOrganVEvaluationGradeList" resultMap="VEvaluationResult">
+        SELECT T.*  FROM(
+            <include refid="OrganVEvaluationGrade"></include>
+        ) AS T
+        <where>
+            and T.counts > 0
+            <choose>
+                <when test="isScoring">
+                    and T.step = '3'
+                </when>
+                <otherwise>
+                    and T.step = '2'
+                </otherwise>
+            </choose>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        <if test="cycle != null and cycle != ''">and cycle =#{cycle}</if>
+                        <if test="belongYear != null and belongYear != ''">and belong_year =#{belongYear}</if>
+                        <if test="cycleDesc != null and cycleDesc != ''">and cycle_desc =#{cycleDesc}</if>
+                    </when>
+                </choose>
+                and T.special = #{special}
+            </if>
+        </where>
+    </select>
+
+    <sql id="toBeOrganGrade">
+        SELECT
+            a.id,
+            a.task_id,
+            a.task_name,
+            a.pro_id,
+            a.cycle,
+            a.cycle_desc,
+            a.belong_year,
+            a.special,
+            a.user_id,
+            cf.name as user_name,
+            cf.dept_id,
+            cf.dept_name,
+            a.dept_score,
+            a.leader_score,
+            a.unusual_score,
+            a.score,
+            a.modified,
+            a.discipline_score,
+            a.grade,
+            a.rsc_opinion,
+            a.escalation_id,
+            a.personnel_type,
+            a.step,
+            sm.escalation_flag,
+            (a.score+a.discipline_score) as composite_score
+        FROM
+            v_evaluation_grade a
+                join sys_user u on u.user_id = a.user_id
+                join v_task_assess_user_confirm cf on cf.task_id  = a.task_id and cf.user_id = a.user_id and cf.confirm_status ='1'
+                join biz_assess_evaluation_grade_save_mark sm on sm.id=a.escalation_id
+    </sql>
+    <select id="selectToBeOrganGradeList" resultMap="VEvaluationGradeResult">
+        select T.*  from (
+            <include refid="toBeOrganGrade"></include>
+        )as T
+        <where>
+            and T.escalation_flag = '2'
+            <choose>
+                <when test="isScoring">
+                   and CAST(T.step AS UNSIGNED) >=3
+                </when>
+                <otherwise>
+                   and CAST(T.step AS UNSIGNED) = 2 and T.grade is not null
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="et.special == '0'.toString()">
+                    and T.special =#{et.special}
+                    <if test="et.cycle != null and et.cycle != ''">and T.cycle =#{et.cycle}</if>
+                    <if test="et.cycleDesc != null and et.cycleDesc != ''">and T.cycle_desc =#{et.cycleDesc}</if>
+                    <if test="et.belongYear != null and et.belongYear != ''">and T.belong_year =#{et.belongYear}</if>
+                    <if test="et.personnelType != null and et.personnelType != ''">and find_in_set(T.personnel_type,#{et.personnelType}) </if>
+                </when>
+                <otherwise>
+                    and T.special =#{et.special} and T.task_id = #{et.taskId}
+                </otherwise>
+            </choose>
+
+        </where>
+        order by T.dept_id asc,T.composite_score desc
+    </select>
+
+    <select id="selectToBeOrganGradeList" resultMap="VEvaluationGradeResult" databaseId="dm">
+        select T.*  from (
+        <include refid="toBeOrganGrade"></include>
+        )as T
+        <where>
+            and T.escalation_flag = '2'
+            <choose>
+                <when test="isScoring">
+                    and CAST(T.step AS INT) >=3
+                </when>
+                <otherwise>
+                    and CAST(T.step AS INT) = 2 and T.grade is not null
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="et.special == '0'.toString()">
+                    and T.special =#{et.special}
+                    <if test="et.cycle != null and et.cycle != ''">and T.cycle =#{et.cycle}</if>
+                    <if test="et.cycleDesc != null and et.cycleDesc != ''">and T.cycle_desc =#{et.cycleDesc}</if>
+                    <if test="et.belongYear != null and et.belongYear != ''">and T.belong_year =#{et.belongYear}</if>
+                    <if test="et.personnelType != null and et.personnelType != ''">and find_in_set(T.personnel_type,#{et.personnelType}) </if>
+                </when>
+                <otherwise>
+                    and T.special =#{et.special} and T.task_id = #{et.taskId}
+                </otherwise>
+            </choose>
+
+        </where>
+        order by T.dept_id asc,T.composite_score desc
+    </select>
+    <resultMap id="ExportEvaluationCompositeResult" type="com.cb.assess.domain.VEvaluationGrade$ExportEvaluationComposite">
+        <result property="userName" column="user_name"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="scoringJson" column="scoring_json"/>
+        <result property="deptScore" column="dept_score"/>
+        <result property="leaderScore" column="leader_score"/>
+        <result property="unusualScore" column="unusual_score"/>
+        <result property="attendanceNum" column="attendanceNum"/>
+        <result property="attendanceScore" column="attendance_score"></result>
+        <result property="disciplineScore" column="discipline_score"/>
+        <result property="grade" column="grade"></result>
+        <result property="organGrade" column="organ_grade"></result>
+        <result property="partyWillGrade" column="party_will_grade"></result>
+    </resultMap>
+    <select id="selectExportEvaluationCompositeList" resultMap="ExportEvaluationCompositeResult">
+        SELECT
+            cf.name as user_name,
+            cf.dept_name,
+            a.scoring_mirror as scoring_json,
+            a.dept_score,
+            a.leader_score,
+            a.unusual_score,
+            fi.absenteeism_num as attendance_num,
+            a.attendance_score,
+            a.discipline_score ,
+            a.grade,
+            a.rsc_opinion as organ_grade,
+            a.dzh_opinion as party_will_grade
+        FROM v_evaluation_grade as a
+            join biz_assess_indicator_pro p on p.pro_id = a.pro_id
+            join v_task_assess_user_confirm cf on cf.task_id = a.task_id and cf.user_id = a.user_id and cf.confirm_status ='1'
+            join v_sys_user u on u.user_id = a.user_id
+            left join v_regular_fill_info fi on fi.task_id = a.task_id and fi.user_id = a.user_id
+        <where>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        and a.special =#{special}
+                        <if test="cycle != null and cycle != ''">and a.cycle =#{cycle}</if>
+                        <if test="cycleDesc != null and cycleDesc != ''">and a.cycle_desc =#{cycleDesc}</if>
+                        <if test="belongYear != null and belongYear != ''">and a.belong_year =#{belongYear}</if>
+                        <if test="personnelType != null and personnelType != ''">
+                            <choose>
+                                <when test="personnelType == 'civil_servant_special'">
+                                    and u.identity_type in('1','2')
+                                    and (
+                                    u.is_main_leader = '1'
+                                    or u.is_hosting_work = '1'
+                                    or u.work_title_code in ('121', '212')
+                                    )
+                                </when>
+                                <when test="personnelType == 'institution_special'">
+                                    and u.identity_type ='3'
+                                    and (
+                                    u.is_main_leader = '1'
+                                    or u.is_hosting_work = '1'
+                                    or u.work_title_code in ('121', '212')
+                                    )
+                                </when>
+                                <otherwise>
+                                    and u.work_title_code  not in ('111', '112', '121', '211', '212')
+                                    and u.is_main_leader = '0'
+                                    and u.is_hosting_work = '0'
+                                </otherwise>
+                            </choose>
+                            <!--and find_in_set(p.personnel_type,#{personnelType})-->
+                        </if>
+                    </when>
+                    <otherwise>
+                        and a.special =#{special} and a.task_id = #{taskId}
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+    <select id="selectPublicityList" resultType="com.cb.assess.domain.VEvaluationGrade$Publicity">
+        SELECT
+        p.id AS promulgateId ,
+        cf.NAME AS userName,
+        cf.dept_name AS deptName,
+        a.dzh_opinion AS finalOpinion
+        FROM
+        biz_assess_promulgate  AS p
+        JOIN v_evaluation_grade AS a  ON p.task_id = a.task_id OR p.quarter = a.cycle_desc
+        LEFT JOIN v_task_assess_user_confirm cf ON cf.task_id = a.task_id and cf.confirm_status ='1'
+        AND cf.user_id = a.user_id
+        <where>
+            <if test="taskId != null and taskId != ''">and a.task_id=#{taskId}</if>
+            <if test="special != null and special != ''">and a.special=#{special}</if>
+            <if test="belongYear != null and belongYear != ''">and a.belong_year=#{belongYear}</if>
+            <if test="quarter != null and quarter != ''">and p.quarter=#{quarter}</if>
+        </where>
+        ORDER BY
+        cf.dept_id ASC,
+        a.score DESC
+    </select>
+    <select id="countDzhOpinionNull" resultType="java.lang.Integer">
+        SELECT count(1) FROM v_evaluation_grade
+        <where>
+            <choose>
+                <when test="special == '0'.toString()">
+                    <if test="special != null and special != ''">and special=#{special}</if>
+                    <if test="belongYear != null and belongYear != ''">and belong_year=#{belongYear}</if>
+                    <if test="quarter != null and quarter != ''">and cycle_desc=#{quarter}</if>
+                </when>
+                <otherwise>
+                    and special =#{special} and task_id = #{taskId}
+                </otherwise>
+            </choose>
+            and dzh_opinion is null
+        </where>
+    </select>
+
+    <select id="selectGradeListByPromulgate" resultMap="VEvaluationGradeResult">
+        SELECT
+        id,
+        task_id,
+        task_name,
+        pro_id,
+        cycle,
+        cycle_desc,
+        belong_year,
+        special,
+        user_id,
+        name as user_name,
+        dept_id,
+        dept_name,
+        dept_score,
+        leader_score,
+        unusual_score,
+        score,
+        modified,
+        discipline_score,
+        grade,
+        rsc_opinion,
+        dzh_opinion,
+        final_option,
+        escalation_id,
+        personnel_type,
+        step,
+        scoring_mirror
+        FROM
+        v_evaluation_grade
+        <where>
+            <choose>
+                <when test="special == '0'.toString()">
+                    <if test="special != null and special != ''">and special=#{special}</if>
+                    <if test="belongYear != null and belongYear != ''">and belong_year=#{belongYear}</if>
+                    <if test="quarter != null and quarter != ''">and cycle_desc=#{quarter}</if>
+                </when>
+                <otherwise>
+                    and special =#{special} and task_id = #{taskId}
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <select id="countDisciplineScoringNum" resultType="java.lang.Integer">
+        SELECT count( 0 ) FROM (
+            <include refid="selectDisciplineVEvaluationGrade"></include>
+        ) AS T where T.step = '0'
+    </select>
+    <select id="countPartyCommitteeNum" resultType="java.lang.Integer">
+        SELECT count(0) FROM (
+            <include refid="selectOrganVEvaluationGrade"></include>
+        ) as T where T.step = '1'
+    </select>
+
+    <select id="selectDzhGradeList" resultMap="VEvaluationGradeResult">
+        SELECT
+        a.id,
+        a.task_id,
+        a.task_name,
+        a.pro_id,
+        a.personnel_type,
+        a.cycle,
+        a.cycle_desc,
+        a.belong_year,
+        a.special,
+        a.user_id,
+        a.name as user_name,
+        a.dept_id,
+        a.dept_name,
+        a.modified,
+        a.dept_score,
+        a.leader_score,
+        a.unusual_score,
+        a.discipline_score,
+        a.score,
+        a.grade,
+        a.rsc_opinion,
+        a.dzh_opinion,
+        a.step,
+        (select count(0)from  biz_assess_task_user_tag t join biz_assess_regular_info ri on ri.user_tag_id = t.id
+        where t.user_id = a.user_id and t.task_id = a.task_id) as is_fill_regular
+        FROM
+        v_evaluation_grade a
+
+        <where>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        and a.special =#{special}
+                        <if test="cycleDesc != null and cycleDesc != ''">and a.cycle_desc =#{cycleDesc}</if>
+                        <if test="belongYear != null and belongYear != ''">and a.belong_year =#{belongYear}</if>
+                        <if test="deptId != null and deptId != ''">and a.dept_id =#{deptId}</if>
+                        <if test="personnelType != null and personnelType != ''">and a.personnel_type =#{personnelType}</if>
+                    </when>
+                    <otherwise>
+                        and a.special =#{special} and a.task_id = #{taskId}
+                        <if test="deptId != null and deptId != ''">and cf.dept_id =#{deptId}</if>
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="handleStatus != null">
+                <choose>
+                <when test="handleStatus == 0">
+                    and CAST(a.step AS UNSIGNED) =3
+                </when>
+                <otherwise>
+                    and CAST(a.step AS UNSIGNED)  > 3
+                </otherwise>
+                </choose>
+            </if>
+            <if test="userName != null and userName!=''">and a.name like concat('%',#{userName},'%') </if>
+        </where>
+        order by a.dept_id asc, a.score desc
+    </select>
+
+
+    <select id="selectDzhGradeList" resultMap="VEvaluationGradeResult" databaseId="dm">
+        SELECT
+        a.id,
+        a.task_id,
+        a.task_name,
+        a.pro_id,
+        a.personnel_type,
+        a.cycle,
+        a.cycle_desc,
+        a.belong_year,
+        a.special,
+        a.user_id,
+        a.name as user_name,
+        a.dept_id,
+        a.dept_name,
+        a.modified,
+        a.dept_score,
+        a.leader_score,
+        a.unusual_score,
+        a.discipline_score,
+        a.score,
+        a.grade,
+        a.rsc_opinion,
+        a.dzh_opinion,
+        a.step,
+        (select count(0)from  biz_assess_task_user_tag t join biz_assess_regular_info ri on ri.user_tag_id = t.id
+        where t.user_id = a.user_id and t.task_id = a.task_id) as is_fill_regular
+        FROM
+        v_evaluation_grade a
+
+        <where>
+            <if test="special != null and special != ''">
+                <choose>
+                    <when test="special == '0'.toString()">
+                        and a.special =#{special}
+                        <if test="cycleDesc != null and cycleDesc != ''">and a.cycle_desc =#{cycleDesc}</if>
+                        <if test="belongYear != null and belongYear != ''">and a.belong_year =#{belongYear}</if>
+                        <if test="deptId != null and deptId != ''">and a.dept_id =#{deptId}</if>
+                        <if test="personnelType != null and personnelType != ''">and a.personnel_type =#{personnelType}</if>
+                    </when>
+                    <otherwise>
+                        and a.special =#{special} and a.task_id = #{taskId}
+                        <if test="deptId != null and deptId != ''">and cf.dept_id =#{deptId}</if>
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="handleStatus != null">
+                <choose>
+                    <when test="handleStatus == 0">
+                        and CAST(a.step AS INT) =3
+                    </when>
+                    <otherwise>
+                        and CAST(a.step AS INT)  > 3
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="userName != null and userName!=''">and a.name like concat('%',#{userName},'%') </if>
+        </where>
+        order by a.dept_id asc, a.score desc
+    </select>
+
+</mapper>

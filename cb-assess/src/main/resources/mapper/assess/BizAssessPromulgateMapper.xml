@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessPromulgateMapper">
+
+    <resultMap type="BizAssessPromulgate" id="BizAssessPromulgateResult">
+        <result property="id"    column="id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="quarter"    column="quarter"    />
+        <result property="publicityTime"    column="publicity_time"    />
+        <result property="publicityDays"    column="publicity_days"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="finishStatus"    column="finish_status"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectBizAssessPromulgateVo">
+        select id, task_id, quarter, publicity_time, publicity_days, create_by, finish_status, create_time, update_by, update_time, remark from biz_assess_promulgate
+    </sql>
+
+    <select id="selectBizAssessPromulgateList" parameterType="BizAssessPromulgate" resultMap="BizAssessPromulgateResult">
+        <include refid="selectBizAssessPromulgateVo"/>
+        <where>
+            <if test="taskId != null  and taskId != ''"> and task_id = #{taskId}</if>
+            <if test="quarter != null  and quarter != ''"> and quarter = #{quarter}</if>
+            <if test="publicityTime != null "> and publicity_time = #{publicityTime}</if>
+            <if test="publicityDays != null "> and publicity_days = #{publicityDays}</if>
+            <if test="finishStatus != null  and finishStatus != ''"> and finish_status = #{finishStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectBizAssessPromulgateById" parameterType="String" resultMap="BizAssessPromulgateResult">
+        <include refid="selectBizAssessPromulgateVo"/>
+        where id = #{id}
+    </select>
+    <select id="checkExist" resultType="java.lang.Boolean">
+        select count(1) from biz_assess_promulgate
+        <where>
+            <choose>
+                <when test="special == '0'.toString()">
+                    and quarter = #{quarter}
+                </when>
+                <otherwise>
+                    and task_id = #{taskId}
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+    <select id="selectPromulgateList" resultMap="BizAssessPromulgateResult">
+        <include refid="selectBizAssessPromulgateVo"/>
+        where finish_status ='0'
+    </select>
+
+    <insert id="insertBizAssessPromulgate" parameterType="BizAssessPromulgate">
+        insert into biz_assess_promulgate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="taskId != null">task_id,</if>
+            <if test="quarter != null">quarter,</if>
+            <if test="publicityTime != null">publicity_time,</if>
+            <if test="publicityDays != null">publicity_days,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="finishStatus != null">finish_status,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="taskId != null">#{taskId},</if>
+            <if test="quarter != null">#{quarter},</if>
+            <if test="publicityTime != null">#{publicityTime},</if>
+            <if test="publicityDays != null">#{publicityDays},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="finishStatus != null">#{finishStatus},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssessPromulgate" parameterType="BizAssessPromulgate">
+        update biz_assess_promulgate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="quarter != null">quarter = #{quarter},</if>
+            <if test="publicityTime != null">publicity_time = #{publicityTime},</if>
+            <if test="publicityDays != null">publicity_days = #{publicityDays},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="finishStatus != null">finish_status = #{finishStatus},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="changePromulgateStatus">
+      update biz_assess_promulgate set finish_status = '1' where id =#{id}
+    </update>
+    <update id="batchChangePromulgateStatus">
+        update biz_assess_promulgate set finish_status = '1' where id in
+        <foreach item="id" collection="list" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <delete id="deleteBizAssessPromulgateById" parameterType="String">
+        delete from biz_assess_promulgate where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessPromulgateByIds" parameterType="String">
+        delete from biz_assess_promulgate where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

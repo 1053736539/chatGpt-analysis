@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessIndicatorMapper">
+
+    <resultMap type="BizAssessIndicator" id="BizAssessIndicatorResult">
+        <result property="indId" column="ind_id"/>
+        <result property="indNo" column="ind_no"/>
+        <result property="indOrder" column="ind_order"/>
+        <result property="indName" column="ind_name"/>
+        <result property="indContent" column="ind_content"/>
+        <result property="indAttribute" column="ind_attribute"/>
+        <result property="indAccording" column="ind_according"/>
+        <result property="indStandard" column="ind_standard"/>
+        <result property="status" column="status"/>
+        <result property="createBy" column="create_by"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectBizAssessIndicatorVo">
+        select a.ind_id,
+               a.ind_no,
+               a.ind_order,
+               a.ind_name,
+               a.ind_content,
+               a.ind_attribute,
+               a.ind_according,
+               a.ind_standard,
+               a.status,
+               a.create_by,
+               a.del_flag,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.remark
+        from biz_assess_indicator as a
+    </sql>
+
+    <select id="selectBizAssessIndicatorList" parameterType="BizAssessIndicator" resultMap="BizAssessIndicatorResult">
+        <include refid="selectBizAssessIndicatorVo"/>
+        <where>
+            <if test="indNo != null  and indNo != ''">and a.ind_no = #{indNo}</if>
+            <if test="indName != null  and indName != ''">and a.ind_name like concat('%', #{indName}, '%')</if>
+            <if test="indContent != null  and indContent != ''">and a.ind_content = #{indContent}</if>
+            <if test="indAttribute != null  and indAttribute != ''">and a.ind_attribute = #{indAttribute}</if>
+            <if test="indAccording != null  and indAccording != ''">and a.ind_according = #{indAccording}</if>
+            <if test="indStandard != null  and indStandard != ''">and a.ind_standard like concat('%', #{indStandard}, '%')</if>
+            <if test="status != null  and status != ''">and a.status = #{status}</if>
+            and a.del_flag = '1'
+        </where>
+    </select>
+
+    <select id="selectBizAssessIndicatorById" parameterType="String" resultMap="BizAssessIndicatorResult">
+        <include refid="selectBizAssessIndicatorVo"/>
+        where a.ind_id = #{indId}
+    </select>
+    <select id="selectIndicatorListByIds" resultMap="BizAssessIndicatorResult">
+        <include refid="selectBizAssessIndicatorVo"/>
+        where ind_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        order by ind_order asc
+    </select>
+    <select id="selectAllIndicator" resultType="com.cb.assess.domain.BizAssessIndicator">
+        select
+               ind_id as indId,
+               ind_name as indName,
+               ind_standard as indStandard
+        from biz_assess_indicator
+    </select>
+
+
+    <insert id="insertBizAssessIndicator" parameterType="BizAssessIndicator">
+        insert into biz_assess_indicator
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="indId != null and indId != ''">ind_id,</if>
+            <if test="indNo != null">ind_no,</if>
+            <if test="indName != null">ind_name,</if>
+            <if test="indContent != null and indContent != ''">ind_content,</if>
+            <if test="indAttribute != null and indAttribute != ''">ind_attribute,</if>
+            <if test="indAccording != null">ind_according,</if>
+            <if test="indStandard != null and indStandard != ''">ind_standard,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="indOrder != null">ind_order,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="indId != null and indId != ''">#{indId},</if>
+            <if test="indNo != null">#{indNo},</if>
+            <if test="indName != null">#{indName},</if>
+            <if test="indContent != null and indContent != ''">#{indContent},</if>
+            <if test="indAttribute != null and indAttribute != ''">#{indAttribute},</if>
+            <if test="indAccording != null">#{indAccording},</if>
+            <if test="indStandard != null and indStandard != ''">#{indStandard},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="indOrder != null">#{indOrder},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssessIndicator" parameterType="BizAssessIndicator">
+        update biz_assess_indicator
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="indNo != null">ind_no = #{indNo},</if>
+            <if test="indName != null">ind_name = #{indName},</if>
+            <if test="indContent != null and indContent != ''">ind_content = #{indContent},</if>
+            <if test="indAttribute != null and indAttribute != ''">ind_attribute = #{indAttribute},</if>
+            <if test="indAccording != null">ind_according = #{indAccording},</if>
+            <if test="indStandard != null and indStandard != ''">ind_standard = #{indStandard},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="indOrder != null">ind_order = #{indOrder},</if>
+        </trim>
+        where ind_id = #{indId}
+    </update>
+    <update id="changeStatus">
+        update biz_assess_indicator
+        set status= #{status}
+        where ind_id = #{indId}
+    </update>
+
+    <delete id="deleteBizAssessIndicatorById" parameterType="String">
+        delete
+        from biz_assess_indicator
+        where ind_id = #{indId}
+    </delete>
+
+    <delete id="deleteBizAssessIndicatorByIds" parameterType="String">
+        delete from biz_assess_indicator where ind_id in
+        <foreach item="indId" collection="array" open="(" separator="," close=")">
+            #{indId}
+        </foreach>
+    </delete>
+
+    <delete id="logicDeleteBizAssessIndicatorById" parameterType="String">
+        update biz_assess_indicator
+        set del_flag= '2'
+        where ind_id = #{indId}
+    </delete>
+
+    <delete id="logicDeleteBizAssessIndicatorByIds" parameterType="String">
+        update biz_assess_indicator set del_flag= '2' where ind_id in
+        <foreach item="indId" collection="array" open="(" separator="," close=")">
+            #{indId}
+        </foreach>
+    </delete>
+</mapper>

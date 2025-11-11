@@ -1,0 +1,588 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessRegularInfoMapper">
+    <resultMap type="BizAssessRegularInfo" id="BizAssessRegularInfoResult">
+        <result property="id" column="id"/>
+        <result property="userTagId" column="user_tag_id"/>
+        <result property="deptAndPost" column="dept_and_post"/>
+        <result property="responsibilities" column="responsibilities"/>
+        <result property="personalSummary" column="personal_summary"/>
+        <result property="absenteeismNum" column="absenteeism_num"/>
+        <result property="leaveNum" column="leave_num"/>
+        <result property="lateArrivalEarlyDepartureNum" column="late_arrival_early_departure_num"/>
+        <result property="rewardsPunishMisconduct" column="rewards_punish_misconduct"/>
+        <result property="evaluationLevelSuggest" column="evaluation_level_suggest"/>
+        <result property="organOpinions" column="organ_opinions"/>
+        <result property="othersRemark" column="others_remark"/>
+        <result property="auditer" column="auditer"/>
+        <result property="auditTime" column="audit_time"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="step" column="step"/>
+        <result property="establishType" column="establish_type"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="auditerSeal" column="auditer_seal"/>
+        <result property="organSeal" column="organ_seal"/>
+        <result property="signImg" column="sign_img"/>
+        <result property="personnelType" column="personnel_type"/>
+        <association property="manage" javaType="BizAssessTaskManage">
+            <id property="taskId" column="task_id"/>
+            <result property="taskName" column="task_name"/>
+            <result property="assessCycle" column="assess_cycle"/>
+            <result property="taskYear" column="task_year"/>
+            <result property="taskQuarter" column="task_quarter"/>
+            <result property="taskMoth" column="task_moth"/>
+        </association>
+        <association property="user" javaType="SysUser">
+            <id property="userId" column="user_id"/>
+            <result property="name" column="name"/>
+            <result property="identityType" column="identity_type"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectBizAssessRegularInfoVo">
+        select a.id,
+               a.user_tag_id,
+               a.dept_and_post,
+               a.responsibilities,
+               a.personal_summary,
+               a.absenteeism_num,
+               a.leave_num,
+               a.late_arrival_early_departure_num,
+               a.rewards_punish_misconduct,
+               a.evaluation_level_suggest,
+               a.organ_opinions,
+               a.others_remark,
+               a.auditer,
+               a.audit_time,
+               a.audit_status,
+               a.step,
+               a.establish_type,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.auditer_seal,
+               a.organ_seal,
+               a.sign_img,
+               m.task_name,
+               m.assess_cycle,
+               m.task_year,
+               m.task_quarter,
+               m.task_moth
+        from biz_assess_task_user_tag t
+                 join biz_assess_regular_info a on a.user_tag_id = t.id
+                 join biz_assess_task_manage m on m.task_id = t.task_id
+    </sql>
+
+
+    <select id="selectBizAssessRegularInfoList" parameterType="Long" resultMap="BizAssessRegularInfoResult">
+        <include refid="selectBizAssessRegularInfoVo"/>
+        where t.user_id = #{userId}
+    </select>
+
+    <resultMap type="VRegularFillInfo" id="VRegularFillInfoResult">
+        <result property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="status" column="status"/>
+        <result property="infoId" column="info_id"/>
+        <result property="userTagId" column="user_tag_id"/>
+        <result property="deptAndPost" column="dept_and_post"/>
+        <result property="responsibilities" column="responsibilities"/>
+        <result property="personalSummary" column="personal_summary"/>
+        <result property="absenteeismNum" column="absenteeism_num"/>
+        <result property="leaveNum" column="leave_num"/>
+        <result property="lateArrivalEarlyDepartureNum" column="late_arrival_early_departure_num"/>
+        <result property="rewardsPunishMisconduct" column="rewards_punish_misconduct"/>
+        <result property="evaluationLevelSuggest" column="evaluation_level_suggest"/>
+        <result property="organOpinions" column="organ_opinions"/>
+        <result property="othersRemark" column="others_remark"/>
+        <result property="auditer" column="auditer"/>
+        <result property="auditTime" column="audit_time"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="step" column="step"/>
+        <result property="establishType" column="establish_type"/>
+        <result property="auditerSeal" column="auditer_seal"/>
+        <result property="organSeal" column="organ_seal"/>
+        <result property="signImg" column="sign_img"/>
+    </resultMap>
+    <select id="selectVRegularFillInfoList" parameterType="VRegularFillInfo" resultMap="VRegularFillInfoResult">
+        SELECT
+        fi.id,
+        fi.task_id,
+        fi.user_id,
+        u.name as user_name,
+        cf.dept_id,
+        cf.dept_name,
+        fi.status,
+        fi.info_id,
+        fi.dept_and_post,
+        fi.responsibilities,
+        fi.personal_summary,
+        fi.absenteeism_num,
+        fi.leave_num,
+        fi.late_arrival_early_departure_num,
+        fi.rewards_punish_misconduct,
+        fi.evaluation_level_suggest,
+        fi.organ_opinions,
+        fi.others_remark,
+        fi.auditer,
+        fi.audit_time,
+        fi.audit_status,
+        fi.step,
+        fi.establish_type,
+        fi.auditer_seal,
+        fi.organ_seal,
+        fi.sign_img
+        FROM
+        v_regular_fill_info fi
+        JOIN v_sys_user u ON fi.user_id = u.user_id
+        join v_task_assess_user_confirm cf on cf.task_id = fi.task_id and fi.user_id = cf.user_id and cf.confirm_status = '1'
+        <where>
+            <if test="taskId != null and taskId != ''">and fi.task_id =#{taskId}</if>
+            <if test="userId != null">and fi.user_id =#{userId}</if>
+            <if test="userName != null and userName!= ''">and u.name =#{userName}</if>
+            <if test="deptId != null">and cf.dept_id =#{deptId}</if>
+            <if test="status != null and status != ''">and fi.status =#{status}</if>
+            <if test="auditStatus != null and auditStatus != ''">and fi.audit_status =#{auditStatus}</if>
+        </where>
+    </select>
+
+    <select id="selectVRegularFillInfoListByTskIds" parameterType="VRegularFillInfo" resultMap="VRegularFillInfoResult">
+        select id,task_id,user_id,status,info_id,dept_and_post,responsibilities,personal_summary,absenteeism_num,
+        leave_num,late_arrival_early_departure_num,rewards_punish_misconduct,evaluation_level_suggest,organ_opinions
+        ,others_remark,auditer,audit_time,audit_status,step,establish_type,auditer_seal,organ_seal,sign_img
+        from v_regular_fill_info
+        where task_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectBizAssessRegularInfoById" parameterType="String" resultMap="BizAssessRegularInfoResult">
+        <include refid="selectBizAssessRegularInfoVo"/>
+        where a.id = #{id}
+    </select>
+
+
+    <insert id="insertBizAssessRegularInfo" parameterType="BizAssessRegularInfo">
+        insert into biz_assess_regular_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userTagId != null and userTagId !=''">user_tag_id,</if>
+            <if test="deptAndPost != null and deptAndPost != ''">dept_and_post,</if>
+            <if test="responsibilities != null and responsibilities != ''">responsibilities,</if>
+            <if test="personalSummary != null and personalSummary != ''">personal_summary,</if>
+            <if test="absenteeismNum != null">absenteeism_num,</if>
+            <if test="leaveNum != null">leave_num,</if>
+            <if test="lateArrivalEarlyDepartureNum != null">late_arrival_early_departure_num,</if>
+            <if test="rewardsPunishMisconduct != null">rewards_punish_misconduct,</if>
+            <if test="evaluationLevelSuggest != null">evaluation_level_suggest,</if>
+            <if test="organOpinions != null">organ_opinions,</if>
+            <if test="othersRemark != null">others_remark,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="step != null">step,</if>
+            <if test="establishType != null">establish_type,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="auditerSeal != null">auditer_seal,</if>
+            <if test="organSeal != null">organ_seal,</if>
+            <if test="signImg != null">sign_img,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userTagId != null and userTagId !='' ">#{userTagId},</if>
+            <if test="deptAndPost != null and deptAndPost != ''">#{deptAndPost},</if>
+            <if test="responsibilities != null and responsibilities != ''">#{responsibilities},</if>
+            <if test="personalSummary != null and personalSummary != ''">#{personalSummary},</if>
+            <if test="absenteeismNum != null">#{absenteeismNum},</if>
+            <if test="leaveNum != null">#{leaveNum},</if>
+            <if test="lateArrivalEarlyDepartureNum != null">#{lateArrivalEarlyDepartureNum},</if>
+            <if test="rewardsPunishMisconduct != null">#{rewardsPunishMisconduct},</if>
+            <if test="evaluationLevelSuggest != null">#{evaluationLevelSuggest},</if>
+            <if test="organOpinions != null">#{organOpinions},</if>
+            <if test="othersRemark != null">#{othersRemark},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="step != null">#{step},</if>
+            <if test="establishType != null">#{establishType},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="auditerSeal != null">#{auditerSeal},</if>
+            <if test="organSeal != null">#{organSeal},</if>
+            <if test="signImg != null">#{signImg},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssessRegularInfo" parameterType="BizAssessRegularInfo">
+        update biz_assess_regular_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userTagId != null">user_tag_id = #{userTagId},</if>
+            <if test="deptAndPost != null and deptAndPost != ''">dept_and_post = #{deptAndPost},</if>
+            <if test="responsibilities != null and responsibilities != ''">responsibilities = #{responsibilities},</if>
+            <if test="personalSummary != null and personalSummary != ''">personal_summary = #{personalSummary},</if>
+            <if test="absenteeismNum != null">absenteeism_num = #{absenteeismNum},</if>
+            <if test="leaveNum != null">leave_num = #{leaveNum},</if>
+            <if test="lateArrivalEarlyDepartureNum != null">late_arrival_early_departure_num =
+                #{lateArrivalEarlyDepartureNum},
+            </if>
+            <if test="rewardsPunishMisconduct != null">rewards_punish_misconduct = #{rewardsPunishMisconduct},</if>
+            <if test="evaluationLevelSuggest != null">evaluation_level_suggest = #{evaluationLevelSuggest},</if>
+            <if test="organOpinions != null">organ_opinions = #{organOpinions},</if>
+            <if test="othersRemark != null">others_remark = #{othersRemark},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="step != null">step = #{step},</if>
+            <if test="establishType != null">establish_type = #{establishType},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+
+            <if test="auditerSeal != null">auditer_seal = #{auditerSeal},</if>
+            <if test="organSeal != null">organ_seal = #{organSeal},</if>
+            <if test="signImg != null">sign_img = #{signImg},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="selectBizAssessRegularInfoByTaskId" resultMap="BizAssessRegularInfoResult">
+        SELECT ri.id,
+               ri.user_tag_id,
+               ri.dept_and_post,
+               ri.responsibilities,
+               ri.personal_summary,
+               ri.absenteeism_num,
+               ri.leave_num,
+               ri.late_arrival_early_departure_num,
+               ri.rewards_punish_misconduct,
+               ri.evaluation_level_suggest,
+               ri.organ_opinions,
+               ri.others_remark,
+               ri.auditer,
+               ri.audit_time,
+               ri.audit_status,
+               ri.step,
+               ri.establish_type,
+               ri.create_by,
+               ri.create_time,
+               ri.update_by,
+               ri.update_time,
+               ri.auditer_seal,
+               ri.organ_seal,
+               ri.sign_img,
+               u.name,
+               u.identity_type
+        FROM biz_assess_regular_info ri
+                 join biz_assess_task_user_tag ut on ut.id = ri.user_tag_id
+                 join biz_assess_task_manage m on m.task_id = ut.task_id
+                 join v_sys_user u on u.user_id = ut.user_id
+        where ut.task_id = #{taskId}
+          and ut.user_id = #{userId}
+    </select>
+    <select id="selectNeedLeaderAuditList" resultMap="BizAssessRegularInfoResult">
+        select a.id, a.user_tag_id, a.dept_and_post, a.responsibilities, a.personal_summary, a.absenteeism_num,
+        a.leave_num,a.late_arrival_early_departure_num, a.rewards_punish_misconduct,a.evaluation_level_suggest,
+        a.organ_opinions,a.others_remark,a.auditer,a.audit_time, a.audit_status,a.step, a.establish_type, a.create_by,
+        a.create_time, a.update_by, a.update_time,
+        m.task_name, m.assess_cycle, m.task_year, m.task_quarter, m.task_moth,
+        u.user_id,u.name
+        from biz_assess_task_user_tag t
+        join biz_assess_regular_info a on a.user_tag_id = t.id
+        join biz_assess_task_manage m on m.task_id = t.task_id
+        join v_sys_user u on u.user_id = t.user_id
+        join v_task_assess_user_confirm cf on cf.user_id =u.user_id and cf.task_id = m.task_id and cf.confirm_status = '1'
+        <where>
+            <choose>
+                <when test="exclude">
+                    <choose>
+                        <when test="auditStatus == '1'.toString()">
+                            and audit_status = #{auditStatus}
+                        </when>
+                        <otherwise>
+                            and a.step =#{step} and audit_status = #{auditStatus}
+                        </otherwise>
+                    </choose>
+                    <if test="userName != null and userName != ''">
+                        and u.name like concat('%',#{userName},'%')
+                    </if>
+                    and cf.dept_id in
+                    <foreach item="item" collection="deptIds" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    and (u.work_title_code not in
+                    <foreach item="item" collection="jobLevels" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    and u.is_hosting_work = 0)
+                </when>
+                <otherwise>
+                    <choose>
+                        <when test="auditStatus == '1'.toString()">
+                            and audit_status = #{auditStatus}
+                        </when>
+                        <otherwise>
+                            and a.step =#{step} and audit_status = #{auditStatus}
+                        </otherwise>
+                    </choose>
+                    <if test="userName != null and userName != ''">
+                        and u.name like concat('%',#{userName},'%')
+                    </if>
+                    and cf.dept_id in
+                    <foreach item="item" collection="deptIds" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    and (u.work_title_code in
+                    <foreach item="item" collection="jobLevels" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    or u.work_title_code is null
+                    or u.is_hosting_work = 1)
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+
+    <select id="selectNeedOrganFillingList" resultMap="BizAssessRegularInfoResult">
+        select a.id, a.user_tag_id, a.dept_and_post, a.responsibilities, a.personal_summary, a.absenteeism_num,
+        a.leave_num,a.late_arrival_early_departure_num, a.rewards_punish_misconduct,a.evaluation_level_suggest,
+        a.organ_opinions, a.others_remark,a.auditer,a.audit_time, a.audit_status,a.step, a.establish_type,
+        a.create_by, a.create_time, a.update_by, a.update_time,
+        m.task_name, m.assess_cycle, m.task_year, m.task_quarter, m.task_moth,
+        u.name
+        from biz_assess_task_user_tag t
+        join biz_assess_regular_info a on a.user_tag_id = t.id
+        join biz_assess_task_manage m on m.task_id = t.task_id
+        join v_sys_user u on u.user_id = t.user_id
+        where a.step =#{step}
+        and (u.work_title_code not in
+        <foreach item="item" collection="jobLevels" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+        or u.work_title_code is null
+        )
+    </select>
+
+    <select id="selectNeedApprovalSummaryList" resultMap="BizAssessRegularInfoResult">
+        select a.id, a.user_tag_id, a.dept_and_post, a.responsibilities, a.personal_summary, a.absenteeism_num,
+        a.leave_num,a.late_arrival_early_departure_num, a.rewards_punish_misconduct,a.evaluation_level_suggest,
+        a.organ_opinions, a.others_remark,a.auditer,a.audit_time, a.audit_status,a.step, a.establish_type,
+        a.create_by, a.create_time, a.update_by, a.update_time,
+        m.task_id,m.task_name,m.type as personnel_type,
+        u.user_id,u.name,u.identity_type
+        from biz_assess_task_user_tag t
+        join biz_assess_regular_info a on a.user_tag_id = t.id
+        join v_ordinary_assess_task m on m.task_id = t.task_id
+        join v_sys_user u on u.user_id = t.user_id
+        <where>
+            and a.step =#{step}
+            and (u.work_title_code not in
+            <foreach item="item" collection="jobLevels" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            or u.work_title_code is null
+            )
+            <if test="vo.taskId != null and vo.taskId != ''">and m.task_id =#{taskId} </if>
+            <if test="vo.belongYear != null and vo.belongYear != ''">and m.belong_year =#{vo.belongYear} </if>
+            <if test="vo.cycleDesc != null and vo.cycleDesc != ''">and m.cycle_desc =#{vo.cycleDesc} </if>
+        </where>
+
+    </select>
+
+    <select id="selectNeedAuditSummaryList" resultMap="BizAssessRegularInfoResult">
+        select a.id, a.user_tag_id, a.dept_and_post, a.responsibilities, a.personal_summary, a.absenteeism_num,
+        a.leave_num,a.late_arrival_early_departure_num, a.rewards_punish_misconduct,a.evaluation_level_suggest,
+        a.organ_opinions,a.others_remark,a.auditer,a.audit_time, a.audit_status,a.step, a.establish_type, a.create_by,
+        a.create_time, a.update_by, a.update_time,
+        m.task_id,m.task_name,m.type as personnel_type,
+        u.user_id,u.name,u.identity_type
+        from biz_assess_task_user_tag t
+        join biz_assess_regular_info a on a.user_tag_id = t.id
+        join v_ordinary_assess_task m on m.task_id = t.task_id
+        join v_sys_user u on u.user_id = t.user_id
+        join v_task_assess_user_confirm cf on cf.user_id =u.user_id and cf.task_id = m.task_id and cf.confirm_status = '1'
+        <where>
+            <if test="vo.taskId != null and vo.taskId != ''">and m.task_id =#{taskId} </if>
+            <if test="vo.belongYear != null and vo.belongYear != ''">and m.belong_year =#{vo.belongYear} </if>
+            <if test="vo.cycleDesc != null and vo.cycleDesc != ''">and m.cycle_desc =#{vo.cycleDesc} </if>
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS( select * from  v_assess_task_handle h where h.task_id = t.task_id and h.user_id = t.user_id and h.handle_status = '0')
+                    and a.audit_status ='0'  and a.step =#{step}
+                </when>
+                <otherwise>
+                    and a.audit_status ='1'  and a.step >=#{step}
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="exclude">
+                    and cf.dept_id in
+                    <foreach item="item" collection="deptIds" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    and (u.work_title_code is null
+                            or u.work_title_code not in
+                            <foreach item="item" collection="jobLevels" open="(" separator="," close=")">
+                               #{item}
+                            </foreach>
+                        )
+                    and u.is_hosting_work ='0'
+                </when>
+                <otherwise>
+                    and cf.dept_id in
+                    <foreach item="item" collection="deptIds" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    and (u.work_title_code in
+                    <foreach item="item" collection="jobLevels" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    or u.work_title_code is null
+                    or u.is_hosting_work ='1'
+                    )
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+    <select id="selectNeedAdminFillingList" resultMap="BizAssessRegularInfoResult">
+        select a.id,
+               a.user_tag_id,
+               a.dept_and_post,
+               a.responsibilities,
+               a.personal_summary,
+               a.absenteeism_num,
+               a.leave_num,
+               a.late_arrival_early_departure_num,
+               a.rewards_punish_misconduct,
+               a.evaluation_level_suggest,
+               a.organ_opinions,
+               a.others_remark,
+               a.auditer,
+               a.audit_time,
+               a.audit_status,
+               a.step,
+               a.establish_type,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               m.task_name,
+               m.assess_cycle,
+               m.task_year,
+               m.task_quarter,
+               m.task_moth,
+               u.name
+        from biz_assess_task_user_tag t
+                 join biz_assess_regular_info a on a.user_tag_id = t.id
+                 join biz_assess_task_manage m on m.task_id = t.task_id
+                 join sys_user u on u.user_id = t.user_id
+             <where>
+                 <if test="step != null">and a.step = #{step}</if>
+             </where>
+    </select>
+    <select id="selectBizAssessRegularInfoByUserTagId" resultMap="BizAssessRegularInfoResult">
+        select a.id,
+               a.user_tag_id,
+               a.dept_and_post,
+               a.responsibilities,
+               a.personal_summary,
+               a.absenteeism_num,
+               a.leave_num,
+               a.late_arrival_early_departure_num,
+               a.rewards_punish_misconduct,
+               a.evaluation_level_suggest,
+               a.organ_opinions,
+               a.others_remark,
+               a.auditer,
+               a.audit_time,
+               a.audit_status,
+               a.step,
+               a.establish_type,
+               a.create_by,
+               a.create_time,
+               a.update_by,
+               a.update_time,
+               a.auditer_seal,
+               a.organ_seal
+        from biz_assess_regular_info a
+        where a.user_tag_id = #{userTagId}
+    </select>
+
+
+    <update id="fillInComments" parameterType="BizAssessRegularInfo">
+        update biz_assess_regular_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="evaluationLevelSuggest != null">evaluation_level_suggest = #{evaluationLevelSuggest},</if>
+            <if test="othersRemark != null">others_remark = #{othersRemark},</if>
+            <if test="organOpinions != null">organ_opinions = #{organOpinions},</if>
+            <if test="auditer != null">auditer = #{auditer},</if>
+            <if test="auditTime != null">audit_time = #{auditTime},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="step != null">step = #{step},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="auditerSeal != null">auditer_seal = #{auditerSeal},</if>
+            <if test="organSeal != null">organ_seal = #{organSeal},</if>
+            <if test="signImg != null">sign_img = #{signImg},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <resultMap type="AssessRegularVo" id="AssessRegularVoResult" extends="BizAssessRegularInfoResult">
+        <result property="userName" column="user_name"/>
+        <result property="auditName" column="audit_name"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+    </resultMap>
+    <select id="exportRegular2Word" resultMap="AssessRegularVoResult">
+        SELECT
+            ri.dept_and_post,
+            ri.responsibilities,
+            ri.personal_summary,
+            ri.absenteeism_num,
+            ri.leave_num,
+            ri.late_arrival_early_departure_num,
+            ri.rewards_punish_misconduct,
+            ri.evaluation_level_suggest,
+            ri.organ_opinions,
+            ri.others_remark,
+            ri.auditer,
+            (select name from v_sys_user where user_id=ri.auditer) as audit_name,
+            ri.audit_time,
+            ri.establish_type,
+            ri.auditer_seal,
+            ri.organ_seal,
+            ri.sign_img,
+            u.name as user_name,
+            u.identity_type,
+            m.assess_cycle as "cycle",
+            CASE m.assess_cycle
+                WHEN '1' THEN m.task_moth
+                WHEN '2' THEN m.task_quarter
+                WHEN '3' THEN m.task_year
+                ELSE '4' END as cycle_desc
+        FROM biz_assess_regular_info ri
+                 join biz_assess_task_user_tag ut on ut.id = ri.user_tag_id
+                 join biz_assess_task_manage m on m.task_id = ut.task_id
+                 join v_sys_user u on u.user_id = ut.user_id
+        where ut.task_id = #{taskId}
+          and ut.user_id = #{userId}
+    </select>
+
+    <delete id="deleteRegularInfo">
+            delete from biz_assess_regular_info where user_tag_id in
+            <foreach item="item" collection="list" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+    </delete>
+
+</mapper>

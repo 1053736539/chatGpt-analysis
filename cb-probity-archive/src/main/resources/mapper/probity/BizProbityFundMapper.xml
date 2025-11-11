@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityFundMapper">
+
+    <resultMap type="BizProbityFund" id="BizProbityFundResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="holder" column="holder"/>
+        <result property="fundNameCode" column="fund_name_code"/>
+        <result property="purchaseAmount" column="purchase_amount"/>
+    </resultMap>
+
+    <sql id="selectBizProbityFundVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               holder,
+               fund_name_code,
+               purchase_amount
+        from biz_probity_fund
+    </sql>
+
+    <select id="selectBizProbityFundList" parameterType="BizProbityFund" resultMap="BizProbityFundResult">
+        <include refid="selectBizProbityFundVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="holder != null  and holder != ''">and holder = #{holder}</if>
+            <if test="fundNameCode != null  and fundNameCode != ''">and fund_name_code = #{fundNameCode}</if>
+            <if test="purchaseAmount != null ">and purchase_amount = #{purchaseAmount}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityFundById" parameterType="String" resultMap="BizProbityFundResult">
+        <include refid="selectBizProbityFundVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityFund" parameterType="BizProbityFund">
+        insert into biz_probity_fund
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="holder != null">holder,</if>
+            <if test="fundNameCode != null">fund_name_code,</if>
+            <if test="purchaseAmount != null">purchase_amount,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="holder != null">#{holder},</if>
+            <if test="fundNameCode != null">#{fundNameCode},</if>
+            <if test="purchaseAmount != null">#{purchaseAmount},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_fund
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            holder,
+            fund_name_code,
+            purchase_amount,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.holder},
+                #{entity.fundNameCode},
+                #{entity.purchaseAmount},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityFund" parameterType="BizProbityFund">
+        update biz_probity_fund
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="holder != null">holder = #{holder},</if>
+            <if test="fundNameCode != null">fund_name_code = #{fundNameCode},</if>
+            <if test="purchaseAmount != null">purchase_amount = #{purchaseAmount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityFundById" parameterType="String">
+        delete
+        from biz_probity_fund
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityFundByIds" parameterType="String">
+        delete from biz_probity_fund where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamPaperDetailMapper">
+    
+    <resultMap type="ExamPaperDetail" id="ExamPaperDetailResult">
+        <result property="id"    column="id"    />
+        <result property="paperId"    column="paper_id"    />
+        <result property="bankIds"    column="bank_ids"    />
+        <result property="labelIds"    column="label_ids"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="modifyTime"    column="modify_time"    />
+        <result property="modifyUser"    column="modify_user"    />
+        <result property="selectCount"    column="select_count"    />
+        <result property="selectsCount"    column="selects_count"    />
+        <result property="judgeCount"    column="judge_count"    />
+        <result property="answerCount"    column="answer_count"    />
+    </resultMap>
+
+    <sql id="selectExamPaperDetailVo">
+        select id, paper_id, bank_ids, label_ids,  create_time, create_user, modify_time, modify_user, select_count, selects_count, judge_count, answer_count from exam_paper_detail
+    </sql>
+
+    <select id="selectExamPaperDetailList" parameterType="ExamPaperDetail" resultMap="ExamPaperDetailResult">
+        <include refid="selectExamPaperDetailVo"/>
+        <where>  
+            <if test="paperId != null "> and paper_id = #{paperId}</if>
+            <if test="bankIds != null  and bankIds != ''"> and bank_ids = #{bankIds}</if>
+            <if test="labelIds != null  and labelIds != ''"> and label_ids = #{labelIds}</if>
+            <if test="questionCount != null "> and question_count = #{questionCount}</if>
+            <if test="questionScore != null "> and question_score = #{questionScore}</if>
+            <if test="createUser != null  and createUser != ''"> and create_user = #{createUser}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+            <if test="modifyUser != null  and modifyUser != ''"> and modify_user = #{modifyUser}</if>
+            <if test="selectCount != null "> and select_count = #{selectCount}</if>
+            <if test="selectsCount != null "> and selects_count = #{selectsCount}</if>
+            <if test="judgeCount != null "> and judge_count = #{judgeCount}</if>
+            <if test="answerCount != null "> and answer_count = #{answerCount}</if>
+        </where>
+    </select>
+    
+    <select id="selectExamPaperDetailById" parameterType="Long" resultMap="ExamPaperDetailResult">
+        <include refid="selectExamPaperDetailVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertExamPaperDetail" parameterType="ExamPaperDetail" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_paper_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="paperId != null">paper_id,</if>
+            <if test="bankIds != null">bank_ids,</if>
+            <if test="labelIds != null">label_ids,</if>
+            <if test="questionCount != null">question_count,</if>
+            <if test="questionScore != null">question_score,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="modifyTime != null">modify_time,</if>
+            <if test="modifyUser != null">modify_user,</if>
+            <if test="selectCount != null">select_count,</if>
+            <if test="selectsCount != null">selects_count,</if>
+            <if test="judgeCount != null">judge_count,</if>
+            <if test="answerCount != null">answer_count,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="paperId != null">#{paperId},</if>
+            <if test="bankIds != null">#{bankIds},</if>
+            <if test="labelIds != null">#{labelIds},</if>
+            <if test="questionCount != null">#{questionCount},</if>
+            <if test="questionScore != null">#{questionScore},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+            <if test="modifyUser != null">#{modifyUser},</if>
+            <if test="selectCount != null">#{selectCount},</if>
+            <if test="selectsCount != null">#{selectsCount},</if>
+            <if test="judgeCount != null">#{judgeCount},</if>
+            <if test="answerCount != null">#{answerCount},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatchExamPaperDetail" parameterType="java.util.List"
+            useGeneratedKeys="true" keyProperty="id" >
+        insert into exam_paper_detail (paper_id,bank_ids,label_ids,
+        create_user,create_time,select_count,selects_count,
+        judge_count,answer_count)
+        values
+        <foreach collection="list" separator="," item="item" index="i">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+                #{item.paperId},
+                #{item.bankIds},
+                #{item.labelIds},
+                #{item.createUser},
+                #{item.createTime},
+                #{item.selectCount},
+                #{item.selectsCount},
+                #{item.judgeCount},
+                #{item.answerCount}
+            </trim>
+        </foreach>
+    </insert>
+
+
+    <update id="updateExamPaperDetail" parameterType="ExamPaperDetail">
+        update exam_paper_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="paperId != null">paper_id = #{paperId},</if>
+            <if test="bankIds != null">bank_ids = #{bankIds},</if>
+            <if test="labelIds != null">label_ids = #{labelIds},</if>
+            <if test="questionCount != null">question_count = #{questionCount},</if>
+            <if test="questionScore != null">question_score = #{questionScore},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createUser != null">create_user = #{createUser},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+            <if test="modifyUser != null">modify_user = #{modifyUser},</if>
+            <if test="selectCount != null">select_count = #{selectCount},</if>
+            <if test="selectsCount != null">selects_count = #{selectsCount},</if>
+            <if test="judgeCount != null">judge_count = #{judgeCount},</if>
+            <if test="answerCount != null">answer_count = #{answerCount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamPaperDetailById" parameterType="Long">
+        delete from exam_paper_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteExamPaperDetailByPaperIds" parameterType="String">
+        delete from exam_paper_detail where paper_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteExamPaperDetailByIds" parameterType="String">
+        delete from exam_paper_detail where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

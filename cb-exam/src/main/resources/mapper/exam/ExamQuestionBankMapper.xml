@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamQuestionBankMapper">
+    <resultMap type="ExamQuestionBank" id="ExamQuestionBankResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="description"    column="description"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectExamQuestionBankVo">
+        select id, name, description, create_by, create_time, update_by, update_time from exam_question_bank
+    </sql>
+
+    <select id="selectBankByQuestionIdList" parameterType="java.lang.Long" resultType="com.cb.exam.domain.ExamQuestionBank">
+       SELECT a.id,b."name" FROM exam_question_bank_questions
+            as a  LEFT JOIN exam_question_bank as b
+            on a.question_bank_id = b.id
+       where a.examination_question_id = #{questionId}
+    </select>
+
+    <select id="selectExamQuestionBankList" parameterType="ExamQuestionBank" resultMap="ExamQuestionBankResult">
+        <include refid="selectExamQuestionBankVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="updateBy != null  and updateBy != ''"> and update_by = #{updateBy}</if>
+            <if test="updateTime != null "> and update_time = #{updateTime}</if>
+        </where>
+    </select>
+
+    <select id="selectExamQuestionBankListByRole" parameterType="long" resultMap="ExamQuestionBankResult">
+        SELECT  b.id, b.name, description, b.create_by, b.create_time, b.update_by, b.update_time  FROM exam_question_bank as b   JOIN
+        (SELECT r.question_bank_id  FROM exam_question_bank_role as r
+            <where>
+                <if test="roleIds != null">
+                    and r.role_id in
+                    <foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+                        #{roleId}
+                    </foreach>
+                </if>
+            </where>
+        ) as a on b.id = a.question_bank_id
+    </select>
+
+    <select id="selectExamBankQuestionCountList" parameterType="com.cb.exam.vo.ExamBankQuestionCountVo" resultType="com.cb.exam.vo.ExamBankQuestionCountVo">
+        SELECT
+            bank.id,
+            bank.name,
+            bank.description,
+            (
+            SELECT
+                count(*)
+            FROM
+                exam_question_bank_questions AS b
+                JOIN exam_questions AS q ON q.id = b.examination_question_id
+            WHERE
+                b.question_bank_id = bank.id
+                AND q.type = 'select'
+            ) AS selectCount,
+            (
+            SELECT
+                count(*)
+            FROM
+                exam_question_bank_questions AS b
+                JOIN exam_questions AS q ON q.id = b.examination_question_id
+            WHERE
+                b.question_bank_id = bank.id
+                AND q.type = 'selects'
+            ) AS selectsCount,
+            (
+            SELECT
+                count(*)
+            FROM
+                exam_question_bank_questions AS b
+                JOIN exam_questions AS q ON q.id = b.examination_question_id
+            WHERE
+                b.question_bank_id = bank.id
+                AND q.type = 'verdict'
+            ) AS verdictCount,
+            (
+            SELECT
+                count(*)
+            FROM
+                exam_question_bank_questions AS b
+                JOIN exam_questions AS q ON q.id = b.examination_question_id
+            WHERE
+                b.question_bank_id = bank.id
+                AND q.type = 'answer'
+            ) AS answerCount
+        FROM
+            exam_question_bank AS bank
+            JOIN exam_question_bank_role role ON bank.id = role.question_bank_id
+        <where>
+            <if test="roleIds != null">
+                and role.role_id in
+                <foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+                     #{roleId}
+                </foreach>
+            </if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectExamQuestionBankById" parameterType="Long" resultMap="ExamQuestionBankResult">
+        <include refid="selectExamQuestionBankVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertExamQuestionBank" parameterType="ExamQuestionBank" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_question_bank
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="description != null">description,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="description != null">#{description},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExamQuestionBank" parameterType="ExamQuestionBank">
+        update exam_question_bank
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamQuestionBankById" parameterType="Long">
+        delete from exam_question_bank where id = #{id}
+    </delete>
+
+    <delete id="deleteExamQuestionBankByIds" parameterType="String">
+        delete from exam_question_bank where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

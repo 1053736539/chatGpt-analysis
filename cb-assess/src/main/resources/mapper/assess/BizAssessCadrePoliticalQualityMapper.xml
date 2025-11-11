@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessCadrePoliticalQualityMapper">
+    
+    <resultMap type="BizAssessCadrePoliticalQuality" id="BizAssessCadrePoliticalQualityResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="loyalty"    column="loyalty"    />
+        <result property="abilityConcentrate"    column="ability_concentrate"    />
+        <result property="assume"    column="assume"    />
+        <result property="capacity"    column="capacity"    />
+        <result property="selfDiscipline"    column="self_discipline"    />
+        <result property="lackLoyalty"    column="lack_loyalty"    />
+        <result property="lackAbilityConcentrate"    column="lack_ability_concentrate"    />
+        <result property="lackAssume"    column="lack_assume"    />
+        <result property="lackMisconduct"    column="lack_misconduct"    />
+        <result property="violationOrganization"    column="violation_organization"    />
+        <result property="lackCapacity"    column="lack_capacity"    />
+        <result property="overallEvaluation"    column="overall_evaluation"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="reviewerUserId"    column="reviewer_user_id"    />
+        <result property="status"    column="status"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <resultMap id="BizAssessCadrePoliticalQualityVo" type="BizAssessCadrePoliticalQualityVo" extends="BizAssessCadrePoliticalQualityResult">
+        <result property="name"    column="name"    />
+        <result property="total"    column="total"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="workPost"    column="work_post"    />
+        <result property="reviewerUserName"    column="reviewerUserName"    />
+    </resultMap>
+    <sql id="selectBizAssessCadrePoliticalQualityVo">
+        select acpq.id, acpq.user_id, acpq.loyalty, acpq.ability_concentrate, acpq.assume, acpq.capacity, acpq.self_discipline, acpq.lack_loyalty,
+               acpq.lack_ability_concentrate, acpq.lack_assume, acpq.lack_misconduct, acpq.violation_organization, acpq.lack_capacity,
+               acpq.overall_evaluation, acpq.create_time, acpq.update_time, acpq.create_by, acpq.update_by,acpq.dept_id,
+               acpq.del_flag, acpq.assessment_year,acpq.reviewer_user_id,acpq.status,u.name,u2.name as reviewerUserName ,
+               d.dept_name
+        from biz_assess_cadre_political_quality acpq
+               inner join sys_user u on acpq.user_id=u.user_id
+               inner join sys_user u2 on acpq.reviewer_user_id=u2.user_id
+               left join sys_dept d on acpq.dept_id=d.dept_id
+    </sql>
+
+    <select id="selectBizAssessCadrePoliticalQualityList" parameterType="BizAssessCadrePoliticalQualityVo" resultMap="BizAssessCadrePoliticalQualityVo">
+        <include refid="selectBizAssessCadrePoliticalQualityVo"/>
+        <where>  
+            <if test="userId != null  and userId != ''"> and acpq.user_id = #{userId}</if>
+            <if test="loyalty != null  and loyalty != ''"> and acpq.loyalty = #{loyalty}</if>
+            <if test="abilityConcentrate != null  and abilityConcentrate != ''"> and acpq.ability_concentrate = #{abilityConcentrate}</if>
+            <if test="assume != null  and assume != ''"> and acpq.assume = #{assume}</if>
+            <if test="capacity != null  and capacity != ''"> and acpq.capacity = #{capacity}</if>
+            <if test="selfDiscipline != null  and selfDiscipline != ''"> and acpq.self_discipline = #{selfDiscipline}</if>
+            <if test="lackLoyalty != null  and lackLoyalty != ''"> and acpq.lack_loyalty = #{lackLoyalty}</if>
+            <if test="lackAbilityConcentrate != null  and lackAbilityConcentrate != ''"> and acpq.lack_ability_concentrate = #{lackAbilityConcentrate}</if>
+            <if test="lackAssume != null  and lackAssume != ''"> and acpq.lack_assume = #{lackAssume}</if>
+            <if test="lackMisconduct != null  and lackMisconduct != ''"> and acpq.lack_misconduct = #{lackMisconduct}</if>
+            <if test="violationOrganization != null  and violationOrganization != ''"> and violation_organization = #{violationOrganization}</if>
+            <if test="lackCapacity != null  and lackCapacity != ''"> and acpq.lack_capacity = #{lackCapacity}</if>
+            <if test="overallEvaluation != null  and overallEvaluation != ''"> and acpq.overall_evaluation = #{overallEvaluation}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and acpq.assessment_year = #{assessmentYear}</if>
+            <if test="status != null  and status != ''"> and acpq.status = #{status}</if>
+            <if test="reviewerUserId != null  and reviewerUserId != ''"> and acpq.reviewer_user_id = #{reviewerUserId}</if>
+            <if test="deptId != null  and deptId != ''"> and acpq.dept_id = #{deptId}</if>
+            <if test="createBy != null  and deptId != ''"> and acpq.create_by = #{createBy}</if>
+            <if test="name != null  and name != ''"> and u.name  like concat('%',#{name},'%') </if>
+        </where>
+        order by acpq.create_by,create_time desc
+    </select>
+
+    <select id="selectCountMyTask" resultMap="BizAssessCadrePoliticalQualityVo">
+        select count(*) as total
+        from biz_assess_cadre_political_quality
+         where reviewer_user_id=#{reviewerUserId} and status='0'
+    </select>
+    <select id="selectStatistics" parameterType="BizAssessCadrePoliticalQuality" resultMap="BizAssessCadrePoliticalQualityVo">
+        select t.*,u.name,d.dept_name,u.work_post from( select
+        user_id,dept_id,
+        sum(if(loyalty='1',1,0))as loyalty,
+        sum(if(ability_concentrate='1',1,0)) as ability_concentrate,
+        sum(if(assume='1',1,0)) as assume,
+        sum(if(capacity='1',1,0)) as capacity,
+        sum(if(self_discipline='1',1,0)) as self_discipline,
+        sum(if(lack_loyalty='1',1,0)) as lack_loyalty,
+        sum(if(lack_ability_concentrate='1',1,0)) as lack_ability_concentrate,
+        sum(if(lack_assume='1',1,0)) as lack_assume,
+        sum(if(lack_misconduct='1',1,0)) as lack_misconduct,
+        sum(if(violation_organization='1',1,0)) as violation_organization,
+        sum(if(lack_capacity='1',1,0)) as lack_capacity,
+        sum(if(overall_evaluation='1',1,0)) as overall_evaluation,
+        if(sum(if(status='1',1,0))=count(*),1,0) as status,
+        count(*) as total,
+        assessment_year
+        from biz_assess_cadre_political_quality
+        group by user_id,assessment_year,dept_id) t
+        inner join sys_user u on t.user_id=u.user_id
+        left join sys_dept d on t.dept_id=d.dept_id
+        <where>
+            <if test="name != null  and name != ''"> and u.name = #{name}</if>
+            <if test="userId != null  and userId != ''"> and u.user_id = #{userId}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and t.assessment_year = #{assessmentYear}</if>
+            <if test="deptId != null  and deptId != ''"> and t.dept_id = #{deptId}</if>
+            <if test="deptName != null  and deptName != ''"> and d.dept_name like concat('%', #{deptName},'%')</if>
+        </where>
+    </select>
+    <select id="selectYears" resultMap="BizAssessCadrePoliticalQualityVo">
+           select assessment_year from biz_assess_cadre_political_quality group by assessment_year order by assessment_year desc
+    </select>
+    <select id="selectBizAssessCadrePoliticalQualityById" parameterType="String" resultMap="BizAssessCadrePoliticalQualityVo">
+        <include refid="selectBizAssessCadrePoliticalQualityVo"/>
+        where acpq.id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessCadrePoliticalQuality" parameterType="BizAssessCadrePoliticalQuality">
+        insert into biz_assess_cadre_political_quality
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="loyalty != null">loyalty,</if>
+            <if test="abilityConcentrate != null">ability_concentrate,</if>
+            <if test="assume != null">assume,</if>
+            <if test="capacity != null">capacity,</if>
+            <if test="selfDiscipline != null">self_discipline,</if>
+            <if test="lackLoyalty != null">lack_loyalty,</if>
+            <if test="lackAbilityConcentrate != null">lack_ability_concentrate,</if>
+            <if test="lackAssume != null">lack_assume,</if>
+            <if test="lackMisconduct != null">lack_misconduct,</if>
+            <if test="violationOrganization != null">violation_organization,</if>
+            <if test="lackCapacity != null">lack_capacity,</if>
+            <if test="overallEvaluation != null">overall_evaluation,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="assessmentYear != null and assessmentYear != ''">assessment_year,</if>
+            <if test="status != null and status != ''">status,</if>
+            <if test="reviewerUserId != null and reviewerUserId != ''">reviewer_user_id,</if>
+            <if test="deptId != null and deptId != ''">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="loyalty != null">#{loyalty},</if>
+            <if test="abilityConcentrate != null">#{abilityConcentrate},</if>
+            <if test="assume != null">#{assume},</if>
+            <if test="capacity != null">#{capacity},</if>
+            <if test="selfDiscipline != null">#{selfDiscipline},</if>
+            <if test="lackLoyalty != null">#{lackLoyalty},</if>
+            <if test="lackAbilityConcentrate != null">#{lackAbilityConcentrate},</if>
+            <if test="lackAssume != null">#{lackAssume},</if>
+            <if test="lackMisconduct != null">#{lackMisconduct},</if>
+            <if test="violationOrganization != null">#{violationOrganization},</if>
+            <if test="lackCapacity != null">#{lackCapacity},</if>
+            <if test="overallEvaluation != null">#{overallEvaluation},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="assessmentYear != null and assessmentYear != ''">#{assessmentYear},</if>
+            <if test="status != null and status != ''">#{status},</if>
+            <if test="reviewerUserId != null and reviewerUserId != ''">#{reviewerUserId},</if>
+            <if test="deptId != null and deptId != ''">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessCadrePoliticalQuality" parameterType="BizAssessCadrePoliticalQuality">
+        update biz_assess_cadre_political_quality
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="loyalty != null">loyalty = #{loyalty},</if>
+            <if test="abilityConcentrate != null">ability_concentrate = #{abilityConcentrate},</if>
+            <if test="assume != null">assume = #{assume},</if>
+            <if test="capacity != null">capacity = #{capacity},</if>
+            <if test="selfDiscipline != null">self_discipline = #{selfDiscipline},</if>
+            <if test="lackLoyalty != null">lack_loyalty = #{lackLoyalty},</if>
+            <if test="lackAbilityConcentrate != null">lack_ability_concentrate = #{lackAbilityConcentrate},</if>
+            <if test="lackAssume != null">lack_assume = #{lackAssume},</if>
+            <if test="lackMisconduct != null">lack_misconduct = #{lackMisconduct},</if>
+            <if test="violationOrganization != null">violation_organization = #{violationOrganization},</if>
+            <if test="lackCapacity != null">lack_capacity = #{lackCapacity},</if>
+            <if test="overallEvaluation != null">overall_evaluation = #{overallEvaluation},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="assessmentYear != null and assessmentYear != ''">assessment_year = #{assessmentYear},</if>
+            <if test="status != null and status != ''">status = #{status},</if>
+            <if test="deptId != null and deptId != ''">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssessCadrePoliticalQualityById" parameterType="String">
+        delete from biz_assess_cadre_political_quality where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessCadrePoliticalQualityByIds" parameterType="String">
+        delete from biz_assess_cadre_political_quality where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <delete id="deleteByUserIdAndYear">
+        delete from biz_assess_cadre_political_quality where user_id=#{userId} and assessment_year=#{year}
+    </delete>
+</mapper>

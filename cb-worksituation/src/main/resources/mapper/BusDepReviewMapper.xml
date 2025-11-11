@@ -260,17 +260,14 @@
             <if test="busDepReview != null and busDepReview.params != null and busDepReview.params.dataScope != null">
                 ${busDepReview.params.dataScope}
             </if>
-            <if test="evaluatTargets != null and evaluatTargets.size() > 0">
+            <if test="evaluatTargets != null and evaluatTargets!=''">
                 AND EXISTS (
                 SELECT 1
                 FROM BUS_DEP_REVIEW_HEADER hdr
                 JOIN BUS_DEP_EXPL e
                 ON e.ID = hdr.BUS_DEP_EXPL_ID
                 WHERE hdr.BUS_DEP_REVIEW_ID = bdr.ID
-                AND e.EVALUATION_DEPT IN
-                <foreach collection="evaluatTargets" item="target" open="(" separator="," close=")">
-                    #{target}
-                </foreach>
+                AND FIND_IN_SET(#{evaluatTargets},e.EVALUATION_DEPT)
                 )
             </if>
         </where>

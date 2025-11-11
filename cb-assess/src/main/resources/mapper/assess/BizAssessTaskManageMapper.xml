@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessTaskManageMapper">
+
+    <resultMap type="BizAssessTaskManage" id="BizAssessTaskManageResult">
+        <result property="taskId"    column="task_id"    />
+        <result property="taskName"    column="task_name"    />
+        <result property="proId"    column="pro_id"    />
+        <result property="assessCycle"    column="assess_cycle"    />
+        <result property="belongYear"    column="belong_year"    />
+        <result property="special"    column="special"    />
+        <result property="taskYear"    column="task_year"    />
+        <result property="taskQuarter"    column="task_quarter"    />
+        <result property="taskMoth"    column="task_moth"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="status"    column="status"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <association property="pro" javaType="BizAssessIndicatorPro">
+            <result property="proName" column="pro_name"/>
+            <result property="proYear" column="pro_year"/>
+            <result property="personnelType" column="personnel_type"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectBizAssessTaskManageVo">
+        select a.task_id, a.task_name, a.pro_id, a.assess_cycle,a.belong_year,a.special, a.task_year, a.task_quarter,
+               a.task_moth, a.start_time, a.end_time,
+               a.status, a.del_flag, a.create_by, a.create_time, a.update_by, a.update_time, a.remark,
+               b.pro_name,b.pro_year,b.personnel_type
+        from biz_assess_task_manage a left join biz_assess_indicator_pro b on b.pro_id = a.pro_id
+    </sql>
+
+    <select id="selectBizAssessTaskManageList" parameterType="BizAssessTaskManage" resultMap="BizAssessTaskManageResult">
+        <include refid="selectBizAssessTaskManageVo"/>
+        <where>
+            <if test="taskName != null  and taskName != ''"> and a.task_name like concat('%', #{taskName}, '%')</if>
+            <if test="proId != null  and proId != ''"> and a.pro_id = #{proId}</if>
+            <if test="assessCycle != null  and assessCycle != ''"> and a.assess_cycle = #{assessCycle}</if>
+            <if test="belongYear != null  and belongYear != ''"> and a.belong_year = #{belongYear}</if>
+            <if test="special != null  and special != ''"> and a.special = #{special}</if>
+            <if test="taskYear != null  and taskYear != ''"> and a.task_year = #{taskYear}</if>
+            <if test="taskQuarter != null  and taskQuarter != ''"> and a.task_quarter = #{taskQuarter}</if>
+            <if test="taskMoth != null  and taskMoth != ''"> and a.task_moth = #{taskMoth}</if>
+            <if test="startTime != null "> and a.start_time = #{startTime}</if>
+            <if test="endTime != null "> and a.end_time = #{endTime}</if>
+            <if test="status != null  and status != ''"> and a.status = #{status}</if>
+             and a.del_flag = '1'
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectBizAssessTaskManageById" parameterType="String" resultMap="BizAssessTaskManageResult">
+        <include refid="selectBizAssessTaskManageVo"/>
+        where task_id = #{taskId}
+    </select>
+    <!--<select id="checkTaskExist" resultType="java.lang.Boolean">
+        select count(1)
+        from biz_assess_task_manage
+        <where>
+            <choose>
+                <when test="assessCycle == '1'.toString()">
+                    and task_moth =#{taskMoth}
+                </when>
+                <when test="assessCycle == '2'.toString()">
+                    and task_quarter =#{taskQuarter}
+                </when>
+                <when test="assessCycle == '3'.toString()">
+                    and task_year =#{taskYear}
+                </when>
+                <otherwise></otherwise>
+            </choose>
+            and pro_id = #{proId}
+            <if test="taskId != null and taskId != ''">and task_id != #{taskId}</if>
+        </where>
+        and del_flag ='1'
+    </select>-->
+    <select id="checkTaskReleased" resultType="java.lang.Boolean">
+        select count(0) from biz_assess_task_manage where task_id = #{taskId} and status ='1'
+    </select>
+    <select id="checkTaskQuarter" resultType="java.lang.Integer">
+        select count(1)
+        from biz_assess_task_manage
+        <where>
+            <choose>
+                <when test="assessCycle == '1'.toString()">
+                    and task_moth =#{taskMoth}
+                </when>
+                <when test="assessCycle == '2'.toString()">
+                    and task_quarter =#{taskQuarter}
+                </when>
+                <when test="assessCycle == '3'.toString()">
+                    and task_year =#{taskYear}
+                </when>
+                <otherwise></otherwise>
+            </choose>
+            and pro_id = #{proId}
+            <if test="taskId != null and taskId != ''">and task_id != #{taskId}</if>
+        </where>
+        and del_flag ='1'
+    </select>
+
+    <insert id="insertBizAssessTaskManage" parameterType="BizAssessTaskManage">
+        insert into biz_assess_task_manage
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">task_id,</if>
+            <if test="taskName != null">task_name,</if>
+            <if test="proId != null">pro_id,</if>
+            <if test="assessCycle != null">assess_cycle,</if>
+            <if test="belongYear != null">belong_year,</if>
+            <if test="special != null">special,</if>
+            <if test="taskYear != null">task_year,</if>
+            <if test="taskQuarter != null">task_quarter,</if>
+            <if test="taskMoth != null">task_moth,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="status != null">status,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">#{taskId},</if>
+            <if test="taskName != null">#{taskName},</if>
+            <if test="proId != null">#{proId},</if>
+            <if test="assessCycle != null">#{assessCycle},</if>
+            <if test="belongYear != null">#{belongYear},</if>
+            <if test="special != null">#{special},</if>
+            <if test="taskYear != null">#{taskYear},</if>
+            <if test="taskQuarter != null">#{taskQuarter},</if>
+            <if test="taskMoth != null">#{taskMoth},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssessTaskManage" parameterType="BizAssessTaskManage">
+        update biz_assess_task_manage
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskName != null">task_name = #{taskName},</if>
+            <if test="proId != null">pro_id = #{proId},</if>
+            <if test="assessCycle != null">assess_cycle = #{assessCycle},</if>
+            <if test="belongYear != null">belong_year = #{belongYear},</if>
+            <if test="special != null">special = #{special},</if>
+            <if test="taskYear != null">task_year = #{taskYear},</if>
+            <if test="taskQuarter != null">task_quarter = #{taskQuarter},</if>
+            <if test="taskMoth != null">task_moth = #{taskMoth},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where task_id = #{taskId}
+    </update>
+    <update id="changStatus" parameterType="BizAssessTaskManage">
+        update biz_assess_task_manage set status =#{status} where task_id = #{taskId}
+    </update>
+
+    <delete id="deleteBizAssessTaskManageById" parameterType="String">
+        delete from biz_assess_task_manage where task_id = #{taskId}
+    </delete>
+
+    <delete id="deleteBizAssessTaskManageByIds" parameterType="String">
+        delete from biz_assess_task_manage where task_id in
+        <foreach item="taskId" collection="array" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </delete>
+
+    <update id="logicDeleteBizAssessTaskManageById" parameterType="String">
+        update biz_assess_task_manage set del_flag ='2' where task_id = #{taskId}
+    </update>
+
+    <update id="logicDeleteBizAssessTaskManageByIds" parameterType="String">
+        update biz_assess_task_manage set del_flag ='2' where task_id in
+        <foreach item="taskId" collection="array" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </update>
+</mapper>

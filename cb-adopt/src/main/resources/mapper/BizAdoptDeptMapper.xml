@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.adopt.mapper.BizAdoptDeptMapper">
+    
+    <resultMap type="BizAdoptDept" id="BizAdoptDeptResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="type"    column="type"    />
+        <result property="orderNo"    column="order_no"    />
+    </resultMap>
+
+    <sql id="selectBizAdoptDeptVo">
+        select id, name, type, order_no from biz_adopt_dept
+    </sql>
+
+    <select id="selectBizAdoptDeptList" parameterType="BizAdoptDept" resultMap="BizAdoptDeptResult">
+        <include refid="selectBizAdoptDeptVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="type != null "> and type = #{type}</if>
+            <if test="orderNo != null "> and order_no = #{orderNo}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+        order by order_no
+    </select>
+    
+    <select id="selectBizAdoptDeptById" parameterType="Integer" resultMap="BizAdoptDeptResult">
+        <include refid="selectBizAdoptDeptVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizAdoptDept" parameterType="BizAdoptDept">
+        insert into biz_adopt_dept
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="name != null">name,</if>
+            <if test="type != null">type,</if>
+            <if test="orderNo != null">order_no,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="name != null">#{name},</if>
+            <if test="type != null">#{type},</if>
+            <if test="orderNo != null">#{orderNo},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_adopt_dept
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                            id,
+                            name,
+                            type,
+                            order_no,
+                    </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                                    #{entity.id},
+                                    #{entity.name},
+                                    #{entity.type},
+                                    #{entity.orderNo},
+                            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizAdoptDept" parameterType="BizAdoptDept">
+        update biz_adopt_dept
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="orderNo != null">order_no = #{orderNo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAdoptDeptById" parameterType="Integer">
+        delete from biz_adopt_dept where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAdoptDeptByIds" parameterType="String">
+        delete from biz_adopt_dept where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

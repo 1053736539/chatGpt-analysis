@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityCertificateMapper">
+
+    <resultMap type="BizProbityCertificate" id="BizProbityCertificateResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="certificateNameNo" column="certificate_name_no"/>
+        <result property="expireDate" column="expire_date"/>
+        <result property="depositoryDept" column="depository_dept"/>
+    </resultMap>
+
+    <sql id="selectBizProbityCertificateVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               certificate_name_no,
+               expire_date,
+               depository_dept
+        from biz_probity_certificate
+    </sql>
+
+    <select id="selectBizProbityCertificateList" parameterType="BizProbityCertificate"
+            resultMap="BizProbityCertificateResult">
+        <include refid="selectBizProbityCertificateVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="certificateNameNo != null  and certificateNameNo != ''">and certificate_name_no =
+                #{certificateNameNo}
+            </if>
+            <if test="expireDate != null  and expireDate != ''">and expire_date = #{expireDate}</if>
+            <if test="depositoryDept != null  and depositoryDept != ''">and depository_dept = #{depositoryDept}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityCertificateById" parameterType="String" resultMap="BizProbityCertificateResult">
+        <include refid="selectBizProbityCertificateVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityCertificate" parameterType="BizProbityCertificate">
+        insert into biz_probity_certificate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="certificateNameNo != null">certificate_name_no,</if>
+            <if test="expireDate != null">expire_date,</if>
+            <if test="depositoryDept != null">depository_dept,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="certificateNameNo != null">#{certificateNameNo},</if>
+            <if test="expireDate != null">#{expireDate},</if>
+            <if test="depositoryDept != null">#{depositoryDept},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_certificate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            certificate_name_no,
+            expire_date,
+            depository_dept,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.certificateNameNo},
+                #{entity.expireDate},
+                #{entity.depositoryDept},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityCertificate" parameterType="BizProbityCertificate">
+        update biz_probity_certificate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="certificateNameNo != null">certificate_name_no = #{certificateNameNo},</if>
+            <if test="expireDate != null">expire_date = #{expireDate},</if>
+            <if test="depositoryDept != null">depository_dept = #{depositoryDept},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityCertificateById" parameterType="String">
+        delete
+        from biz_probity_certificate
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityCertificateByIds" parameterType="String">
+        delete from biz_probity_certificate where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

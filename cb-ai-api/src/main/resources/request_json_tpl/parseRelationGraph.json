@@ -1,0 +1,34 @@
+{
+  "inputs": {
+    "input": "待处理的文本",
+    "out_value_scheme": {
+      "rootId": "N13",
+      "nodes": [
+        {
+          "id": "N1",
+          "text": "侯亮平",
+          "data": {
+            "type": "人物"
+          }
+        },
+        {
+          "id": "N6",
+          "text": "高育良",
+          "data": {
+            "type": "人物"
+          }
+        }
+      ],
+      "lines": [
+        {
+          "from": "N6",
+          "to": "N1",
+          "text": "师生",
+          "data": {
+            "type": "师生"
+          }
+        }
+      ]
+    }
+  }
+}

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentAttachMapper">
+    
+    <resultMap type="com.cb.vo.AttachVo" id="TransferringStudentAttachResult">
+        <result property="userId"    column="user_id"    />
+        <result property="id"    column="id"    />
+        <result property="attachType"    column="attach_type"    />
+        <result property="attach"    column="attach"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="name"    column="name"    />
+    </resultMap>
+
+    <sql id="selectTransferringStudentAttachVo">
+        select user_id, id, attach_type, attach, create_time, update_time, create_by, update_by, del_flag from transferring_student_attach
+    </sql>
+
+    <select id="selectTransferringStudentAttachList"  resultMap="TransferringStudentAttachResult">
+        select sa.user_id, sa.id, sa.attach_type, sa.attach, sa.create_time, sa.update_time, sa.create_by, sa.update_by, sa.del_flag,
+               u.nick_name as name
+        from transferring_student_attach sa
+        inner join  sys_user u on sa.user_id=u.user_id
+        <where>
+            <if test="userId != null  and userId != ''"> and sa.user_id = #{userId}</if>
+            <if test="attachType != null  and attachType != ''"> and sa.attach_type = #{attachType}</if>
+            <if test="attach != null  and attach != ''"> and sa.attach = #{attach}</if>
+            <if test="delFlag != null  and delFlag != ''"> and sa.del_flag = #{delFlag}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%',#{name},'%') </if>
+        </where>
+    </select>
+
+    <select id="selectTransferringStudentAttachById" parameterType="String" resultMap="TransferringStudentAttachResult">
+        <include refid="selectTransferringStudentAttachVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTransferringStudentAttach" >
+        insert into transferring_student_attach
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="id != null and id != ''">id,</if>
+            <if test="attachType != null">attach_type,</if>
+            <if test="attach != null">attach,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="attachType != null">#{attachType},</if>
+            <if test="attach != null">#{attach},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransferringStudentAttach" >
+        update transferring_student_attach
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="attachType != null">attach_type = #{attachType},</if>
+            <if test="attach != null">attach = #{attach},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentAttachById" parameterType="String">
+        delete from transferring_student_attach where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentAttachByIds" parameterType="String">
+        update transferring_student_attach set del_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

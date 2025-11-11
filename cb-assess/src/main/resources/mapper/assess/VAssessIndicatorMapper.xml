@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.VAssessIndicatorMapper">
+
+    <resultMap type="VAssessIndicator" id="VAssessIndicatorResult">
+        <result property="indId" column="ind_id"/>
+        <result property="indNo" column="ind_no"/>
+        <result property="dictOrder" column="dict_order"/>
+        <result property="indOrder" column="ind_order"/>
+        <result property="indName" column="ind_name"/>
+        <result property="indAttribute" column="ind_attribute"/>
+        <result property="indStandard" column="ind_standard"/>
+        <result property="status" column="status"/>
+        <result property="delFlag" column="del_flag"/>
+    </resultMap>
+
+    <select id="selectAssessIndicatorSelectorList" resultMap="VAssessIndicatorResult">
+        select a.ind_id,
+                a.ind_no,
+                a.dict_order,
+                a.ind_order,
+                a.ind_name,
+                a.ind_attribute,
+                a.ind_standard,
+                a.status,
+                a.del_flag
+        from v_assess_indicator as a
+        <where>
+            1=1
+            <if test="indAttribute != null  and indAttribute != ''">and a.ind_attribute = #{indAttribute}</if>
+            <if test="indStandard != null  and indStandard != ''">and a.ind_standard like concat('%', #{indStandard}, '%')</if>
+            and a.del_flag = '1' and status ='0'
+        </where>
+        order by a.dict_order,a.ind_order asc
+    </select>
+
+    <select id="selectAllAssessIndicatorSelectorList" resultMap="VAssessIndicatorResult">
+        select a.ind_id,
+        a.ind_no,
+        a.dict_order,
+        a.ind_order,
+        a.ind_name,
+        a.ind_attribute,
+        a.ind_standard,
+        a.status,
+        a.del_flag
+        from v_assess_indicator as a
+        <where>
+            1=1
+            <if test="indAttribute != null  and indAttribute != ''">and a.ind_attribute = #{indAttribute}</if>
+            <if test="indStandard != null  and indStandard != ''">and a.ind_standard like concat('%', #{indStandard}, '%')</if>
+        </where>
+        order by a.dict_order,a.ind_order asc
+    </select>
+</mapper>

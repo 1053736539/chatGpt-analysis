@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.adopt.mapper.BizAdoptRecordMapper">
+    
+    <resultMap type="BizAdoptRecord" id="BizAdoptRecordResult">
+        <result property="id"    column="id"    />
+        <result property="issueNo"    column="issue_no"    />
+        <result property="title"    column="title"    />
+        <result property="level"    column="level"    />
+        <result property="carrier"    column="carrier"    />
+        <result property="adoptDate"    column="adopt_date"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="destination"    column="destination"    />
+        <result property="attach"    column="attach"    />
+        <collection property="bizAdoptRecordScoreList"
+                    column="id"
+                    select="com.cb.adopt.mapper.BizAdoptRecordScoreMapper.selectScoreListByRecordId"/>
+    </resultMap>
+    <sql id="selectBizAdoptRecordVo">
+        select id, issue_no, title, level, carrier, adopt_date, create_by, create_time, update_by, update_time, remark,destination, attach from biz_adopt_record
+    </sql>
+
+    <sql id="selectBizAdoptRecord">
+        SELECT bar.id,
+               MAX(bar.issue_no) AS issue_no, MAX(bar.title) AS title , MAX(bar.level) AS level, MAX(bar.carrier) AS carrier,
+               MAX(bar.adopt_date)AS adopt_date , MAX(bar.create_by) AS create_by, bar.create_time,
+               MAX(bar.update_by) AS update_by, MAX(bar.update_time) AS update_time, MAX(bar.remark) AS remark ,MAX(bar.destination) AS destination,
+               MAX(bar.attach) AS attach
+        FROM biz_adopt_record bar
+                 LEFT JOIN "biz_adopt_record_score" bars  ON bars.record_id = bar.id
+    </sql>
+
+    <select id="selectBizAdoptRecordList" parameterType="BizAdoptRecord" resultMap="BizAdoptRecordResult">
+        <include refid="selectBizAdoptRecord"/>
+        <where>  
+            <if test="issueNo != null  and issueNo != ''"> and bar.issue_no = #{issueNo}</if>
+            <if test="title != null  and title != ''"> and bar.title like concat('%',#{title},'%') </if>
+            <if test="level != null  and level != ''"> and bar.level = #{level}</if>
+            <if test="carrier != null  and carrier != ''"> and bar.carrier = #{carrier}</if>
+            <if test="startAdoptDate != null "> and bar.adopt_date &gt;= #{startAdoptDate}</if>
+            <if test="endAdoptDate != null "> and bar.adopt_date &lt;= #{endAdoptDate}</if>
+            <if test="deptName != null  and deptName != ''"> and bars.dept like concat('%', #{deptName}, '%')</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+        GROUP BY  bar.id, bar.create_time
+        ORDER BY  bar.create_time desc
+    </select>
+    
+    <select id="selectBizAdoptRecordById" parameterType="String" resultMap="BizAdoptRecordResult">
+        <include refid="selectBizAdoptRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizAdoptRecord" parameterType="BizAdoptRecord">
+        insert into biz_adopt_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="issueNo != null">issue_no,</if>
+            <if test="title != null">title,</if>
+            <if test="level != null">level,</if>
+            <if test="carrier != null">carrier,</if>
+            <if test="adoptDate != null">adopt_date,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="destination != null">destination,</if>
+            <if test="attach != null">attach,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="issueNo != null">#{issueNo},</if>
+            <if test="title != null">#{title},</if>
+            <if test="level != null">#{level},</if>
+            <if test="carrier != null">#{carrier},</if>
+            <if test="adoptDate != null">#{adoptDate},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="destination != null">#{destination},</if>
+            <if test="attach != null">#{attach},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_adopt_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                            id,
+                            issue_no,
+                            title,
+                            level,
+                            carrier,
+                            adopt_date,
+                            create_by,
+                            create_time,
+                            update_by,
+                            update_time,
+                            remark,
+                          destination,
+                            attach,
+                    </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                                    #{entity.id},
+                                    #{entity.issueNo},
+                                    #{entity.title},
+                                    #{entity.level},
+                                    #{entity.carrier},
+                                    #{entity.adoptDate},
+                                    #{entity.createBy},
+                                    #{entity.createTime},
+                                    #{entity.updateBy},
+                                    #{entity.updateTime},
+                                    #{entity.remark},
+                                    #{entity.destination},
+                                    #{entity.attach},
+                            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizAdoptRecord" parameterType="BizAdoptRecord">
+        update biz_adopt_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="issueNo != null">issue_no = #{issueNo},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="level != null">level = #{level},</if>
+            <if test="carrier != null">carrier = #{carrier},</if>
+            <if test="adoptDate != null">adopt_date = #{adoptDate},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="destination != null">destination = #{destination},</if>
+            <if test="attach != null">attach = #{attach},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAdoptRecordById" parameterType="String">
+        delete from biz_adopt_record where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAdoptRecordByIds" parameterType="String">
+        delete from biz_adopt_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.basedata.mapper.BasRentedOutSourceMapper">
+    
+    <resultMap type="BasRentedOutSource" id="BasRentedOutSourceResult">
+        <result property="sourceId"    column="source_id"    />
+        <result property="propertiesSale"    column="properties_sale"    />
+        <result property="building"    column="building"    />
+        <result property="unit"    column="unit"    />
+        <result property="roomNumber"    column="room_number"    />
+        <result property="monthlyRent"    column="monthly_rent"    />
+        <result property="areaId"    column="area_id"    />
+        <result property="name01"    column="name01"    />
+        <result property="idcard01"    column="idcard01"    />
+        <result property="name02"    column="name02"    />
+        <result property="idcard02"    column="idcard02"    />
+        <result property="name03"    column="name03"    />
+        <result property="idcard03"    column="idcard03"    />
+        <result property="name04"    column="name04"    />
+        <result property="idcard04"    column="idcard04"    />
+        <result property="name05"    column="name05"    />
+        <result property="idcard05"    column="idcard05"    />
+        <result property="name06"    column="name06"    />
+        <result property="idcard06"    column="idcard06"    />
+        <result property="importTime"    column="import_time"    />
+        <result property="numberApplicants"    column="number_applicants"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="isCleaning"    column="isCleaning"    />
+    </resultMap>
+
+    <sql id="selectBasRentedOutSourceVo">
+        select s.source_id, s.properties_sale, s.building, s.unit, s.room_number, s.monthly_rent, s.area_id, s.name01, s.idcard01,
+               s.name02, s.idcard02, s.name03, s.idcard03, s.name04, s.idcard04, s.name05, s.idcard05, s.name06, s.idcard06,
+               s.import_time, s.number_applicants, s.create_time, s.update_time, s.create_by, s.update_by, s.del_flag,
+             case when o.source_id is null then 0 else 1 end as isCleaning
+        from bas_rented_out_source s
+            left join bas_rented_out o on o.source_id = s.source_id
+    </sql>
+
+    <select id="selectBasRentedOutSourceList" parameterType="BasRentedOutSource" resultMap="BasRentedOutSourceResult">
+        <include refid="selectBasRentedOutSourceVo"/>
+        <where>  
+            <if test="propertiesSale != null  and propertiesSale != ''"> and properties_sale = #{propertiesSale}</if>
+            <if test="building != null  and building != ''"> and building = #{building}</if>
+            <if test="unit != null  and unit != ''"> and unit = #{unit}</if>
+            <if test="roomNumber != null  and roomNumber != ''"> and room_number = #{roomNumber}</if>
+            <if test="monthlyRent != null "> and monthly_rent = #{monthlyRent}</if>
+            <if test="areaId != null  and areaId != ''"> and area_id = #{areaId}</if>
+            <if test="name01 != null  and name01 != ''"> and name01 = #{name01}</if>
+            <if test="idcard01 != null  and idcard01 != ''"> and idcard01 = #{idcard01}</if>
+            <if test="name02 != null  and name02 != ''"> and name02 = #{name02}</if>
+            <if test="idcard02 != null  and idcard02 != ''"> and idcard02 = #{idcard02}</if>
+            <if test="name03 != null  and name03 != ''"> and name03 = #{name03}</if>
+            <if test="idcard03 != null  and idcard03 != ''"> and idcard03 = #{idcard03}</if>
+            <if test="name04 != null  and name04 != ''"> and name04 = #{name04}</if>
+            <if test="idcard04 != null  and idcard04 != ''"> and idcard04 = #{idcard04}</if>
+            <if test="name05 != null  and name05 != ''"> and name05 = #{name05}</if>
+            <if test="idcard05 != null  and idcard05 != ''"> and idcard05 = #{idcard05}</if>
+            <if test="name06 != null  and name06 != ''"> and name06 = #{name06}</if>
+            <if test="idcard06 != null  and idcard06 != ''"> and idcard06 = #{idcard06}</if>
+            <if test="importTime != null "> and import_time = #{importTime}</if>
+            <if test="numberApplicants != null "> and number_applicants = #{numberApplicants}</if>
+        </where>
+    </select>
+    
+    <select id="selectBasRentedOutSourceById" parameterType="String" resultMap="BasRentedOutSourceResult">
+        <include refid="selectBasRentedOutSourceVo"/>
+        where s.source_id = #{sourceId}
+    </select>
+        
+    <insert id="insertBasRentedOutSource" parameterType="BasRentedOutSource">
+        insert into bas_rented_out_source
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sourceId != null and sourceId != ''">source_id,</if>
+            <if test="propertiesSale != null">properties_sale,</if>
+            <if test="building != null">building,</if>
+            <if test="unit != null">unit,</if>
+            <if test="roomNumber != null">room_number,</if>
+            <if test="monthlyRent != null">monthly_rent,</if>
+            <if test="areaId != null">area_id,</if>
+            <if test="name01 != null">name01,</if>
+            <if test="idcard01 != null">idcard01,</if>
+            <if test="name02 != null">name02,</if>
+            <if test="idcard02 != null">idcard02,</if>
+            <if test="name03 != null">name03,</if>
+            <if test="idcard03 != null">idcard03,</if>
+            <if test="name04 != null">name04,</if>
+            <if test="idcard04 != null">idcard04,</if>
+            <if test="name05 != null">name05,</if>
+            <if test="idcard05 != null">idcard05,</if>
+            <if test="name06 != null">name06,</if>
+            <if test="idcard06 != null">idcard06,</if>
+            <if test="importTime != null">import_time,</if>
+            <if test="numberApplicants != null">number_applicants,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sourceId != null and sourceId != ''">#{sourceId},</if>
+            <if test="propertiesSale != null">#{propertiesSale},</if>
+            <if test="building != null">#{building},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="roomNumber != null">#{roomNumber},</if>
+            <if test="monthlyRent != null">#{monthlyRent},</if>
+            <if test="areaId != null">#{areaId},</if>
+            <if test="name01 != null">#{name01},</if>
+            <if test="idcard01 != null">#{idcard01},</if>
+            <if test="name02 != null">#{name02},</if>
+            <if test="idcard02 != null">#{idcard02},</if>
+            <if test="name03 != null">#{name03},</if>
+            <if test="idcard03 != null">#{idcard03},</if>
+            <if test="name04 != null">#{name04},</if>
+            <if test="idcard04 != null">#{idcard04},</if>
+            <if test="name05 != null">#{name05},</if>
+            <if test="idcard05 != null">#{idcard05},</if>
+            <if test="name06 != null">#{name06},</if>
+            <if test="idcard06 != null">#{idcard06},</if>
+            <if test="importTime != null">#{importTime},</if>
+            <if test="numberApplicants != null">#{numberApplicants},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+    <insert id="insertBasRentedOutSourceBatch" parameterType="BasRentedOutSource">
+        insert into bas_rented_out_source
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            source_id,properties_sale,building,unit,room_number,monthly_rent,area_id,name01,idcard01,name02,
+            idcard02,name03,idcard03,name04,idcard04,name05,idcard05,name06,idcard06,import_time,
+            number_applicants,create_time,update_time,create_by,update_by,del_flag
+        </trim>
+        values
+        <foreach collection="list" item="item" separator=",">
+                <trim prefix="(" suffix=")" suffixOverrides=",">
+                    #{item.sourceId},#{item.propertiesSale},#{item.building},#{item.unit},#{item.roomNumber},#{item.monthlyRent},#{item.areaId},
+                    #{item.name01},#{item.idcard01},#{item.name02},#{item.idcard02},#{item.name03},#{item.idcard03},#{item.name04},#{item.idcard04},
+                    #{item.name05},#{item.idcard05},#{item.name06},
+                    #{item.idcard06},#{item.importTime},#{item.numberApplicants},#{item.createTime},#{item.updateTime},#{item.createBy},
+                    #{item.updateBy},#{item.delFlag}
+                </trim>
+            </foreach>
+
+    </insert>
+
+    <update id="updateBasRentedOutSource" parameterType="BasRentedOutSource">
+        update bas_rented_out_source
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="propertiesSale != null">properties_sale = #{propertiesSale},</if>
+            <if test="building != null">building = #{building},</if>
+            <if test="unit != null">unit = #{unit},</if>
+            <if test="roomNumber != null">room_number = #{roomNumber},</if>
+            <if test="monthlyRent != null">monthly_rent = #{monthlyRent},</if>
+            <if test="areaId != null">area_id = #{areaId},</if>
+            <if test="name01 != null">name01 = #{name01},</if>
+            <if test="idcard01 != null">idcard01 = #{idcard01},</if>
+            <if test="name02 != null">name02 = #{name02},</if>
+            <if test="idcard02 != null">idcard02 = #{idcard02},</if>
+            <if test="name03 != null">name03 = #{name03},</if>
+            <if test="idcard03 != null">idcard03 = #{idcard03},</if>
+            <if test="name04 != null">name04 = #{name04},</if>
+            <if test="idcard04 != null">idcard04 = #{idcard04},</if>
+            <if test="name05 != null">name05 = #{name05},</if>
+            <if test="idcard05 != null">idcard05 = #{idcard05},</if>
+            <if test="name06 != null">name06 = #{name06},</if>
+            <if test="idcard06 != null">idcard06 = #{idcard06},</if>
+            <if test="importTime != null">import_time = #{importTime},</if>
+            <if test="numberApplicants != null">number_applicants = #{numberApplicants},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where source_id = #{sourceId}
+    </update>
+
+    <delete id="deleteBasRentedOutSourceById" parameterType="String">
+        delete from bas_rented_out_source where source_id = #{sourceId}
+    </delete>
+
+    <delete id="deleteBasRentedOutSourceByIds" parameterType="String">
+        delete from bas_rented_out_source where source_id in 
+        <foreach item="sourceId" collection="array" open="(" separator="," close=")">
+            #{sourceId}
+        </foreach>
+    </delete>
+</mapper>

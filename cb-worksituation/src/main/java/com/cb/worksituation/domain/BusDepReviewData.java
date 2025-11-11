@@ -63,4 +63,28 @@ public class BusDepReviewData extends BaseEntity {
     @Excel(name = "", readConverterExp = "1=-草稿，2-提交")
     private String dataStatus;
 
+    /**
+     * 定量评价得分（70分)小计
+     */
+    private String subtotalQuanScore;
+
+    /**
+     * 加分小计
+     */
+    private String bonusSubtotal;
+
+
+    /**
+     * 文件路径
+     */
+    @Excel(name = "文件路径")
+    private String filePath;
+
+
+    /**
+     * 文件索引id
+     */
+    @Excel(name = "文件索引id")
+    private String attachId;
+
 }

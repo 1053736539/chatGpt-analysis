@@ -1,0 +1,33 @@
+[
+  {
+    "event_type": "财经/交易-加息",
+    "trigger": true,
+    "arguments": [
+      "时间"
+    ]
+  },
+  {
+    "event_type": "财经/交易-降息",
+    "trigger": true,
+    "arguments": [
+      "降息幅度"
+    ]
+  },
+  {
+    "event_type": "财经/交易-涨价",
+    "trigger": true,
+    "arguments": [
+      "涨价方"
+    ]
+  },
+  {
+    "event_type": "灾害/意外-坍/垮塌",
+    "trigger": true,
+    "arguments": [
+      "时间",
+      "死亡人数",
+      "坍塌主体",
+      "受伤人数"
+    ]
+  }
+]

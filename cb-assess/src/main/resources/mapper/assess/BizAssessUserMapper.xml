@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessUserMapper">
+    <resultMap type="SysUser" id="SysUserResult">
+        <id property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="name" column="name"/>
+        <result property="identityType" column="identity_type"/>
+        <result property="workTitleCode" column="work_title_code"/>
+        <collection property="userDeptPostList" javaType="java.util.List" resultMap="UserDeptPostResult"/>
+    </resultMap>
+    <resultMap type="UserDeptPost" id="UserDeptPostResult">
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <select id="selectAssessedUserIds" resultMap="SysUserResult">
+        select u.user_id,u.user_name,u.nick_name ,u.name, u.identity_type ,u.work_title_code,u.dept_id
+        from v_sys_user u
+        <where>
+            u.status = '0' and u.del_flag = '0' and u.user_type ='00' and u.personnel_status in('1','6','7','8')
+            <if test="deptIds != null and deptIds.size > 0">
+                and u.dept_id in
+                <foreach item="item" collection="deptIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="types != null and types.size > 0">
+                and (
+                    u.identity_type in
+                    <foreach item="item" collection="types" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                    or
+                    u.dept_identity_type in
+                    <foreach item="item" collection="types" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                )
+            </if>
+            <choose>
+                <when test="positive">
+                    and (
+                    <if test="workCodes != null and workCodes.size > 0">
+                         u.work_title_code in
+                        <foreach item="item" collection="workCodes" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                    </if>
+                    <if test="includeMainLeader">
+                        OR u.is_main_leader = '1'
+                    </if>
+                    <if test="includeHostWork">
+                        OR u.is_hosting_work = '1'
+                    </if>
+                    )
+                </when>
+                <otherwise>
+                    <if test="workCodes != null and workCodes.size > 0">
+                        and (
+                        u.work_title_code not in
+                        <foreach item="item" collection="workCodes" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+                        OR u.work_title_code is null
+                        )
+                    </if>
+                    <if test="!includeMainLeader">
+                        and u.is_main_leader != '1'
+                    </if>
+                    <if test="!includeHostWork">
+                        and u.is_hosting_work != '1'
+                    </if>
+                </otherwise>
+            </choose>
+        </where>
+
+
+    </select>
+    <select id="selectOrdinaryUserInDept" resultType="java.lang.Long">
+        select distinct u.user_id  from v_sys_user u
+        where u.status = '0' and u.del_flag = '0' and u.user_type ='00' and u.personnel_status in('1','6','7','8')
+        and u.is_hosting_work ='0' and u.is_main_leader = '0'
+        <if test="deptIds != null and deptIds.size > 0">
+            and u.dept_id in
+            <foreach item="item" collection="deptIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="types != null and types.size > 0">
+            and (
+                u.identity_type in
+                <foreach item="item" collection="types" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                or
+                u.dept_identity_type in
+                <foreach item="item" collection="types" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            )
+        </if>
+        <if test="workCodes != null and workCodes.size > 0">
+            <choose>
+                <when test="positive">
+                    and u.work_title_code in
+                    <foreach item="item" collection="workCodes" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    and (u.work_title_code not in
+                    <foreach item="item" collection="workCodes" open="(" separator="," close=")">
+                        #{item}
+                    </foreach>
+                        or u.work_title_code is null
+                        )
+                </otherwise>
+            </choose>
+        </if>
+        <if test="excludingSelf">
+            and u.user_id != #{self.userId}
+        </if>
+    </select>
+    <select id="selectDirectorUserInDept" resultType="java.lang.Long">
+        select distinct u.user_id  from v_sys_user u
+        where u.status = '0' and u.del_flag = '0' and u.user_type ='00' and u.personnel_status in('1','6','7','8')
+        <!--获取主要负责人以及主持工作的 -->
+          and (u.is_hosting_work ='1' OR u.is_main_leader = '1')
+        <if test="deptIds != null and deptIds.size > 0">
+            and u.dept_id in
+            <foreach item="item" collection="deptIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="types != null and types.size > 0">
+            and (
+                u.identity_type in
+                <foreach item="item" collection="types" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+                or
+                u.dept_identity_type in
+                <foreach item="item" collection="types" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            )
+        </if>
+    </select>
+    <select id="selectByWorkCodes" resultType="java.lang.Long">
+        select distinct u.user_id  from v_sys_user u
+        where u.status = '0' and u.del_flag = '0' and u.user_type ='00' and u.personnel_status in('1','6','7','8')
+        <if test="workCodes != null and workCodes.size > 0">
+            and u.work_title_code in
+            <foreach item="item" collection="workCodes" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+    <select id="selectSysUserList" resultMap="SysUserResult">
+        select distinct u.user_id,u.user_name,u.nick_name ,u.name, u.identity_type ,u.work_title_code from v_sys_user u
+        where u.user_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="getAssessedUserIdList4Democratic" resultType="java.lang.Long">
+        select distinct u.user_id  from v_sys_user u
+        where u.status = '0' and u.del_flag = '0' and u.user_type ='00'
+        and u.dept_id = #{deptId}
+        and u.work_title_code in ('121','122','131','212')
+    </select>
+
+    <select id="getUserList" resultType="java.lang.Long">
+        select user_id from v_sys_user
+        <where>
+            <if test="identityTypes != null and identityTypes.size > 0">
+                and (
+                    identity_type in
+                    <foreach item="type" collection="identityTypes" open="(" close=")" separator=",">
+                        #{type}
+                    </foreach>
+                    or
+                    dept_identity_type in
+                    <foreach item="type" collection="identityTypes" open="(" close=")" separator=",">
+                        #{type}
+                    </foreach>
+                )
+            </if>
+            <if test="deptId != null and deptId != ''">and dept_id = #{deptId}</if>
+            <if test="includeHostWork or (workCodes != null and workCodes.size > 0)">
+                <trim prefix="and (" suffix=")" prefixOverrides="AND|OR">
+                    <if test="includeHostWork">
+                        AND v_sys_user.is_hosting_work = '1'
+                    </if>
+                    <if test="workCodes != null and workCodes.size > 0">
+                        OR work_title_code in
+                        <foreach item="code" collection="workCodes" open="(" close=")" separator=",">
+                            #{code}
+                        </foreach>
+                    </if>
+                </trim>
+
+            </if>
+
+            <if test="excludeCodes != null and excludeCodes.size > 0">
+                and work_title_code not in
+                <foreach item="code" collection="excludeCodes" open="(" close=")" separator=",">
+                    #{code}
+                </foreach>
+            </if>
+            <if test="excludeHostWork">
+                AND v_sys_user.is_hosting_work != '1'
+            </if>
+        </where>
+    </select>
+
+</mapper>

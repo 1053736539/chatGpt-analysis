@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.task.mapper.BizTaskInfoMapper">
+    
+    <resultMap type="BizTaskInfo" id="BizTaskInfoResult">
+        <result property="id"    column="id"    />
+        <result property="causation"    column="causation"    />
+        <result property="businessId"    column="business_id"    />
+        <result property="basis"    column="basis"    />
+        <result property="topId"    column="top_id"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="title"    column="title"    />
+        <result property="desc"    column="desc"    />
+        <result property="beginTime"    column="begin_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="urgency"    column="urgency"    />
+        <result property="planScore"    column="plan_score"    />
+        <result property="difficult"    column="difficult"    />
+        <result property="progress"    column="progress"    />
+        <result property="completeSituation"    column="complete_situation"    />
+        <result property="status"    column="status"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="createDept"    column="create_dept"    />
+        <result property="rejectReason"    column="reject_reason"    />
+        <result property="attach"    column="attach"    />
+        <result property="docType"    column="doc_type"    />
+        <result property="extInfo"    column="ext_info"    />
+
+        <result property="parentTaskName"    column="parentTaskName"    />
+        <result property="topTaskName"    column="topTaskName"    />
+        <result property="createByName"    column="createByName"    />
+        <result property="createDeptName"    column="createDeptName"    />
+
+    </resultMap>
+    <sql id="selectBizTaskInfoVo">
+        select t.id, t.causation, t.business_id, t.basis, t.top_id, t.parent_id, t.title, t.desc, t.begin_time, t.end_time, t.urgency, t.plan_score, t.difficult, t.progress, t.complete_situation, t.status, t.audit_status, t.create_by, t.create_time, t.update_by, t.update_time, t.remark, t.create_dept, t.reject_reason, t.attach, t.doc_type, t.ext_info
+             ,pt.title as parentTaskName
+             ,tt.title as topTaskName
+             ,cu.name as createByName
+             ,cd.dept_name as createDeptName
+        from biz_task_info t
+                 left join biz_task_info pt on t.parent_id = pt.id
+                 left join biz_task_info tt on t.top_id = tt.id
+                 left join sys_user cu on t.create_by = cu.user_name and cu.del_flag != '2'
+        left join sys_dept cd on t.create_dept = cd.dept_id
+    </sql>
+    <sql id="selectBizTaskInfoVo" databaseId="dm">
+        select t.id, t.causation, t.business_id, t.basis, t.top_id, t.parent_id, t.title, t."desc", t.begin_time, t.end_time, t.urgency, t.plan_score, t.difficult, t.progress, t.complete_situation, t.status, t.audit_status, t.create_by, t.create_time, t.update_by, t.update_time, t.remark, t.create_dept, t.reject_reason, t.attach, t.doc_type, t.ext_info
+                ,pt.title as parentTaskName
+                ,tt.title as topTaskName
+                ,cu.name as createByName
+                ,cd.dept_name as createDeptName
+        from biz_task_info t
+        left join biz_task_info pt on t.parent_id = pt.id
+        left join biz_task_info tt on t.top_id = tt.id
+        left join sys_user cu on t.create_by = cu.user_name and cu.del_flag != '2'
+        left join sys_dept cd on t.create_dept = cd.dept_id
+    </sql>
+
+    <select id="selectBizTaskInfoList" parameterType="BizTaskInfo" resultMap="BizTaskInfoResult">
+        <include refid="selectBizTaskInfoVo"/>
+        <where>  
+            <if test="causation != null  and causation != ''"> and t.causation = #{causation}</if>
+            <if test="businessId != null  and businessId != ''"> and t.business_id = #{businessId}</if>
+            <if test="basis != null  and basis != ''"> and t.basis like concat('%', #{basis}, '%')</if>
+            <if test="topId != null  and topId != ''"> and t.top_id = #{topId}</if>
+            <if test="parentId != null  and parentId != ''"> and t.parent_id = #{parentId}</if>
+            <if test="title != null  and title != ''"> and t.title like concat('%', #{title}, '%')</if>
+            <!--<if test="desc != null  and desc != ''"> and t."desc" like concat('%', #{desc}, '%')</if>-->
+            <if test="params.planTimeBegin != null and params.planTimeBegin != ''">
+                and t.end_time &gt;= #{params.planTimeBegin}
+            </if>
+            <if test="params.planTimeEnd != null and params.planTimeEnd != '' ">
+                and t.begin_time &lt;= #{params.planTimeEnd}
+            </if>
+            <if test="urgency != null  and urgency != ''"> and t.urgency = #{urgency}</if>
+            <if test="planScore != null "> and t.plan_score = #{planScore}</if>
+            <if test="difficult != null  and difficult != ''"> and t.difficult = #{difficult}</if>
+            <if test="progress != null "> and t.progress = #{progress}</if>
+            <if test="completeSituation != null  and completeSituation != ''"> and t.complete_situation like concat('%', #{completeSituation}, '%')</if>
+            <if test="status != null  and status != ''"> and t.status = #{status}</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and t.audit_status = #{auditStatus}</if>
+            <if test="createDept != null "> and t.create_dept = #{createDept}</if>
+            <if test="rejectReason != null  and rejectReason != ''"> and t.reject_reason like concat('%', #{rejectReason}, '%')</if>
+            <if test="createBy != null "> and t.create_by = #{createBy}</if>
+            <if test="docType != null "> and t.doc_type = #{docType}</if>
+        </where>
+        order by t.status asc, t.end_time desc
+    </select>
+
+    <select id="listByDept" parameterType="BizTaskInfo" resultMap="BizTaskInfoResult">
+        <include refid="selectBizTaskInfoVo"/>
+        <where>
+            <if test="causation != null  and causation != ''"> and t.causation = #{causation}</if>
+            <if test="businessId != null  and businessId != ''"> and t.business_id = #{businessId}</if>
+            <if test="basis != null  and basis != ''"> and t.basis like concat('%', #{basis}, '%')</if>
+            <if test="topId != null  and topId != ''"> and t.top_id = #{topId}</if>
+            <if test="parentId != null  and parentId != ''"> and t.parent_id = #{parentId}</if>
+            <if test="title != null  and title != ''"> and t.title like concat('%', #{title}, '%')</if>
+            <!--<if test="desc != null  and desc != ''"> and t."desc" like concat('%', #{desc}, '%')</if>-->
+            <if test="params.planTimeBegin != null and params.planTimeBegin != ''">
+                and t.end_time &gt;= #{params.planTimeBegin}
+            </if>
+            <if test="params.planTimeEnd != null and params.planTimeEnd != '' ">
+                and t.begin_time &lt;= #{params.planTimeEnd}
+            </if>
+            <if test="urgency != null  and urgency != ''"> and t.urgency = #{urgency}</if>
+            <if test="planScore != null "> and t.plan_score = #{planScore}</if>
+            <if test="difficult != null  and difficult != ''"> and t.difficult = #{difficult}</if>
+            <if test="progress != null "> and t.progress = #{progress}</if>
+            <if test="completeSituation != null  and completeSituation != ''"> and t.complete_situation like concat('%', #{completeSituation}, '%')</if>
+            <if test="status != null  and status != ''"> and t.status = #{status}</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and t.audit_status = #{auditStatus}</if>
+            <if test="createDept != null "> and t.create_dept = #{createDept}</if>
+            <if test="rejectReason != null  and rejectReason != ''"> and t.reject_reason like concat('%', #{rejectReason}, '%')</if>
+            <if test="createBy != null "> and t.create_by = #{createBy}</if>
+            <if test="docType != null "> and t.doc_type = #{docType}</if>
+            <if test="params.expireQuery">
+                and t.audit_status = '3' and t.status = '1'
+                and t.end_time &lt;= #{params.now}
+            </if>
+            <if test="createByName != null and createByName!= ''">
+                and cu.name like concat('%', #{createByName}, '%')
+            </if>
+        </where>
+        order by t.begin_time desc
+    </select>
+
+    <select id="listMyAudit" resultMap="BizTaskInfoResult">
+        <include refid="selectBizTaskInfoVo"/>
+        <where>
+            <if test="entity.causation != null  and entity.causation != ''"> and t.causation = #{entity.causation}</if>
+            <if test="entity.businessId != null  and entity.businessId != ''"> and t.business_id = #{entity.businessId}</if>
+            <if test="entity.basis != null  and entity.basis != ''"> and t.basis like concat('%', #{entity.basis}, '%')</if>
+            <if test="entity.topId != null  and entity.topId != ''"> and t.top_id = #{entity.topId}</if>
+            <if test="entity.parentId != null  and entity.parentId != ''"> and t.parent_id = #{entity.parentId}</if>
+            <if test="entity.title != null  and entity.title != ''"> and t.title like concat('%', #{entity.title}, '%')</if>
+            <!--<if test="entity.desc != null  and entity.desc != ''"> and t."desc" like concat('%', #{entity.desc}, '%')</if>-->
+            <if test="entity.params.planTimeBegin != null and entity.params.planTimeBegin != ''">
+                and t.end_time &gt;= #{entity.params.planTimeBegin}
+            </if>
+            <if test="entity.params.planTimeEnd != null and entity.params.planTimeEnd != '' ">
+                and t.begin_time &lt;= #{entity.params.planTimeEnd}
+            </if>
+            <if test="entity.urgency != null  and entity.urgency != ''"> and t.urgency = #{entity.urgency}</if>
+            <if test="entity.planScore != null "> and t.plan_score = #{entity.planScore}</if>
+            <if test="entity.difficult != null  and entity.difficult != ''"> and t.difficult = #{entity.difficult}</if>
+            <if test="entity.progress != null "> and t.progress = #{entity.progress}</if>
+            <if test="entity.completeSituation != null  and entity.completeSituation != ''"> and t.complete_situation like concat('%', #{entity.completeSituation}, '%')</if>
+            <if test="entity.status != null  and entity.status != ''"> and t.status = #{entity.status}</if>
+            and t.audit_status = '1'
+            <if test="entity.createDept != null "> and t.create_dept = #{entity.createDept}</if>
+            <if test="entity.rejectReason != null  and rejectReason != ''"> and t.reject_reason like concat('%', #{entity.rejectReason}, '%')</if>
+            <if test="entity.createBy != null "> and t.create_by = #{entity.createBy}</if>
+            <if test="entity.docType != null "> and t.doc_type = #{entity.docType}</if>
+            <if test="leaderDeptId != null">
+                and t.create_dept = #{leaderDeptId}
+            </if>
+        </where>
+    </select>
+
+    <select id="selectBizTaskInfoById" parameterType="String" resultMap="BizTaskInfoResult">
+        <include refid="selectBizTaskInfoVo"/>
+        where t.id = #{id}
+    </select>
+
+    <select id="selectBizTaskInfoByIdIn" resultMap="BizTaskInfoResult">
+        <include refid="selectBizTaskInfoVo"/>
+        where t.id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertBizTaskInfo" parameterType="BizTaskInfo">
+        insert into biz_task_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="causation != null and causation != ''">causation,</if>
+            <if test="businessId != null">business_id,</if>
+            <if test="basis != null">basis,</if>
+            <if test="topId != null and topId != ''">top_id,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="desc != null and desc != ''">`desc`,</if>
+            <if test="beginTime != null and beginTime != ''">begin_time,</if>
+            <if test="endTime != null and endTime != ''">end_time,</if>
+            <if test="urgency != null and urgency != ''">urgency,</if>
+            <if test="planScore != null">plan_score,</if>
+            <if test="difficult != null and difficult != ''">difficult,</if>
+            <if test="progress != null">progress,</if>
+            <if test="completeSituation != null">complete_situation,</if>
+            <if test="status != null">status,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createDept != null">create_dept,</if>
+            <if test="rejectReason != null">reject_reason,</if>
+            <if test="attach != null">attach,</if>
+            <if test="docType != null">doc_type,</if>
+            <if test="extInfo != null">ext_info,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="causation != null and causation != ''">#{causation},</if>
+            <if test="businessId != null">#{businessId},</if>
+            <if test="basis != null">#{basis},</if>
+            <if test="topId != null and topId != ''">#{topId},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="desc != null and desc != ''">#{desc},</if>
+            <if test="beginTime != null and beginTime != ''">#{beginTime},</if>
+            <if test="endTime != null and endTime != ''">#{endTime},</if>
+            <if test="urgency != null and urgency != ''">#{urgency},</if>
+            <if test="planScore != null">#{planScore},</if>
+            <if test="difficult != null and difficult != ''">#{difficult},</if>
+            <if test="progress != null">#{progress},</if>
+            <if test="completeSituation != null">#{completeSituation},</if>
+            <if test="status != null">#{status},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createDept != null">#{createDept},</if>
+            <if test="rejectReason != null">#{rejectReason},</if>
+            <if test="attach != null">#{attach},</if>
+            <if test="docType != null">#{docType},</if>
+            <if test="extInfo != null">#{extInfo},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBizTaskInfo" parameterType="BizTaskInfo" databaseId="dm">
+        insert into biz_task_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="causation != null and causation != ''">causation,</if>
+            <if test="businessId != null">business_id,</if>
+            <if test="basis != null">basis,</if>
+            <if test="topId != null and topId != ''">top_id,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="desc != null and desc != ''">"desc",</if>
+            <if test="beginTime != null and beginTime != ''">begin_time,</if>
+            <if test="endTime != null and endTime != ''">end_time,</if>
+            <if test="urgency != null and urgency != ''">urgency,</if>
+            <if test="planScore != null">plan_score,</if>
+            <if test="difficult != null and difficult != ''">difficult,</if>
+            <if test="progress != null">progress,</if>
+            <if test="completeSituation != null">complete_situation,</if>
+            <if test="status != null">status,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createDept != null">create_dept,</if>
+            <if test="rejectReason != null">reject_reason,</if>
+            <if test="attach != null">attach,</if>
+            <if test="docType != null">doc_type,</if>
+            <if test="extInfo != null">ext_info,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="causation != null and causation != ''">#{causation},</if>
+            <if test="businessId != null">#{businessId},</if>
+            <if test="basis != null">#{basis},</if>
+            <if test="topId != null and topId != ''">#{topId},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="desc != null and desc != ''">#{desc},</if>
+            <if test="beginTime != null and beginTime != ''">#{beginTime},</if>
+            <if test="endTime != null and endTime != ''">#{endTime},</if>
+            <if test="urgency != null and urgency != ''">#{urgency},</if>
+            <if test="planScore != null">#{planScore},</if>
+            <if test="difficult != null and difficult != ''">#{difficult},</if>
+            <if test="progress != null">#{progress},</if>
+            <if test="completeSituation != null">#{completeSituation},</if>
+            <if test="status != null">#{status},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createDept != null">#{createDept},</if>
+            <if test="rejectReason != null">#{rejectReason},</if>
+            <if test="attach != null">#{attach},</if>
+            <if test="docType != null">#{docType},</if>
+            <if test="extInfo != null">#{extInfo},</if>
+        </trim>
+    </insert >
+
+    <update id="updateBizTaskInfo" parameterType="BizTaskInfo">
+        update biz_task_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="causation != null and causation != ''">causation = #{causation},</if>
+            <if test="businessId != null">business_id = #{businessId},</if>
+            <if test="basis != null">basis = #{basis},</if>
+            <if test="topId != null and topId != ''">top_id = #{topId},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="desc != null and desc != ''">`desc` = #{desc},</if>
+            <if test="beginTime != null and beginTime != ''">begin_time = #{beginTime},</if>
+            <if test="endTime != null and endTime != ''">end_time = #{endTime},</if>
+            <if test="urgency != null and urgency != ''">urgency = #{urgency},</if>
+            <if test="planScore != null">plan_score = #{planScore},</if>
+            <if test="difficult != null and difficult != ''">difficult = #{difficult},</if>
+            <if test="progress != null">progress = #{progress},</if>
+            <if test="completeSituation != null">complete_situation = #{completeSituation},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createDept != null">create_dept = #{createDept},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="attach != null">attach = #{attach},</if>
+            <if test="docType != null">doc_type = #{docType},</if>
+            <if test="extInfo != null">ext_info = #{extInfo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateBizTaskInfo" parameterType="BizTaskInfo" databaseId="dm">
+        update biz_task_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="causation != null and causation != ''">causation = #{causation},</if>
+            <if test="businessId != null">business_id = #{businessId},</if>
+            <if test="basis != null">basis = #{basis},</if>
+            <if test="topId != null and topId != ''">top_id = #{topId},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="desc != null and desc != ''">"desc" = #{desc},</if>
+            <if test="beginTime != null and beginTime != ''">begin_time = #{beginTime},</if>
+            <if test="endTime != null and endTime != ''">end_time = #{endTime},</if>
+            <if test="urgency != null and urgency != ''">urgency = #{urgency},</if>
+            <if test="planScore != null">plan_score = #{planScore},</if>
+            <if test="difficult != null and difficult != ''">difficult = #{difficult},</if>
+            <if test="progress != null">progress = #{progress},</if>
+            <if test="completeSituation != null">complete_situation = #{completeSituation},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createDept != null">create_dept = #{createDept},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="attach != null">attach = #{attach},</if>
+            <if test="docType != null">doc_type = #{docType},</if>
+            <if test="extInfo != null">ext_info = #{extInfo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizTaskInfoById" parameterType="String">
+        delete from biz_task_info where id = #{id}
+    </delete>
+
+    <delete id="deleteBizTaskInfoByIds" parameterType="String">
+        delete from biz_task_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <resultMap type="BizTaskHandle" id="BizTaskHandleResult">
+        <result property="id"    column="id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="handleType"    column="handle_type"    />
+        <result property="handleDept"    column="handle_dept"    />
+        <result property="handleUser"    column="handle_user"    />
+        <result property="scorePercent"    column="score_percent"    />
+        <result property="progress"    column="progress"    />
+        <result property="handleStatus"    column="handle_status"    />
+        <result property="assignStatus"    column="assign_status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="receiveTime"    column="receive_time"    />
+        <result property="completeTime"    column="complete_time"    />
+        <result property="resultAttach"    column="result_attach"    />
+        <result property="completeSituation"    column="complete_situation"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="transferUser"    column="transfer_user"    />
+        <result property="transferRemark"    column="transfer_remark"    />
+        <result property="handleRole"    column="handle_role"    />
+        <result property="masterFlag"    column="master_flag"  javaType="boolean"  />
+
+        <result property="taskName"    column="taskName"    />
+        <result property="taskBeginTime"    column="taskBeginTime"    />
+        <result property="taskEndTime"    column="taskEndTime"    />
+        <result property="taskAttach"    column="taskAttach"    />
+        <result property="handleDeptName"    column="handleDeptName"    />
+        <result property="handleUserName"    column="handleUserName"    />
+        <result property="transferUserName"    column="transferUserName"    />
+    </resultMap>
+
+    <select id="listHandle4Evaluation" resultMap="BizTaskHandleResult">
+        select t.id
+             , t.task_id
+             , t.handle_type
+             , t.handle_dept
+             , t.handle_user
+             , t.score_percent
+             , t.progress
+             , t.handle_status
+             , t.assign_status
+             , t.create_by
+             , t.create_time
+             , t.update_by
+             , t.update_time
+             , t.remark
+             , t.receive_time
+             , t.complete_time
+             , t.result_attach
+             , t.complete_situation
+             , t.parent_id
+             , t.transfer_user
+             , t.transfer_remark
+             , t.handle_role
+             , t.master_flag
+             , ti.title      as taskName
+             , ti.begin_time as taskBeginTime
+             , ti.end_time   as taskEndTime
+             , ti.attach     as taskAttach
+             , hd.dept_name  as handleDeptName
+             , hu.name       as handleUserName
+             , tu.name       as transferUserName
+        from biz_task_handle t
+                 left join biz_task_info ti on t.task_id = ti.id
+                 left join sys_dept hd on t.handle_dept = hd.dept_id
+                 left join sys_user hu on t.handle_user = hu.user_name and hu.del_flag != '2'
+        left join sys_user tu
+        on t.transfer_user = tu.user_name and tu.del_flag != '2'
+        where t.claim_status = '1'
+          and t.claim_type = '1'
+          and (
+                t.handle_user = #{userName}
+                <if test="isDeptLeader">
+                    or ti.create_by = #{userName}
+                </if>
+            )
+          and (ti.begin_time &lt;= #{endTime}
+          and ti.end_time &gt;= #{beginTime})
+    </select>
+
+</mapper>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessCadrePoliticalQualityIdentifyMapper">
+    
+    <resultMap type="BizAssessCadrePoliticalQualityIdentify" id="BizAssessCadrePoliticalQualityIdentifyResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="workPost"    column="work_post"    />
+        <result property="selfAssessment"    column="self_assessment"    />
+        <result property="votes"    column="votes"    />
+        <result property="recoverVotes"    column="recover_votes"    />
+        <result property="effectiveVotes"    column="effective_votes"    />
+        <result property="goodVotes"    column="good_votes"    />
+        <result property="preferablyVotes"    column="preferably_votes"    />
+        <result property="generalVotes"    column="general_votes"    />
+        <result property="badVotes"    column="bad_votes"    />
+        <result property="leaderComment"    column="leader_comment"    />
+        <result property="expertOpinion"    column="expert_opinion"    />
+        <result property="isReport"    column="is_report"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="leaderCommentGrade"    column="leader_comment_grade"    />
+    </resultMap>
+
+    <resultMap id="bizAssessCadrePoliticalQualityIdentifyVo" type="BizAssessCadrePoliticalQualityIdentifyVo" extends="BizAssessCadrePoliticalQualityIdentifyResult">
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+    <sql id="selectBizAssessCadrePoliticalQualityIdentifyVo">
+        select bacpqi.id, bacpqi.user_id, bacpqi.dept_id, bacpqi.work_post, bacpqi.self_assessment, bacpqi.votes, bacpqi.recover_votes,
+               bacpqi.effective_votes, bacpqi.good_votes, bacpqi.preferably_votes, bacpqi.general_votes,
+               bacpqi.bad_votes, bacpqi.leader_comment, bacpqi.expert_opinion, bacpqi.is_report, bacpqi.assessment_year,
+               bacpqi.create_by, bacpqi.update_by, bacpqi.create_time, bacpqi.update_time, bacpqi.del_flag,bacpqi.leader_comment_grade,
+               bacpqi.final_identify,bacpqi.manager_user_id,
+               u.name,d.dept_name
+        from biz_assess_cadre_political_quality_identify bacpqi
+        left join sys_user u on bacpqi.user_id=u.user_id
+        left join sys_dept d on bacpqi.dept_id=d.dept_id
+    </sql>
+
+    <select id="selectStaticsByUser" resultMap="bizAssessCadrePoliticalQualityIdentifyVo">
+        select assessment_year,user_id,
+               sum(if(overall_evaluation='1'and status='1',1,0)) as good_votes,
+               sum(if(overall_evaluation='2'and status='1',1,0)) as preferably_votes,
+               sum(if(overall_evaluation='3'and status='1',1,0)) as general_votes,
+               sum(if(overall_evaluation='4'and status='1',1,0)) as bad_votes,
+               count(*)as votes,
+               sum(if(status='1',1,0)) as recover_votes,
+               sum(if(status='1',1,0)) as effective_votes
+        from biz_assess_cadre_political_quality
+        where user_id=#{userId} and assessment_year=#{assessmentYear}
+        group by user_id,assessment_year
+    </select>
+    <select id="selectYears" resultMap="bizAssessCadrePoliticalQualityIdentifyVo">
+        select assessment_year
+        from biz_assess_cadre_political_quality
+        group by assessment_year order by assessment_year desc
+    </select>
+    <select id="selectBizAssessCadrePoliticalQualityIdentifyList" parameterType="BizAssessCadrePoliticalQualityIdentify" resultMap="bizAssessCadrePoliticalQualityIdentifyVo">
+        <include refid="selectBizAssessCadrePoliticalQualityIdentifyVo"/>
+        <where>  
+            <if test="deptId != null "> and bacpqi.dept_id = #{deptId}</if>
+            <if test="userId != null "> and bacpqi.user_id = #{userId}</if>
+            <if test="workPost != null  and workPost != ''"> and bacpqi.work_post = #{workPost}</if>
+            <if test="selfAssessment != null  and selfAssessment != ''"> and bacpqi.self_assessment = #{selfAssessment}</if>
+            <if test="votes != null "> and bacpqi.votes = #{votes}</if>
+            <if test="recoverVotes != null "> and bacpqi.recover_votes = #{recoverVotes}</if>
+            <if test="effectiveVotes != null "> and bacpqi.effective_votes = #{effectiveVotes}</if>
+            <if test="goodVotes != null "> and bacpqi.good_votes = #{goodVotes}</if>
+            <if test="preferablyVotes != null "> and bacpqi.preferably_votes = #{preferablyVotes}</if>
+            <if test="generalVotes != null "> and bacpqi.general_votes = #{generalVotes}</if>
+            <if test="badVotes != null "> and bacpqi.bad_votes = #{badVotes}</if>
+            <if test="leaderComment != null  and leaderComment != ''"> and bacpqi.leader_comment = #{leaderComment}</if>
+            <if test="expertOpinion != null  and expertOpinion != ''"> and bacpqi.expert_opinion = #{expertOpinion}</if>
+            <if test="isReport != null  and isReport != ''"> and bacpqi.is_report = #{isReport}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and bacpqi.assessment_year = #{assessmentYear}</if>
+            <if test="createTime != null "> and bacpqi.create_time = #{createTime}</if>
+            <if test="createBy != null "> and bacpqi.create_by = #{createBy}</if>
+            <if test="name != null "> and u.name like concat('%',#{name},'%') </if>
+            <if test="deptName != null "> and d.dept_name like concat('%',#{deptName},'%') </if>
+            <if test="managerUserId != null "> and bacpqi.manager_user_id = #{managerUserId}</if>
+        </where>
+        order by bacpqi.dept_id asc,bacpqi.create_time desc
+    </select>
+    <select id="listByManagerUser" parameterType="BizAssessCadrePoliticalQualityIdentify" resultMap="bizAssessCadrePoliticalQualityIdentifyVo">
+        <include refid="selectBizAssessCadrePoliticalQualityIdentifyVo"/>
+        <where>
+            <if test="deptId != null "> and bacpqi.dept_id = #{deptId}</if>
+            <if test="userId != null "> and bacpqi.user_id = #{userId}</if>
+            <if test="workPost != null  and workPost != ''"> and bacpqi.work_post = #{workPost}</if>
+            <if test="selfAssessment != null  and selfAssessment != ''"> and bacpqi.self_assessment = #{selfAssessment}</if>
+            <if test="votes != null "> and bacpqi.votes = #{votes}</if>
+            <if test="recoverVotes != null "> and bacpqi.recover_votes = #{recoverVotes}</if>
+            <if test="effectiveVotes != null "> and bacpqi.effective_votes = #{effectiveVotes}</if>
+            <if test="goodVotes != null "> and bacpqi.good_votes = #{goodVotes}</if>
+            <if test="preferablyVotes != null "> and bacpqi.preferably_votes = #{preferablyVotes}</if>
+            <if test="generalVotes != null "> and bacpqi.general_votes = #{generalVotes}</if>
+            <if test="badVotes != null "> and bacpqi.bad_votes = #{badVotes}</if>
+            <if test="leaderComment != null  and leaderComment != ''"> and bacpqi.leader_comment = #{leaderComment}</if>
+            <if test="expertOpinion != null  and expertOpinion != ''"> and bacpqi.expert_opinion = #{expertOpinion}</if>
+            <if test="isReport != null  and isReport != ''"> and bacpqi.is_report != #{isReport}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and bacpqi.assessment_year = #{assessmentYear}</if>
+            <if test="createTime != null "> and bacpqi.create_time = #{createTime}</if>
+            <if test="createBy != null "> and bacpqi.create_by = #{createBy}</if>
+            <if test="name != null "> and u.name like concat('%',#{name},'%') </if>
+            <if test="deptName != null "> and d.dept_name like concat('%',#{deptName},'%') </if>
+            <if test="managerUserId != null "> and bacpqi.manager_user_id = #{managerUserId}</if>
+        </where>
+        order by bacpqi.dept_id asc,bacpqi.create_time desc
+    </select>
+    
+    <select id="selectBizAssessCadrePoliticalQualityIdentifyById" parameterType="String" resultMap="bizAssessCadrePoliticalQualityIdentifyVo">
+        <include refid="selectBizAssessCadrePoliticalQualityIdentifyVo"/>
+        where bacpqi.id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessCadrePoliticalQualityIdentify" parameterType="BizAssessCadrePoliticalQualityIdentify">
+        insert into biz_assess_cadre_political_quality_identify
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="workPost != null">work_post,</if>
+            <if test="selfAssessment != null">self_assessment,</if>
+            <if test="votes != null">votes,</if>
+            <if test="recoverVotes != null">recover_votes,</if>
+            <if test="effectiveVotes != null">effective_votes,</if>
+            <if test="goodVotes != null">good_votes,</if>
+            <if test="preferablyVotes != null">preferably_votes,</if>
+            <if test="generalVotes != null">general_votes,</if>
+            <if test="badVotes != null">bad_votes,</if>
+            <if test="leaderComment != null">leader_comment,</if>
+            <if test="expertOpinion != null">expert_opinion,</if>
+            <if test="isReport != null">is_report,</if>
+            <if test="assessmentYear != null">assessment_year,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="leaderCommentGrade != null">leader_comment_grade,</if>
+            <if test="finalIdentify != null">final_identify,</if>
+            <if test="managerUserId != null ">manager_user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="workPost != null">#{workPost},</if>
+            <if test="selfAssessment != null">#{selfAssessment},</if>
+            <if test="votes != null">#{votes},</if>
+            <if test="recoverVotes != null">#{recoverVotes},</if>
+            <if test="effectiveVotes != null">#{effectiveVotes},</if>
+            <if test="goodVotes != null">#{goodVotes},</if>
+            <if test="preferablyVotes != null">#{preferablyVotes},</if>
+            <if test="generalVotes != null">#{generalVotes},</if>
+            <if test="badVotes != null">#{badVotes},</if>
+            <if test="leaderComment != null">#{leaderComment},</if>
+            <if test="expertOpinion != null">#{expertOpinion},</if>
+            <if test="isReport != null">#{isReport},</if>
+            <if test="assessmentYear != null">#{assessmentYear},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="leaderCommentGrade != null">#{leaderCommentGrade},</if>
+            <if test="finalIdentify != null">#{finalIdentify},</if>
+            <if test="managerUserId != null "> #{managerUserId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessCadrePoliticalQualityIdentify" parameterType="BizAssessCadrePoliticalQualityIdentify">
+        update biz_assess_cadre_political_quality_identify
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="workPost != null">work_post = #{workPost},</if>
+            <if test="selfAssessment != null">self_assessment = #{selfAssessment},</if>
+            <if test="votes != null">votes = #{votes},</if>
+            <if test="recoverVotes != null">recover_votes = #{recoverVotes},</if>
+            <if test="effectiveVotes != null">effective_votes = #{effectiveVotes},</if>
+            <if test="goodVotes != null">good_votes = #{goodVotes},</if>
+            <if test="preferablyVotes != null">preferably_votes = #{preferablyVotes},</if>
+            <if test="generalVotes != null">general_votes = #{generalVotes},</if>
+            <if test="badVotes != null">bad_votes = #{badVotes},</if>
+            <if test="leaderComment != null">leader_comment = #{leaderComment},</if>
+            <if test="expertOpinion != null">expert_opinion = #{expertOpinion},</if>
+            <if test="isReport != null">is_report = #{isReport},</if>
+            <if test="assessmentYear != null">assessment_year = #{assessmentYear},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="leaderCommentGrade != null">leader_comment_grade = #{leaderCommentGrade},</if>
+            <if test="finalIdentify != null">final_identify = #{finalIdentify},</if>
+            <if test="managerUserId != null ">manager_user_id = #{managerUserId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateSetIsReport" parameterType="BizAssessCadrePoliticalQualityIdentify">
+        update biz_assess_cadre_political_quality_identify
+            set is_report = #{isReport}
+        where assessment_year = #{assessmentYear} and dept_id=#{deptId}
+    </update>
+
+    <delete id="deleteBizAssessCadrePoliticalQualityIdentifyById" parameterType="String">
+        delete from biz_assess_cadre_political_quality_identify where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessCadrePoliticalQualityIdentifyByIds" parameterType="String">
+        delete from biz_assess_cadre_political_quality_identify where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

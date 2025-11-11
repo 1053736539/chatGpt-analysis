@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityInvestigateMapper">
+
+    <resultMap type="BizProbityInvestigate" id="BizProbityInvestigateResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="investigateTime" column="investigate_time"/>
+        <result property="investigateReason" column="investigate_reason"/>
+        <result property="investigateDept" column="investigate_dept"/>
+        <result property="handleStage" column="handle_stage"/>
+        <result property="handleResult" column="handle_result"/>
+    </resultMap>
+
+    <sql id="selectBizProbityInvestigateVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               investigate_time,
+               investigate_reason,
+               investigate_dept,
+               handle_stage,
+               handle_result
+        from biz_probity_investigate
+    </sql>
+
+    <select id="selectBizProbityInvestigateList" parameterType="BizProbityInvestigate"
+            resultMap="BizProbityInvestigateResult">
+        <include refid="selectBizProbityInvestigateVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="investigateTime != null  and investigateTime != ''">and investigate_time = #{investigateTime}</if>
+            <if test="investigateReason != null  and investigateReason != ''">and investigate_reason =
+                #{investigateReason}
+            </if>
+            <if test="investigateDept != null  and investigateDept != ''">and investigate_dept = #{investigateDept}</if>
+            <if test="handleStage != null  and handleStage != ''">and handle_stage = #{handleStage}</if>
+            <if test="handleResult != null  and handleResult != ''">and handle_result = #{handleResult}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityInvestigateById" parameterType="String" resultMap="BizProbityInvestigateResult">
+        <include refid="selectBizProbityInvestigateVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityInvestigate" parameterType="BizProbityInvestigate">
+        insert into biz_probity_investigate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="investigateTime != null">investigate_time,</if>
+            <if test="investigateReason != null">investigate_reason,</if>
+            <if test="investigateDept != null">investigate_dept,</if>
+            <if test="handleStage != null">handle_stage,</if>
+            <if test="handleResult != null">handle_result,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="investigateTime != null">#{investigateTime},</if>
+            <if test="investigateReason != null">#{investigateReason},</if>
+            <if test="investigateDept != null">#{investigateDept},</if>
+            <if test="handleStage != null">#{handleStage},</if>
+            <if test="handleResult != null">#{handleResult},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_investigate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            investigate_time,
+            investigate_reason,
+            investigate_dept,
+            handle_stage,
+            handle_result,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.investigateTime},
+                #{entity.investigateReason},
+                #{entity.investigateDept},
+                #{entity.handleStage},
+                #{entity.handleResult},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityInvestigate" parameterType="BizProbityInvestigate">
+        update biz_probity_investigate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="investigateTime != null">investigate_time = #{investigateTime},</if>
+            <if test="investigateReason != null">investigate_reason = #{investigateReason},</if>
+            <if test="investigateDept != null">investigate_dept = #{investigateDept},</if>
+            <if test="handleStage != null">handle_stage = #{handleStage},</if>
+            <if test="handleResult != null">handle_result = #{handleResult},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityInvestigateById" parameterType="String">
+        delete
+        from biz_probity_investigate
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityInvestigateByIds" parameterType="String">
+        delete from biz_probity_investigate where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

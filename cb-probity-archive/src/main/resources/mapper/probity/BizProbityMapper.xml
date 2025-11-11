@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityMapper">
+
+    <resultMap type="BizProbity" id="BizProbityResult">
+        <result property="id" column="id"/>
+        <result property="year" column="year"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="confirmStatus" column="confirm_status"/>
+        <result property="confirmTime" column="confirm_time"/>
+        <result property="deptName" column="dept_name"/>
+    </resultMap>
+
+    <sql id="selectBizProbityVo">
+        select id, year, t.dept_name, t.user_id, u.nick_name as user_name, t.create_by, t.create_time, t.update_by, t.update_time, t.remark, confirm_status, confirm_time
+        from biz_probity t INNER JOIN sys_user u
+        on t.user_id = u.user_id
+    </sql>
+
+    <select id="selectBizProbityList" parameterType="BizProbity" resultMap="BizProbityResult">
+        <include refid="selectBizProbityVo"/>
+        <where>
+            <if test="year != null ">and t.year = #{year}</if>
+            <if test="userName != null and userName != ''">and u.nick_name like concat('%',#{userName},'%')</if>
+            <if test="deptName != null and deptName != ''">and t.dept_name like concat('%',#{deptName},'%')</if>
+            <if test="confirmStatus != null  and confirmStatus != ''">and t.confirm_status = #{confirmStatus}</if>
+            <if test="confirmTime != null ">and t.confirm_time = #{confirmTime}</if>
+            <if test="userId != null ">and t.user_id = #{userId}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityById" parameterType="String" resultMap="BizProbityResult">
+        <include refid="selectBizProbityVo"/>
+        where t.id = #{id}
+    </select>
+
+    <insert id="insertBizProbity" parameterType="BizProbity">
+        insert into biz_probity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="year != null">year,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="confirmStatus != null">confirm_status,</if>
+            <if test="confirmTime != null">confirm_time,</if>
+            <if test="deptName != null">dept_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="year != null">#{year},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="confirmStatus != null">#{confirmStatus},</if>
+            <if test="confirmTime != null">#{confirmTime},</if>
+            <if test="deptName != null">#{deptName},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            year,
+            user_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            confirm_status,
+            confirm_time,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.year},
+                #{entity.userId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.confirmStatus},
+                #{entity.confirmTime},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbity" parameterType="BizProbity">
+        update biz_probity
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="year != null">year = #{year},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="confirmStatus != null">confirm_status = #{confirmStatus},</if>
+            <if test="confirmTime != null">confirm_time = #{confirmTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityById" parameterType="String">
+        delete
+        from biz_probity
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityByIds" parameterType="String">
+        delete from biz_probity where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteInfoByProbityId" parameterType="String">
+        delete
+        from biz_probity_basic
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_marital
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_stock
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_other
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_investigate
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_gift
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_family_member
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_certificate
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_go_abroad
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_house
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_child_spouse
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_migrate
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_operate
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_live_abroad
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_fund
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_insurance
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_foreign_deposit
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_foreign_investment
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_enterprise
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_salary
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_stock_item
+        where probity_id = #{probityId};
+        delete
+        from biz_probity_lecture
+        where probity_id = #{probityId};
+    </delete>
+
+    <update id="verifyBizProbity" parameterType="String">
+        update biz_probity set confirm_status = '2',confirm_time=NOW() where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="updateConfirmStatus" parameterType="String">
+        update biz_probity
+        set confirm_status = #{confirmStatus}
+        where id = #{id}
+    </update>
+</mapper>

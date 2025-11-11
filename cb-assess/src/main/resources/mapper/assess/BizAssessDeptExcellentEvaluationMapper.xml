@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessDeptExcellentEvaluationMapper">
+    
+    <resultMap type="BizAssessDeptExcellentEvaluation" id="BizAssessDeptExcellentEvaluationResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="discussantUserId"    column="discussant_user_id"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="status"    column="status"    />
+        <result property="recommendGrade"    column="recommend_grade"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="escalation"    column="escalation"    />
+        <result property="identityType"    column="identity_type"    />
+    </resultMap>
+<resultMap id="BizAssessDeptExcellentEvaluationVo" type="BizAssessDeptExcellentEvaluationVo" extends="BizAssessDeptExcellentEvaluationResult">
+    <result property="name"    column="name"    />
+    <result property="deptName"    column="dept_name"    />
+    <result property="discussantUserName"    column="discussant_user_name"    />
+    <result property="recommendGradeExcellent"    column="recommendGradeExcellent"    />
+    <result property="number"    column="number"    />
+    <result property="reviewed"    column="reviewed"    />
+    <result property="escalation"    column="escalation"    />
+    <result property="countTotal"    column="countTotal"    />
+</resultMap>
+    <sql id="selectBizAssessDeptExcellentEvaluationVo">
+        select  adee.id, adee.user_id, adee.dept_id, adee.discussant_user_id,
+                adee.assessment_year, adee.status, adee.recommend_grade, adee.create_time, adee.update_time,
+                adee.create_by, adee.update_by, adee.del_flag,adee.escalation,adee.identity_type,
+                u.name,d.dept_name,u2.name as discussant_user_name
+        from biz_assess_dept_excellent_evaluation adee
+        inner join sys_user u on adee.user_id=u.user_id
+        inner join sys_dept d on adee.dept_id=d.dept_id
+        inner join sys_user u2 on adee.discussant_user_id=u2.user_id
+    </sql>
+    <select id="selectMyExcellentEvaluationCount" resultMap="BizAssessDeptExcellentEvaluationVo">
+        select  count(*) as countTotal
+        from biz_assess_dept_excellent_evaluation
+        where discussant_user_id=#{discussantUserId} and status = '0'
+    </select>
+    <select id="selectBizAssessDeptExcellentEvaluationList" parameterType="BizAssessDeptExcellentEvaluation" resultMap="BizAssessDeptExcellentEvaluationVo">
+        <include refid="selectBizAssessDeptExcellentEvaluationVo"/>
+        <where>  
+            <if test="userId != null "> and adee.user_id = #{userId}</if>
+            <if test="deptId != null "> and adee.dept_id = #{deptId}</if>
+            <if test="discussantUserId != null "> and adee.discussant_user_id = #{discussantUserId}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and adee.assessment_year = #{assessmentYear}</if>
+            <if test="status != null  and status != ''"> and adee.status = #{status}</if>
+            <if test="recommendGrade != null  and recommendGrade != ''"> and adee.recommend_grade = #{recommendGrade}</if>
+            <if test="escalation != null  and escalation != ''"> and adee.escalation = #{escalation}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%',#{name},'%') </if>
+            <if test="deptName != null  and deptName != ''"> and d.dept_name like concat('%',#{deptName},'%') </if>
+            <if test="discussantUserName != null  and discussantUserName != ''"> and u2.name like concat('%',#{discussantUserName},'%') </if>
+            <if test="createBy != null  and createBy != ''"> and adee.create_by = #{createBy} </if>
+        </where>
+        order by adee.create_time desc,adee.user_id asc
+    </select>
+
+    <select id="selectStatisticsByDept" resultMap="BizAssessDeptExcellentEvaluationVo">
+        select t.user_id,t.assessment_year,u.name,t.dept_id,d.dept_name,t.recommendGradeExcellent,t.number,t.reviewed,0 as escalation,
+        u.identity_type
+        from (select
+        user_id,assessment_year,dept_id,sum(if(recommend_grade='1',1,0))as recommendGradeExcellent,
+        count(*) as number,sum(if(status='1',1,0)) as reviewed
+        from biz_assess_dept_excellent_evaluation
+        <where>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''">and assessment_year = #{assessmentYear}</if>
+        </where>
+        group by user_id,assessment_year,dept_id) t
+        inner join sys_user u on t.user_id=u.user_id
+        inner join sys_dept d on t.dept_id=d.dept_id
+        <where>
+            <if test="name != null  and name != ''">and u.name like concat('%',#{recommendGrade},'%')</if>
+            <if test="deptName != null  and deptName != ''">and d.dept_name like concat('%',#{deptName},'%')</if>
+        </where>
+        order by t.recommendGradeExcellent asc
+    </select>
+
+    <select id="selectYears" resultMap="BizAssessDeptExcellentEvaluationVo">
+        select
+                assessment_year
+        from biz_assess_dept_excellent_evaluation group by assessment_year order by assessment_year desc
+    </select>
+    <select id="selectBizAssessDeptExcellentEvaluationById" parameterType="String" resultMap="BizAssessDeptExcellentEvaluationResult">
+        <include refid="selectBizAssessDeptExcellentEvaluationVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessDeptExcellentEvaluation" parameterType="BizAssessDeptExcellentEvaluation">
+        insert into biz_assess_dept_excellent_evaluation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="discussantUserId != null">discussant_user_id,</if>
+            <if test="assessmentYear != null">assessment_year,</if>
+            <if test="status != null">status,</if>
+            <if test="recommendGrade != null">recommend_grade,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="escalation != null">escalation,</if>
+            <if test="identityType != null">identity_type,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="discussantUserId != null">#{discussantUserId},</if>
+            <if test="assessmentYear != null">#{assessmentYear},</if>
+            <if test="status != null">#{status},</if>
+            <if test="recommendGrade != null">#{recommendGrade},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="escalation != null">#{escalation},</if>
+            <if test="identityType != null">#{identityType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessDeptExcellentEvaluation" parameterType="BizAssessDeptExcellentEvaluation">
+        update biz_assess_dept_excellent_evaluation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="discussantUserId != null">discussant_user_id = #{discussantUserId},</if>
+            <if test="assessmentYear != null">assessment_year = #{assessmentYear},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="recommendGrade != null">recommend_grade = #{recommendGrade},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="escalation != null">escalation = #{escalation},</if>
+            <if test="identityType != null">identity_type = #{identityType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssessDeptExcellentEvaluationById" parameterType="String">
+        delete from biz_assess_dept_excellent_evaluation where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessDeptExcellentEvaluationByIds" parameterType="String">
+        delete from biz_assess_dept_excellent_evaluation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

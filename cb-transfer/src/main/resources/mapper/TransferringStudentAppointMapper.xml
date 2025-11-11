@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentAppointMapper">
+    
+    <resultMap type="com.cb.vo.StudentAppointVo" id="TransferringStudentAppointResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="appointTime"    column="appoint_time"    />
+        <result property="appointDepartment"    column="appoint_department"    />
+        <result property="appointStation"    column="appoint_station"    />
+        <result property="appointAttach"    column="appoint_attach"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="docNo"    column="doc_no"    />
+        <result property="appointDeptId"    column="appoint_dept_id"    />
+    </resultMap>
+
+    <sql id="selectTransferringStudentAppointVo">
+        select id, user_id, appoint_time, appoint_department, appoint_station, appoint_attach, create_time, update_time, del_flag, create_by, update_by
+            ,doc_no ,appoint_dept_id
+        from transferring_student_appoint
+    </sql>
+
+    <select id="selectTransferringStudentAppointList"  resultMap="TransferringStudentAppointResult">
+        select sa.id, sa.user_id, sa.appoint_time, sa.appoint_department, sa.appoint_station, sa.appoint_attach, sa.create_time, sa.update_time, sa.del_flag,
+        sa.create_by, sa.update_by,u.nick_name
+        ,sa.doc_no ,sa.appoint_dept_id
+        from transferring_student_appoint sa
+        inner join sys_user u on sa.user_id=u.user_id
+        <where>
+            <if test="delFlag != null and delFlag != ''">and sa.del_flag = #{delFlag}</if>
+            <if test="userId != null  and userId != ''"> and sa.user_id = #{userId}</if>
+            <if test="appointTime != null  and appointTime != ''"> and sa.appoint_time = #{appointTime}</if>
+            <if test="appointDepartment != null  and appointDepartment != ''"> and sa.appoint_department like concat('%',#{appointDepartment},'%')</if>
+            <if test="appointStation != null  and appointStation != ''"> and sa.appoint_station like concat('%',#{appointStation},'%')</if>
+            <if test="appointAttach != null  and appointAttach != ''"> and sa.appoint_attach = #{appointAttach}</if>
+            <if test="createBy != null  and createBy != ''"> and sa.create_by = #{createBy}</if>
+            <if test="updateBy != null">and sa.update_by = #{updateBy}</if>
+            <if test="nickName != null and nickName != ''">and u.nick_name like concat('%',#{nickName},'%') </if>
+            <if test="docNo != null and docNo != ''">and sa.doc_no like concat('%',#{docNo},'%')</if>
+            <if test="appointDeptId != null">and sa.appoint_dept_id = #{appointDeptId}</if>
+            <if test="params.beginTime != null and params.beginTime != ''">and sa.appoint_time &gt;= #{params.beginTime} </if>
+            <if test="params.endTime != null and params.endTime != ''">and sa.appoint_time &lt;= #{params.endTime} </if>
+        </where>
+    </select>
+    
+    <select id="selectTransferringStudentAppointById" parameterType="String" resultMap="TransferringStudentAppointResult">
+        <include refid="selectTransferringStudentAppointVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTransferringStudentAppoint" >
+        insert into transferring_student_appoint
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="appointTime != null">appoint_time,</if>
+            <if test="appointDepartment != null">appoint_department,</if>
+            <if test="appointStation != null">appoint_station,</if>
+            <if test="appointAttach != null">appoint_attach,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="docNo != null">doc_no,</if>
+            <if test="appointDeptId != null">appoint_dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="appointTime != null">#{appointTime},</if>
+            <if test="appointDepartment != null">#{appointDepartment},</if>
+            <if test="appointStation != null">#{appointStation},</if>
+            <if test="appointAttach != null">#{appointAttach},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="docNo != null">#{docNo},</if>
+            <if test="appointDeptId != null">#{appointDeptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransferringStudentAppoint" >
+        update transferring_student_appoint
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="appointTime != null">appoint_time = #{appointTime},</if>
+            <if test="appointDepartment != null">appoint_department = #{appointDepartment},</if>
+            <if test="appointStation != null">appoint_station = #{appointStation},</if>
+            <if test="appointAttach != null">appoint_attach = #{appointAttach},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="docNo != null">doc_no = #{docNo},</if>
+            <if test="appointDeptId != null">appoint_dept_id = #{appointDeptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentAppointById" parameterType="String">
+        delete from transferring_student_appoint where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentAppointByIds" parameterType="String">
+        update transferring_student_appoint set del_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

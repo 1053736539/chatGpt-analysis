@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityLectureMapper">
+
+    <resultMap type="BizProbityLecture" id="BizProbityLectureResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="lecture" column="lecture"/>
+        <result property="writing" column="writing"/>
+        <result property="consult" column="consult"/>
+        <result property="review" column="review"/>
+        <result property="calligraphyPainting" column="calligraphy_painting"/>
+        <result property="other" column="other"/>
+        <result property="total" column="total"/>
+    </resultMap>
+
+    <sql id="selectBizProbityLectureVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               lecture,
+               writing,
+               consult,
+               review,
+               calligraphy_painting,
+               other,
+               total
+        from biz_probity_lecture
+    </sql>
+
+    <select id="selectBizProbityLectureList" parameterType="BizProbityLecture" resultMap="BizProbityLectureResult">
+        <include refid="selectBizProbityLectureVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="lecture != null  and lecture != ''">and lecture = #{lecture}</if>
+            <if test="writing != null  and writing != ''">and writing = #{writing}</if>
+            <if test="consult != null  and consult != ''">and consult = #{consult}</if>
+            <if test="review != null  and review != ''">and review = #{review}</if>
+            <if test="calligraphyPainting != null  and calligraphyPainting != ''">and calligraphy_painting =
+                #{calligraphyPainting}
+            </if>
+            <if test="other != null  and other != ''">and other = #{other}</if>
+            <if test="total != null  and total != ''">and total = #{total}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityLectureById" parameterType="String" resultMap="BizProbityLectureResult">
+        <include refid="selectBizProbityLectureVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityLecture" parameterType="BizProbityLecture">
+        insert into biz_probity_lecture
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="lecture != null">lecture,</if>
+            <if test="writing != null">writing,</if>
+            <if test="consult != null">consult,</if>
+            <if test="review != null">review,</if>
+            <if test="calligraphyPainting != null">calligraphy_painting,</if>
+            <if test="other != null">other,</if>
+            <if test="total != null">total,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="lecture != null">#{lecture},</if>
+            <if test="writing != null">#{writing},</if>
+            <if test="consult != null">#{consult},</if>
+            <if test="review != null">#{review},</if>
+            <if test="calligraphyPainting != null">#{calligraphyPainting},</if>
+            <if test="other != null">#{other},</if>
+            <if test="total != null">#{total},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_lecture
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            lecture,
+            writing,
+            consult,
+            review,
+            calligraphy_painting,
+            other,
+            total,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.lecture},
+                #{entity.writing},
+                #{entity.consult},
+                #{entity.review},
+                #{entity.calligraphyPainting},
+                #{entity.other},
+                #{entity.total},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityLecture" parameterType="BizProbityLecture">
+        update biz_probity_lecture
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="lecture != null">lecture = #{lecture},</if>
+            <if test="writing != null">writing = #{writing},</if>
+            <if test="consult != null">consult = #{consult},</if>
+            <if test="review != null">review = #{review},</if>
+            <if test="calligraphyPainting != null">calligraphy_painting = #{calligraphyPainting},</if>
+            <if test="other != null">other = #{other},</if>
+            <if test="total != null">total = #{total},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityLectureById" parameterType="String">
+        delete
+        from biz_probity_lecture
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityLectureByIds" parameterType="String">
+        delete from biz_probity_lecture where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

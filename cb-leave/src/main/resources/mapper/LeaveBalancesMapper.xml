@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.leave.mapper.LeaveBalancesMapper">
+    
+    <resultMap type="LeaveBalances" id="LeaveBalancesResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="leaveTypeId"    column="leave_type_id"    />
+        <result property="leaveYear"    column="leave_year"    />
+        <result property="totalDays"    column="total_days"    />
+        <result property="usedDays"    column="used_days"    />
+        <result property="pendingDays"    column="pending_days"    />
+        <result property="remainingDays"    column="remaining_days"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"       column="status" />
+        <result property="approvalOpinion"      column="approval_opinion" />
+        <result property="leaderId"      column="leader_id" />
+        <result property="changeFlag"      column="change_flag" />
+        <result property="leaderName"      column="leader_name" />
+        <result property="deptName"      column="dept_name" />
+        <!-- 新增的字段映射 -->
+        <result property="nickName" column="nickName" /> <!-- 映射查询的用户名 -->
+        <result property="leaveName" column="leaveName" /> <!-- 映射查询的假期类型名称 -->
+        <result property="identityType"    column="identity_type"    />
+    </resultMap>
+
+    <resultMap type="LeaveBalancesVo" id="LeaveBalancesResult1">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="leaveTypeId"    column="leave_type_id"    />
+        <result property="leaveYear"    column="leave_year"    />
+        <result property="totalDays"    column="total_days"    />
+        <result property="usedDays"    column="used_days"    />
+        <result property="pendingDays"    column="pending_days"    />
+        <result property="remainingDays"    column="remaining_days"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="status"       column="status" />
+        <result property="approvalOpinion"      column="approval_opinion" />
+        <result property="leaderId"      column="leader_id" />
+        <result property="changeFlag"      column="change_flag" />
+        <result property="leaderName"      column="leader_name" />
+        <result property="deptName"      column="dept_name" />
+        <!-- 新增的字段映射 -->
+        <result property="nickName" column="nickName" /> <!-- 映射查询的用户名 -->
+        <result property="leaveName" column="leaveName" /> <!-- 映射查询的假期类型名称 -->
+        <result property="identityType"    column="identity_type"    />
+    </resultMap>
+
+    <sql id="selectLeaveBalancesVo">
+        select lb.id, lb.user_id, lb.leave_type_id, lb.leave_year, lb.total_days, lb.used_days, lb.pending_days,
+               lb.remaining_days, lb.create_by, lb.create_time, lb.update_by, lb.update_time,
+               lb.status, lb.approval_opinion, lb.leader_id, lb.change_flag
+                ,lu.nick_name as leader_name
+                ,ld.dept_name
+        from leave_balances lb
+        left join sys_user lu on lb.leader_id = lu.user_id
+        left join sys_dept ld on ld.dept_id = lu.dept_id
+    </sql>
+
+    <select id="selectLeaveBalancesList1" parameterType="LeaveBalances" resultMap="LeaveBalancesResult">
+        <include refid="selectLeaveBalancesVo"/>
+        <where>  
+            <if test="userId != null "> and lb.user_id = #{userId}</if>
+            <if test="leaveTypeId != null "> and lb.leave_type_id = #{leaveTypeId}</if>
+            <if test="leaveYear != null "> and lb.leave_year = #{leaveYear}</if>
+            <if test="totalDays != null "> and lb.total_days = #{totalDays}</if>
+            <if test="usedDays != null "> and lb.used_days = #{usedDays}</if>
+            <if test="pendingDays != null "> and lb.pending_days = #{pendingDays}</if>
+            <if test="remainingDays != null "> and lb.remaining_days = #{remainingDays}</if>
+            <if test="status != null "> and lb.status = #{status}</if>
+            <if test="leaderId != null "> and lb.leader_id = #{leaderId}</if>
+            <if test="changeFlag != null "> and lb.change_flag = #{changeFlag}</if>
+             <if test="deptName != null and deptName != ''">
+                 and ld.dept_name like concat('%', #{deptName}, '%')
+             </if>
+        </where>
+    </select>
+
+    <sql id="selectLeaveBalancesVo1">
+        select
+            lb.id,
+            lb.user_id,
+            su.nick_name as nickName, -- 关联查询用户名
+            lb.leave_type_id,
+            lt.leave_name as leaveName, -- 关联查询假期类型名称
+            lb.leave_year,
+            lb.total_days,
+            lb.used_days,
+            lb.pending_days,
+            lb.remaining_days,
+            lb.status,
+            lb.approval_opinion,
+            lb.leader_id,
+            lb.change_flag,
+            lu.nick_name leader_name,
+            ld.dept_name,
+            lb.create_by,
+            lb.create_time,
+            lb.update_by,
+            lb.update_time
+        from leave_balances lb
+                 left join sys_user su on lb.user_id = su.user_id  -- 联表查询用户信息
+                 left join sys_dept ld on ld.dept_id = su.dept_id
+                 left join leave_types lt on lb.leave_type_id = lt.id  -- 联表查询假期类型名称
+                 left join sys_user lu on lb.leader_id = lu.user_id
+    </sql>
+
+    <select id="selectLeaveBalancesList" parameterType="LeaveBalances" resultMap="LeaveBalancesResult">
+        <include refid="selectLeaveBalancesVo1"/>
+        <where>
+            <if test="userId != null "> and lb.user_id = #{userId}</if>
+            <if test="leaveTypeId != null "> and lb.leave_type_id = #{leaveTypeId}</if>
+            <if test="leaveYear != null "> and lb.leave_year = #{leaveYear}</if>
+            <if test="totalDays != null "> and lb.total_days = #{totalDays}</if>
+            <if test="usedDays != null "> and lb.used_days = #{usedDays}</if>
+            <if test="pendingDays != null "> and lb.pending_days = #{pendingDays}</if>
+            <if test="remainingDays != null "> and lb.remaining_days = #{remainingDays}</if>
+            <if test="status != null "> and lb.status = #{status}</if>
+            <if test="leaderId != null ">and lb.leader_id = #{leaderId}</if>
+            <if test="changeFlag != null "> and lb.change_flag = #{changeFlag}</if>
+            <if test="deptName != null and deptName != ''">
+                and ld.dept_name like concat('%', #{deptName}, '%')
+            </if>
+            <if test="nickName != null and nickName != ''">
+                and su.nick_name LIKE CONCAT('%', #{nickName}, '%')
+            </if>
+            and su.del_flag = '0' and su.user_type = '00'
+        </where>
+        order by
+        lb.user_id, lb.create_time
+
+    </select>
+    
+    <select id="selectLeaveBalancesById" parameterType="Integer" resultMap="LeaveBalancesResult">
+        <include refid="selectLeaveBalancesVo"/>
+        where lb.id = #{id}
+    </select>
+
+    <select id="selectListByIds" parameterType="Integer" resultMap="LeaveBalancesResult">
+        <include refid="selectLeaveBalancesVo1"/>
+        where lb.id in
+            <foreach collection="array" item="id" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </select>
+
+    <insert id="insertLeaveBalances" parameterType="LeaveBalances">
+        insert into leave_balances
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="leaveTypeId != null">leave_type_id,</if>
+            <if test="leaveYear != null">leave_year,</if>
+            <if test="totalDays != null">total_days,</if>
+            <if test="usedDays != null">used_days,</if>
+            <if test="pendingDays != null">pending_days,</if>
+            <if test="remainingDays != null">remaining_days,</if>
+            <if test="status != null">status,</if>
+            <if test="approvalOpinion != null">approval_opinion,</if>
+            <if test="leaderId != null">leader_id,</if>
+            <if test="changeFlag != null">change_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="leaveTypeId != null">#{leaveTypeId},</if>
+            <if test="leaveYear != null">#{leaveYear},</if>
+            <if test="totalDays != null">#{totalDays},</if>
+            <if test="usedDays != null">#{usedDays},</if>
+            <if test="pendingDays != null">#{pendingDays},</if>
+            <if test="remainingDays != null">#{remainingDays},</if>
+            <if test="status != null">#{status},</if>
+            <if test="approvalOpinion != null">#{approvalOpinion},</if>
+            <if test="leaderId != null">#{leaderId},</if>
+            <if test="changeFlag != null">#{changeFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLeaveBalances" parameterType="LeaveBalances">
+        update leave_balances
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="leaveTypeId != null">leave_type_id = #{leaveTypeId},</if>
+            <if test="leaveYear != null">leave_year = #{leaveYear},</if>
+            <if test="totalDays != null">total_days = #{totalDays},</if>
+            <if test="usedDays != null">used_days = #{usedDays},</if>
+            <if test="pendingDays != null">pending_days = #{pendingDays},</if>
+            <if test="remainingDays != null">remaining_days = #{remainingDays},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="approvalOpinion != null">approval_opinion = #{approvalOpinion},</if>
+            <if test="leaderId != null">leader_id = #{leaderId},</if>
+            <if test="changeFlag != null">change_flag = #{changeFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLeaveBalancesById" parameterType="Integer">
+        delete from leave_balances where id = #{id}
+    </delete>
+
+    <delete id="deleteLeaveBalancesByIds" parameterType="String">
+        delete from leave_balances where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!-- 查询用户指定假期类型的余额信息 -->
+    <select id="selectByUserIdAndType" parameterType="map" resultMap="LeaveBalancesResult">
+        SELECT *
+        FROM leave_balances
+        WHERE user_id = #{userId}
+        AND leave_type_id = #{leaveTypeId}
+        AND leave_year = #{leaveYear}
+    </select>
+
+    <select id="findUnusedLeaveStatistics" parameterType="LeaveBalances"  resultMap="LeaveBalancesResult1">
+        SELECT lb.id,
+               lb.user_id,
+               su.nick_name  nickName,
+               lb.leave_type_id,
+               lt.leave_name leaveName,
+               lb.total_days,
+               lb.used_days,
+               lb.remaining_days,
+               lb.leave_year,
+               lb.status,
+               lb.approval_opinion,
+               lb.leader_id,
+               lb.change_flag,
+               lu.nick_name leader_name,
+               ld.dept_name,
+               lb.create_time,
+               lb.create_by,
+               lb.update_by,
+               lb.update_time
+        FROM leave_balances lb
+                 left join sys_user su on lb.user_id = su.user_id
+                 left join sys_dept ld on ld.dept_id = su.dept_id
+                 JOIN leave_types lt ON lb.leave_type_id = lt.id
+                left join sys_user lu on lb.leader_id = lu.user_id
+        WHERE su.status = '0' and su.del_flag='0' and su.user_type ='00'
+            and lb.remaining_days > 0
+        <if test="userId != null">
+            and lb.user_id = #{userId}
+        </if>
+        <if test="nickName != null and nickName != ''">
+            and su.nick_name LIKE CONCAT('%', #{nickName}, '%')
+        </if>
+        <if test="leaveTypeId != null">
+            and lb.leave_type_id = #{leaveTypeId}
+        </if>
+        <if test="leaveYear != null">
+            and lb.leave_year = #{leaveYear}
+        </if>
+        <if test="status != null">
+            and lb.status = #{status}
+        </if>
+        <if test="leaderId != null">
+            and lb.leader_id = #{leaderId}
+        </if>
+        <if test="changeFlag != null">
+            and lb.change_flag = #{changeFlag}
+        </if>
+        <if test="deptName != null and deptName != ''">
+            and ld.dept_name LIKE CONCAT('%', #{deptName}, '%')
+        </if>
+        <if test="identityType != null and identityType != ''">
+            and su.identity_type = #{identityType}
+        </if>
+        order by
+        lb.user_id, lb.create_time
+    </select>
+
+    <select id="listLeaveBalanceByUser" parameterType="LeaveBalances"  resultMap="LeaveBalancesResult1">
+        SELECT lb.id,
+        lb.user_id,
+        su.nick_name  nickName,
+        lb.leave_type_id,
+        lt.leave_name leaveName,
+        lb.total_days,
+        lb.used_days,
+        lb.remaining_days,
+        lb.leave_year,
+        lb.status,
+        lb.approval_opinion,
+        lb.leader_id,
+        lb.change_flag,
+        lu.nick_name leader_name,
+        ld.dept_name,
+        lb.create_time,
+        lb.create_by,
+        lb.update_by,
+        lb.update_time,
+        su.identity_type  identity_type
+        FROM leave_balances lb
+        left join sys_user su on lb.user_id = su.user_id
+        left join sys_dept ld on ld.dept_id = su.dept_id
+        JOIN leave_types lt ON lb.leave_type_id = lt.id
+        left join sys_user lu on lb.leader_id = lu.user_id
+        <where>
+                su.status = '0' and su.del_flag='0' and su.user_type ='00'
+            <if test="query.leaveTypeId != null">
+                and lb.leave_type_id = #{query.leaveTypeId}
+            </if>
+            <if test="query.leaveYear != null">
+                and lb.leave_year = #{query.leaveYear}
+            </if>
+            <if test="query.status != null">
+                and lb.status = #{query.status}
+            </if>
+            <if test="query.changeFlag != null">
+                and lb.change_flag = #{query.changeFlag}
+            </if>
+            <if test="query.deptName != null and query.deptName != ''">
+                and ld.dept_name = #{query.deptName}
+            </if>
+            <if test="query.identityType != null and query.identityType != ''">
+                and su.identity_type = #{query.identityType}
+            </if>
+            <if test="exclude">
+                and not (ld.dept_id = 138 or ld.ancestors like '0,100,138%')
+            </if>
+            <trim prefix="and (" suffix=")" prefixOverrides="AND |and |OR |or ">
+                <if test="query.userId != null">
+                    and lb.user_id = #{query.userId}
+                </if>
+                <if test="query.nickName != null and query.nickName != ''">
+                    and su.nick_name LIKE CONCAT('%', #{query.nickName}, '%')
+                </if>
+                <if test="deptIds != null and deptIds.size() > 0">
+                    and su.dept_id in
+                    <foreach item="deptId" collection="deptIds" open="(" separator="," close=")">
+                        #{deptId}
+                    </foreach>
+                </if>
+                <if test="leaderId != null">
+                    or lb.leader_id = #{leaderId}
+                </if>
+            </trim>
+
+        </where>
+        order by lb.leave_year desc,
+        ifnull(ld.order_num, 99999) ASC,
+        ifnull(su.SEQUENCE, 99999) ASC, lb.create_time
+    </select>
+
+    <update id="batchOpenStatusByYear">
+        update leave_balances set status = 1 ,
+            update_by = #{updateBy}, update_time = #{updateTime}
+        where status is null
+            and leave_year = #{year}
+    </update>
+
+    <update id="batchConfirm">
+        update leave_balances set status = #{status} , leader_id = #{leaderId} , approval_opinion = null,
+            update_by = #{updateBy}, update_time = #{updateTime}
+        where ( status = 1 or status = 4)
+            and id in
+            <foreach item="id" collection="ids" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </update>
+
+    <update id="batchApproveByIds" >
+        update leave_balances set status = #{status} ,  approval_opinion = #{approvalOpinion},
+            update_by = #{updateBy}, update_time = #{updateTime}
+        where status = 2
+            and id in
+            <foreach item="id" collection="ids" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </update>
+
+    <update id="batchSetChangeFlag">
+        update leave_balances set change_flag = #{changeFlag}
+        where id in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <select id="exportLeaveBalancesData" parameterType="map" resultType="map">
+        SELECT lb.id,
+        lb.user_id userId,
+        su.nick_name  userName,
+        lb.leave_type_id leaveTypeId,
+        lt.leave_name leaveName,
+        lb.total_days totalDays,
+        lb.used_days usedDays,
+        lb.pending_days pendingDays,
+        lb.remaining_days remainingDays,
+        CASE WHEN lb.total_days = 0 THEN '0%' ELSE CONCAT(ROUND(lb.used_days * 100 / lb.total_days),'%') END leaveRate,
+        lb.leave_year leaveYear,
+        lb.status,
+        lb.approval_opinion approvalOpinion,
+        lb.leader_id leaderId,
+        lu.nick_name leaderName,
+        lb.change_flag changeFlag,
+        ld.dept_name deptName,
+        lb.create_time createTime,
+        lb.create_by createBy,
+        lb.update_by updateBy,
+        lb.update_time updateTime
+        FROM leave_balances lb
+        left join sys_user su on lb.user_id = su.user_id
+        left join sys_dept ld on ld.dept_id = su.dept_id
+        JOIN leave_types lt ON lb.leave_type_id = lt.id
+        left join sys_user lu on lb.leader_id = lu.user_id
+        where
+            su.del_flag = '0'
+            <if test="id != null and id != ''" >
+                <choose>
+                    <when test="isUpdate">
+                        <if test="historyId != null and historyId != ''">
+                            and lb.id <![CDATA[>]]> #{historyId}
+                        </if>
+                        and lb.id <![CDATA[<=]]> #{id}
+                    </when>
+                    <otherwise>
+                        and lb.id <![CDATA[>]]> #{id}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="lastExportTime != null and lastExportTime != ''">
+                and TO_TIMESTAMP(lb.update_time, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[>=]]> TO_TIMESTAMP(#{lastExportTime}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+        order by lb.id asc
+        <if test="orderBy != null and orderBy != ''">
+            , #{orderBy}
+        </if>
+        <if test="limit != null and limit != ''">
+            limit #{limit}
+        </if>
+    </select>
+
+    <!-- 查询用户假期余额信息 -->
+    <select id="selectLeaveBalanceByUserId" parameterType="LeaveBalances" resultMap="LeaveBalancesResult">
+        SELECT *
+        FROM leave_balances
+        WHERE 1=1
+        <if test="userId != null "> and user_id = #{userId}</if>
+        <if test="leaveTypeId != null "> and leave_type_id = #{leaveTypeId}</if>
+        <if test="leaveYear != null "> and leave_year = #{leaveYear}</if>
+    </select>
+
+</mapper>

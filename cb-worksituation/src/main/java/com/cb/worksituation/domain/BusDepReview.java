@@ -60,6 +60,12 @@ public class BusDepReview extends BaseEntity {
     private String remarks;
 
     /**
+     * 当前用户评分数据状态（0-未填写，1-草稿，2-已提交）
+     */
+    @Transient
+    private String dataStatus;
+
+    /**
      * 对应表头字段
      */
     @Transient

@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.AssessTaskProcessStatisticsMapper">
+    <resultMap id="AssessTaskProcessStatisticsResult" type="com.cb.assess.domain.vo.AssessTaskProcessStatisticsVo">
+        <result property="taskId" column="task_id"/>
+        <result property="proId" column="pro_id"/>
+        <result property="special" column="special"/>
+        <result property="process" column="process"/>
+        <result property="processName" column="process_name"/>
+        <result property="totalNum" column="total_num"/>
+        <result property="completedNum" column="completed_num"/>
+    </resultMap>
+    <select id="selectAssessTaskProcessCount" resultMap="AssessTaskProcessStatisticsResult">
+        SELECT
+            task_id,
+            pro_id,
+            special,
+            process,
+            process_name,
+            total_num,
+            completed_num
+        FROM
+            v_assessment_process_statistics
+        where task_id = #{taskId} and task_status = '1'
+    </select>
+
+    <resultMap id="EvaluateReportResult" type="com.cb.assess.domain.vo.AssessTaskProcessStatisticsVo$EvaluateReport">
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="reportStatus" column="report_status"/>
+        <result property="reportUserName" column="report_user_name"/>
+        <result property="reportTime" column="report_time"/>
+    </resultMap>
+    <select id="selectEvaluateReportList" resultMap="EvaluateReportResult">
+        SELECT DISTINCT
+            t.task_id,
+            t.task_name,
+            cf.dept_id,
+            cf.dept_name,
+            CASE WHEN r.repor_id IS NULL THEN 0 ELSE 1 END AS report_status,
+            r.create_by AS report_user_id,
+            u.name AS report_user_name,
+            r.create_time AS report_time
+        FROM
+            v_ordinary_assess_task t
+                JOIN v_task_assess_user_confirm cf ON cf.task_id = t.task_id and cf.confirm_status = '1'
+                JOIN v_assess_report r  ON r.task_id = t.task_id and t.cycle_desc = r.cycle_desc and r.dept_id = cf.dept_id
+                LEFT JOIN v_sys_user u ON u.user_name = r.create_by
+        where t.task_id = #{taskId}
+        <if test="deptId != null"> and cf.dept_id =#{deptId}</if>
+    </select>
+
+    <resultMap id="EvaluateReportAuditResult" type="com.cb.assess.domain.vo.AssessTaskProcessStatisticsVo$EvaluateReportAudit">
+        <result property="taskId" column="task_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="auditer" column="auditer"/>
+        <result property="auditTime" column="audit_time"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="options" column="options"/>
+    </resultMap>
+
+    <select id="selectEvaluateReportAuditList" resultMap="EvaluateReportAuditResult">
+        SELECT DISTINCT
+            g.task_id,
+            sm.dept_id,
+            d.dept_name,
+            sm.escalation_flag as audit_status,
+            sm.options,
+            u.name as auditer,
+            sm.update_time as audit_time
+        FROM
+            biz_assess_evaluation_grade g
+                JOIN biz_assess_evaluation_grade_save_mark sm ON sm.id = g.escalation_id
+                join sys_dept d on d.dept_id = sm.dept_id
+                LEFT JOIN v_sys_user u ON u.user_name = sm.update_by
+        where g.task_id = #{taskId}
+        <if test="deptId != null"> and sm.dept_id =#{deptId}</if>
+    </select>
+
+    <resultMap id="DisciplineResult" type="com.cb.assess.domain.vo.AssessTaskProcessStatisticsVo$Discipline">
+        <result property="taskId" column="task_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="disciplineScore" column="discipline_score"/>
+        <result property="attendanceNum" column="attendance_num"/>
+        <result property="attendanceScore" column="attendance_score"/>
+        <result property="handleStatus" column="handle_status"/>
+    </resultMap>
+    <select id="selectDisciplineList" resultMap="DisciplineResult">
+        SELECT
+            a.task_id,
+            a.NAME AS user_name,
+            a.dept_id,
+            a.dept_name,
+            a.discipline_score,
+            fi.absenteeism_num AS attendance_num,
+            a.attendance_score,
+            CASE WHEN CAST( a.step AS UNSIGNED ) >= 1 THEN
+                     1 ELSE 0 END AS handle_status
+        FROM
+            v_evaluation_grade AS a
+                LEFT JOIN v_regular_fill_info fi ON fi.task_id = a.task_id
+                AND fi.user_id = a.user_id
+                JOIN biz_assess_indicator_pro p ON p.pro_id = a.pro_id
+                <!--AND p.personnel_type IN ( 'civil_servant_special', 'institution_special' )-->
+        where a.task_id = #{taskId}
+        <if test="deptName != null and deptName != ''"> and a.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and a.name like concat('%',#{userName},'%')</if>
+    </select>
+
+    <select id="selectDisciplineList" resultMap="DisciplineResult" databaseId="dm">
+        SELECT
+        a.task_id,
+        a.NAME AS user_name,
+        a.dept_id,
+        a.dept_name,
+        a.discipline_score,
+        fi.absenteeism_num AS attendance_num,
+        a.attendance_score,
+        CASE WHEN CAST( a.step AS INT ) >= 1 THEN
+        1 ELSE 0 END AS handle_status
+        FROM
+        v_evaluation_grade AS a
+        LEFT JOIN v_regular_fill_info fi ON fi.task_id = a.task_id
+        AND fi.user_id = a.user_id
+        JOIN biz_assess_indicator_pro p ON p.pro_id = a.pro_id
+        <!--AND p.personnel_type IN ( 'civil_servant_special', 'institution_special' )-->
+        where a.task_id = #{taskId}
+        <if test="deptName != null and deptName != ''"> and a.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and a.name like concat('%',#{userName},'%')</if>
+    </select>
+
+    <resultMap id="MainLevelGradeResult" type="com.cb.assess.domain.vo.AssessTaskProcessStatisticsVo$MainLevelGrade">
+        <result property="taskId" column="task_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="score" column="score"/>
+        <result property="attendanceNum" column="attendance_num"/>
+        <result property="attendanceScore" column="attendance_score"/>
+        <result property="disciplineScore" column="discipline_score"/>
+        <result property="grade" column="grade"/>
+        <result property="handleStatus" column="handle_status"/>
+    </resultMap>
+    <select id="selectMainLevelGradeList" resultMap="MainLevelGradeResult">
+        SELECT DISTINCT
+            g.task_id,
+            g.dept_name,
+            g.NAME AS user_name,
+            g.score,
+            ifnull(fi.absenteeism_num,0) AS attendance_num,
+            g.attendance_score,
+            g.discipline_score,
+            g.grade,
+            CASE WHEN cast( g.step AS UNSIGNED ) >= 2 THEN
+                     1 ELSE 0
+                END AS handle_status
+        FROM
+            v_evaluation_grade AS g
+                JOIN v_ordinary_assess_task AS ot ON g.task_id = ot.task_id
+                left JOIN v_regular_fill_info fi ON fi.task_id = g.task_id
+        where g.task_id = #{taskId}
+          -- and ot.type in ('civil_servant_special','institution_special')
+        <if test="deptName != null and deptName != ''"> and g.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and g.name like concat('%',#{userName},'%')</if>
+    </select>
+
+    <select id="selectMainLevelGradeList" resultMap="MainLevelGradeResult" databaseId="dm">
+        SELECT DISTINCT
+        g.task_id,
+        g.dept_name,
+        g.NAME AS user_name,
+        g.score,
+        ifnull(fi.absenteeism_num,0) AS attendance_num,
+        g.attendance_score,
+        g.discipline_score,
+        g.grade,
+        CASE WHEN cast( g.step AS INT ) >= 2 THEN
+        1 ELSE 0
+        END AS handle_status
+        FROM
+        v_evaluation_grade AS g
+        JOIN v_ordinary_assess_task AS ot ON g.task_id = ot.task_id
+        left JOIN v_regular_fill_info fi ON fi.task_id = g.task_id
+        where g.task_id = #{taskId}
+        -- and ot.type in ('civil_servant_special','institution_special')
+        <if test="deptName != null and deptName != ''"> and g.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and g.name like concat('%',#{userName},'%')</if>
+    </select>
+
+    <resultMap id="GradeResult" type="com.cb.assess.domain.vo.AssessTaskProcessStatisticsVo$Grade">
+        <result property="taskId" column="task_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="score" column="score"/>
+        <result property="attendanceNum" column="attendance_num"/>
+        <result property="attendanceScore" column="attendance_score"/>
+        <result property="disciplineScore" column="discipline_score"/>
+        <result property="grade" column="grade"/>
+        <result property="rscOpinion" column="rsc_opinion"/>
+        <result property="dzhOpinion" column="dzh_opinion"/>
+        <result property="handleStatus" column="handle_status"/>
+    </resultMap>
+    <select id="selectRscOpinionList" resultMap="GradeResult">
+        SELECT
+            a.task_id,
+            a.name as user_name,
+            a.dept_name,
+            a.discipline_score,
+            a.score,
+            a.grade,
+            a.rsc_opinion,
+            a.dzh_opinion,
+            CASE WHEN cast( a.step AS UNSIGNED ) >= 3 THEN
+            1 ELSE 0
+            END AS handle_status
+        FROM
+            v_evaluation_grade a
+        where a.task_id = #{taskId}
+        <if test="deptName != null and deptName != ''"> and a.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and a.name like concat('%',#{userName},'%')</if>
+    </select>
+
+    <select id="selectRscOpinionList" resultMap="GradeResult" databaseId="dm">
+        SELECT
+        a.task_id,
+        a.name as user_name,
+        a.dept_name,
+        a.discipline_score,
+        a.score,
+        a.grade,
+        a.rsc_opinion,
+        a.dzh_opinion,
+        CASE WHEN cast( a.step AS INT ) >= 3 THEN
+        1 ELSE 0
+        END AS handle_status
+        FROM
+        v_evaluation_grade a
+        where a.task_id = #{taskId}
+        <if test="deptName != null and deptName != ''"> and a.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and a.name like concat('%',#{userName},'%')</if>
+    </select>
+
+    <select id="selectDzhOpinionList" resultMap="GradeResult">
+        SELECT
+        a.task_id,
+        a.name as user_name,
+        a.dept_name,
+        a.discipline_score,
+        a.score,
+        a.grade,
+        a.rsc_opinion,
+        a.dzh_opinion,
+        CASE WHEN cast( a.step AS UNSIGNED ) >= 4 THEN
+        1 ELSE 0
+        END AS handle_status
+        FROM
+        v_evaluation_grade a
+        where a.task_id = #{taskId}
+        <if test="deptName != null and deptName != ''"> and a.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and a.name like concat('%',#{userName},'%')</if>
+    </select>
+
+    <select id="selectDzhOpinionList" resultMap="GradeResult" databaseId="dm">
+        SELECT
+        a.task_id,
+        a.name as user_name,
+        a.dept_name,
+        a.discipline_score,
+        a.score,
+        a.grade,
+        a.rsc_opinion,
+        a.dzh_opinion,
+        CASE WHEN cast( a.step AS INT ) >= 4 THEN
+        1 ELSE 0
+        END AS handle_status
+        FROM
+        v_evaluation_grade a
+        where a.task_id = #{taskId}
+        <if test="deptName != null and deptName != ''"> and a.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and a.name like concat('%',#{userName},'%')</if>
+    </select>
+
+    <resultMap id="PromulgateResult" type="com.cb.assess.domain.vo.AssessTaskProcessStatisticsVo$Promulgate">
+        <result property="taskId" column="task_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="finalOpinion" column="final_opinion"></result>
+        <result property="handleStatus" column="handle_status"/>
+        <result property="publicityTime" column="publicity_time"></result>
+        <result property="publicityDays" column="publicity_days"></result>
+        <result property="finishStatus" column="finish_status"></result>
+    </resultMap>
+    <select id="selectPromulgateList" resultMap="PromulgateResult">
+        SELECT
+            a.task_id,
+            a.dept_name,
+            a.NAME AS user_name,
+            a.dzh_opinion AS final_opinion,
+            case when p.id is NULL THEN 0 ELSE 1 end as handle_status,
+            p.publicity_time,
+            p.publicity_days,
+            p.finish_status
+        FROM
+            v_evaluation_grade AS a
+            JOIN biz_assess_promulgate AS p ON p.task_id = a.task_id
+            OR p.QUARTER = a.cycle_desc
+        where  a.task_id = #{taskId}
+        <if test="deptName != null and deptName != ''"> and a.dept_name like concat('%',#{deptName},'%')</if>
+        <if test="userName != null and userName != ''"> and a.name like concat('%',#{userName},'%')</if>
+    </select>
+</mapper>

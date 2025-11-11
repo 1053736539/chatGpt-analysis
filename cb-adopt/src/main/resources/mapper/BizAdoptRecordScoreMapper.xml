@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.adopt.mapper.BizAdoptRecordScoreMapper">
+    
+    <resultMap type="BizAdoptRecordScore" id="BizAdoptRecordScoreResult">
+        <result property="id"    column="id"    />
+        <result property="recordId"    column="record_id"    />
+        <result property="dept"    column="dept"    />
+        <result property="score"    column="score"    />
+        <result property="mainFlag"    column="main_flag"    />
+    </resultMap>
+
+    <sql id="selectBizAdoptRecordScoreVo">
+        select id, record_id, dept, score, main_flag from biz_adopt_record_score
+    </sql>
+
+    <select id="selectBizAdoptRecordScoreList" parameterType="BizAdoptRecordScore" resultMap="BizAdoptRecordScoreResult">
+        <include refid="selectBizAdoptRecordScoreVo"/>
+        <where>  
+            <if test="recordId != null  and recordId != ''"> and record_id = #{recordId}</if>
+            <if test="dept != null  and dept != ''"> and dept = #{dept}</if>
+            <if test="score != null "> and score = #{score}</if>
+            <if test="mainFlag != null "> and main_flag = #{mainFlag}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectBizAdoptRecordScoreById" parameterType="String" resultMap="BizAdoptRecordScoreResult">
+        <include refid="selectBizAdoptRecordScoreVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectScoreListByRecordId" parameterType="String" resultMap="BizAdoptRecordScoreResult">
+        <include refid="selectBizAdoptRecordScoreVo"/>
+        where record_id = #{recordId}
+    </select>
+
+        
+    <insert id="insertBizAdoptRecordScore" parameterType="BizAdoptRecordScore">
+        insert into biz_adopt_record_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="recordId != null">record_id,</if>
+            <if test="dept != null">dept,</if>
+            <if test="score != null">score,</if>
+            <if test="mainFlag != null">main_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="recordId != null">#{recordId},</if>
+            <if test="dept != null">#{dept},</if>
+            <if test="score != null">#{score},</if>
+            <if test="mainFlag != null">#{mainFlag},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_adopt_record_score
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                            id,
+                            record_id,
+                            dept,
+                            score,
+                            main_flag,
+                    </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                                    #{entity.id},
+                                    #{entity.recordId},
+                                    #{entity.dept},
+                                    #{entity.score},
+                                    #{entity.mainFlag},
+                            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizAdoptRecordScore" parameterType="BizAdoptRecordScore">
+        update biz_adopt_record_score
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="recordId != null">record_id = #{recordId},</if>
+            <if test="dept != null">dept = #{dept},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="mainFlag != null">main_flag = #{mainFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAdoptRecordScoreById" parameterType="String">
+        delete from biz_adopt_record_score where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAdoptRecordScoreByIds" parameterType="String">
+        delete from biz_adopt_record_score where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <delete id="deleteRecordScoreNotIds">
+        delete from biz_adopt_record_score
+        where record_id = #{recordId}
+        and id not in
+        <foreach item="id" collection="ids" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <resultMap id="StatisticDeptResultMap" type="com.cb.adopt.vo.AdoptVo$StatisticItem">
+        <result column="dept" property="dept"/>
+        <result column="city_jw_count" property="c_j_c"/>
+        <result column="city_jw_score" property="c_j_s"/>
+        <result column="city_office_count" property="c_o_c"/>
+        <result column="city_office_score" property="c_o_s"/>
+        <result column="province_jw_count" property="p_j_c"/>
+        <result column="province_jw_score" property="p_j_s"/>
+        <result column="province_office_count" property="p_o_c"/>
+        <result column="province_office_score" property="p_o_s"/>
+        <result column="central_jw_count" property="ce_j_c"/>
+        <result column="central_jw_score" property="ce_j_s"/>
+        <result column="leader_instruct_count" property="li_c"/>
+        <result column="leader_instruct_score" property="li_s"/>
+        <result column="accrued_count" property="a_c"/>
+        <result column="accrued_score" property="a_s"/>
+    </resultMap>
+
+    <select id="statisticByDeptTypeAndDateRange" resultMap="StatisticDeptResultMap" >
+        select t.dept,
+            sum(if(t.level = '市纪委监委',1,0)) as city_jw_count,
+            sum(if(t.level = '市纪委监委',t.score,0)) as city_jw_score,
+            sum(if(t.level = '市委办公室',1,0)) as city_office_count,
+            sum(if(t.level = '市委办公室',t.score,0)) as city_office_score,
+            sum(if(t.level = '省纪委监委',1,0)) as province_jw_count,
+            sum(if(t.level = '省纪委监委',t.score,0)) as province_jw_score,
+            sum(if(t.level = '省委办公厅',1,0)) as province_office_count,
+            sum(if(t.level = '省委办公厅',t.score,0)) as province_office_score,
+            sum(if(t.level = '中央纪委国家监委',1,0)) as central_jw_count,
+            sum(if(t.level = '中央纪委国家监委',t.score,0)) as central_jw_score,
+            sum(if(t.level = '领导批示',1,0)) as leader_instruct_count,
+            sum(if(t.level = '领导批示',t.score,0)) as leader_instruct_score,
+            count(1) as accrued_count,
+            sum(t.score) as accrued_score
+        from (
+            select rs.dept,rs.score,rs.main_flag
+                ,r.level
+                ,r.carrier
+                ,r.title
+                ,r.issue_no
+                ,r.adopt_date
+            from biz_adopt_record_score rs
+            left join biz_adopt_record r on rs.record_id = r.id
+            left join biz_adopt_dept d on rs.dept = d.name
+            where d.type = #{deptType}
+                <if test="beginDate != null" > and r.adopt_date &gt;= #{beginDate} </if>
+                <if test="endDate != null" > and r.adopt_date &lt;= #{endDate} </if>
+        ) t group by dept
+    </select>
+
+    <select id="listCarrierRecordScore" resultType="com.cb.adopt.vo.AdoptVo$ListCarrierRecordScoreItem">
+        select rs.dept, d.type as deptType, d.order_no as deptOrderNo,rs.score,rs.main_flag as mainFlag
+        ,r.id as recordId
+        ,r.level
+        ,r.carrier
+        ,r.title
+        ,r.issue_no as issueNo
+        from biz_adopt_record_score rs
+        left join biz_adopt_record r on rs.record_id = r.id
+        left join biz_adopt_dept d on rs.dept = d.name
+        where
+            r.level = #{level}
+          <if test="carrier != null and carrier != ''" > and r.carrier = #{carrier}</if>
+          <if test="beginDate != null"> and r.adopt_date &gt;= #{beginDate} </if>
+          <if test="endDate != null"> and r.adopt_date &lt;= #{endDate} </if>
+        order by r.adopt_date,r.issue_no,d.order_no
+    </select>
+
+</mapper>

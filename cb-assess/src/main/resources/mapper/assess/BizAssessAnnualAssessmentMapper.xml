@@ -1,0 +1,253 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessAnnualAssessmentMapper">
+    
+    <resultMap type="BizAssessAnnualAssessment" id="BizAssessAnnualAssessmentResult">
+        <result property="id"    column="id"    />
+        <result property="userTagId"    column="user_tag_id"    />
+        <result property="post"    column="post"    />
+        <result property="responsibilities"    column="responsibilities"    />
+        <result property="personalSummary"    column="personal_summary"    />
+        <result property="politicalIdentity"    column="political_identity"    />
+        <result property="officeTime"    column="office_time"    />
+        <result property="rewardsPunishMisconduct"    column="rewards_punish_misconduct"    />
+        <result property="evaluationLevelSuggest"    column="evaluation_level_suggest"    />
+        <result property="organOpinions"    column="organ_opinions"    />
+        <result property="othersRemark"    column="others_remark"    />
+        <result property="auditStatus"    column="audit_status"    />
+        <result property="establishType"    column="establish_type"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="myOpinionSign"    column="my_opinion_sign"    />
+        <result property="myOpinionTime"    column="my_opinion_time"    />
+        <result property="evaluationLevelSign"    column="evaluation_level_sign"    />
+        <result property="evaluationLevelTime"    column="evaluation_level_time"    />
+        <result property="organOpinionsSign"    column="organ_opinions_sign"    />
+        <result property="mySummarySign"    column="my_summary_sign"    />
+        <result property="mySummaryTime"    column="my_summary_time"    />
+        <result property="organOpinionsTime"    column="organ_opinions_time"    />
+        <result property="illustratsSituation"    column="illustrats_situation"    />
+        <result property="illustratsSituationSign"    column="illustrats_situation_sign"    />
+        <result property="illustratsSituationTime"    column="illustrats_situation_time"    />
+        <result property="userId"    column="user_id"    />
+        <result property="year"    column="year"    />
+        <result property="trainingSituation"    column="training_situation"    />
+        <result property="myOpinion"    column="my_opinion"    />
+        <result property="evaluationLevelStamp"    column="evaluation_level_stamp"    />
+        <result property="institutionalReviewStamp"    column="institutional_review_stamp"    />
+        <result property="workTitle"    column="work_title"    />
+    </resultMap>
+
+    <resultMap id="bizAssessAnnualAssessmentVo" type="BizAssessAnnualAssessmentVo" extends="BizAssessAnnualAssessmentResult">
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="sex"    column="sex"    />
+        <result property="birthday"    column="birthday"    />
+    </resultMap>
+    <sql id="selectBizAssessAnnualAssessmentVo">
+        select aaa.id, aaa.user_tag_id, aaa.post, aaa.responsibilities, aaa.personal_summary, aaa.political_identity,
+               aaa.office_time, aaa.rewards_punish_misconduct, aaa.evaluation_level_suggest, aaa.organ_opinions,
+               aaa.others_remark, aaa.audit_status, aaa.establish_type, aaa.create_by, aaa.create_time, aaa.update_by,
+               aaa.update_time, aaa.dept_id, aaa.my_opinion_sign, aaa.my_opinion_time, aaa.evaluation_level_sign,
+               aaa.evaluation_level_time, aaa.organ_opinions_sign, aaa.my_summary_sign, aaa.my_summary_time,
+               aaa.organ_opinions_time, aaa.illustrats_situation, aaa.illustrats_situation_sign,aaa.my_opinion,
+               aaa.evaluation_level_stamp,aaa.institutional_review_stamp,
+               aaa.illustrats_situation_time, aaa.user_id, aaa.year ,aaa.training_situation,u.name,d.dept_name,u.sex,u.birthday,
+               u.work_title
+
+        from biz_assess_annual_assessment aaa
+        inner join sys_user u on aaa.user_id=u.user_id
+        inner join sys_dept d on aaa.dept_id=d.dept_id
+    </sql>
+
+    <select id="selectBizAssessAnnualAssessmentList" parameterType="BizAssessAnnualAssessmentVo" resultMap="bizAssessAnnualAssessmentVo">
+        <include refid="selectBizAssessAnnualAssessmentVo"/>
+        <where>  
+            <if test="userTagId != null  and userTagId != ''"> and aaa.user_tag_id = #{userTagId}</if>
+            <if test="post != null  and post != ''"> and aaa.post = #{post}</if>
+            <if test="responsibilities != null  and responsibilities != ''"> and aaa.responsibilities = #{responsibilities}</if>
+            <if test="personalSummary != null  and personalSummary != ''"> and aaa.personal_summary = #{personalSummary}</if>
+            <if test="politicalIdentity != null  and politicalIdentity != ''"> and aaa.political_identity = #{politicalIdentity}</if>
+            <if test="officeTime != null "> and aaa.office_time = #{officeTime}</if>
+            <if test="rewardsPunishMisconduct != null  and rewardsPunishMisconduct != ''"> and aaa.rewards_punish_misconduct = #{rewardsPunishMisconduct}</if>
+            <if test="evaluationLevelSuggest != null  and evaluationLevelSuggest != ''"> and aaa.evaluation_level_suggest = #{evaluationLevelSuggest}</if>
+            <if test="organOpinions != null  and organOpinions != ''"> and aaa.organ_opinions = #{organOpinions}</if>
+            <if test="othersRemark != null  and othersRemark != ''"> and aaa.others_remark = #{othersRemark}</if>
+            <if test="auditStatus != null  and auditStatus != ''"> and aaa.audit_status > #{auditStatus}</if>
+            <if test="establishType != null  and establishType != ''"> and aaa.establish_type = #{establishType}</if>
+            <if test="deptId != null  and deptId != ''"> and aaa.dept_id = #{deptId}</if>
+            <if test="myOpinionSign != null  and myOpinionSign != ''"> and aaa.my_opinion_sign = #{myOpinionSign}</if>
+            <if test="myOpinionTime != null "> and aaa.my_opinion_time = #{myOpinionTime}</if>
+            <if test="evaluationLevelSign != null  and evaluationLevelSign != ''"> and aaa.evaluation_level_sign = #{evaluationLevelSign}</if>
+            <if test="evaluationLevelTime != null "> and aaa.evaluation_level_time = #{evaluationLevelTime}</if>
+            <if test="organOpinionsSign != null  and organOpinionsSign != ''"> and aaa.organ_opinions_sign = #{organOpinionsSign}</if>
+            <if test="mySummarySign != null  and mySummarySign != ''"> and maaa.y_summary_sign = #{mySummarySign}</if>
+            <if test="mySummaryTime != null "> and aaa.my_summary_time = #{mySummaryTime}</if>
+            <if test="organOpinionsTime != null "> and aaa.organ_opinions_time = #{organOpinionsTime}</if>
+            <if test="illustratsSituation != null  and illustratsSituation != ''"> and aaa.illustrats_situation = #{illustratsSituation}</if>
+            <if test="illustratsSituationSign != null  and illustratsSituationSign != ''"> and aaa.illustrats_situation_sign = #{illustratsSituationSign}</if>
+            <if test="illustratsSituationTime != null "> and aaa.illustrats_situation_time = #{illustratsSituationTime}</if>
+            <if test="userId != null  and userId != ''"> and aaa.user_id = #{userId}</if>
+            <if test="year != null  and year != ''"> and aaa.year = #{year}</if>
+            <if test="deptName != null  and deptName != ''"> and d.dept_name like concat('%',#{deptName},'%') </if>
+            <if test="name != null  and name != ''"> and u.name like concat('%',#{name},'%')</if>
+            <if test="workCodes != null and workCodes.size > 0">
+                        and u.work_title_code in
+                        <foreach item="item" collection="workCodes" open="(" separator="," close=")">
+                            #{item}
+                        </foreach>
+            </if>
+            <if test="deptIds != null and deptIds.size > 0">
+                and d.dept_id in
+                <foreach item="item" collection="deptIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by aaa.year desc,aaa.create_time desc
+    </select>
+    
+    <select id="selectBizAssessAnnualAssessmentById" parameterType="String" resultMap="bizAssessAnnualAssessmentVo">
+        <include refid="selectBizAssessAnnualAssessmentVo"/>
+        where aaa.id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessAnnualAssessment" parameterType="BizAssessAnnualAssessment">
+        insert into biz_assess_annual_assessment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userTagId != null">user_tag_id,</if>
+            <if test="post != null">post,</if>
+            <if test="responsibilities != null">responsibilities,</if>
+            <if test="personalSummary != null">personal_summary,</if>
+            <if test="politicalIdentity != null">political_identity,</if>
+            <if test="officeTime != null">office_time,</if>
+            <if test="rewardsPunishMisconduct != null">rewards_punish_misconduct,</if>
+            <if test="evaluationLevelSuggest != null">evaluation_level_suggest,</if>
+            <if test="organOpinions != null">organ_opinions,</if>
+            <if test="othersRemark != null">others_remark,</if>
+            <if test="auditStatus != null">audit_status,</if>
+            <if test="establishType != null">establish_type,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="myOpinionSign != null">my_opinion_sign,</if>
+            <if test="myOpinionTime != null">my_opinion_time,</if>
+            <if test="evaluationLevelSign != null">evaluation_level_sign,</if>
+            <if test="evaluationLevelTime != null">evaluation_level_time,</if>
+            <if test="organOpinionsSign != null">organ_opinions_sign,</if>
+            <if test="mySummarySign != null">my_summary_sign,</if>
+            <if test="mySummaryTime != null">my_summary_time,</if>
+            <if test="organOpinionsTime != null">organ_opinions_time,</if>
+            <if test="illustratsSituation != null">illustrats_situation,</if>
+            <if test="illustratsSituationSign != null">illustrats_situation_sign,</if>
+            <if test="illustratsSituationTime != null">illustrats_situation_time,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="year != null">year,</if>
+            <if test="trainingSituation != null">training_situation,</if>
+            <if test="myOpinion != null">my_opinion,</if>
+            <if test="evaluationLevelStamp != null">evaluation_level_stamp,</if>
+            <if test="institutionalReviewStamp != null">institutional_review_stamp,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userTagId != null">#{userTagId},</if>
+            <if test="post != null">#{post},</if>
+            <if test="responsibilities != null">#{responsibilities},</if>
+            <if test="personalSummary != null">#{personalSummary},</if>
+            <if test="politicalIdentity != null">#{politicalIdentity},</if>
+            <if test="officeTime != null">#{officeTime},</if>
+            <if test="rewardsPunishMisconduct != null">#{rewardsPunishMisconduct},</if>
+            <if test="evaluationLevelSuggest != null">#{evaluationLevelSuggest},</if>
+            <if test="organOpinions != null">#{organOpinions},</if>
+            <if test="othersRemark != null">#{othersRemark},</if>
+            <if test="auditStatus != null">#{auditStatus},</if>
+            <if test="establishType != null">#{establishType},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="myOpinionSign != null">#{myOpinionSign},</if>
+            <if test="myOpinionTime != null">#{myOpinionTime},</if>
+            <if test="evaluationLevelSign != null">#{evaluationLevelSign},</if>
+            <if test="evaluationLevelTime != null">#{evaluationLevelTime},</if>
+            <if test="organOpinionsSign != null">#{organOpinionsSign},</if>
+            <if test="mySummarySign != null">#{mySummarySign},</if>
+            <if test="mySummaryTime != null">#{mySummaryTime},</if>
+            <if test="organOpinionsTime != null">#{organOpinionsTime},</if>
+            <if test="illustratsSituation != null">#{illustratsSituation},</if>
+            <if test="illustratsSituationSign != null">#{illustratsSituationSign},</if>
+            <if test="illustratsSituationTime != null">#{illustratsSituationTime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="year != null">#{year},</if>
+            <if test="trainingSituation != null">#{trainingSituation},</if>
+            <if test="myOpinion != null">#{myOpinion},</if>
+            <if test="evaluationLevelStamp != null">#{evaluationLevelStamp},</if>
+            <if test="institutionalReviewStamp != null">#{institutionalReviewStamp},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessAnnualAssessment" parameterType="BizAssessAnnualAssessment">
+        update biz_assess_annual_assessment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userTagId != null">user_tag_id = #{userTagId},</if>
+            <if test="post != null">post = #{post},</if>
+            <if test="responsibilities != null">responsibilities = #{responsibilities},</if>
+            <if test="personalSummary != null">personal_summary = #{personalSummary},</if>
+            <if test="politicalIdentity != null">political_identity = #{politicalIdentity},</if>
+            <if test="officeTime != null">office_time = #{officeTime},</if>
+            <if test="rewardsPunishMisconduct != null">rewards_punish_misconduct = #{rewardsPunishMisconduct},</if>
+            <if test="evaluationLevelSuggest != null">evaluation_level_suggest = #{evaluationLevelSuggest},</if>
+            <if test="organOpinions != null">organ_opinions = #{organOpinions},</if>
+            <if test="othersRemark != null">others_remark = #{othersRemark},</if>
+            <if test="auditStatus != null">audit_status = #{auditStatus},</if>
+            <if test="establishType != null">establish_type = #{establishType},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="myOpinionSign != null">my_opinion_sign = #{myOpinionSign},</if>
+            <if test="myOpinionTime != null">my_opinion_time = #{myOpinionTime},</if>
+            <if test="evaluationLevelSign != null">evaluation_level_sign = #{evaluationLevelSign},</if>
+            <if test="evaluationLevelTime != null">evaluation_level_time = #{evaluationLevelTime},</if>
+            <if test="organOpinionsSign != null">organ_opinions_sign = #{organOpinionsSign},</if>
+            <if test="mySummarySign != null">my_summary_sign = #{mySummarySign},</if>
+            <if test="mySummaryTime != null">my_summary_time = #{mySummaryTime},</if>
+            <if test="organOpinionsTime != null">organ_opinions_time = #{organOpinionsTime},</if>
+            <if test="illustratsSituation != null">illustrats_situation = #{illustratsSituation},</if>
+            <if test="illustratsSituationSign != null">illustrats_situation_sign = #{illustratsSituationSign},</if>
+            <if test="illustratsSituationTime != null">illustrats_situation_time = #{illustratsSituationTime},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="year != null">year = #{year},</if>
+            <if test="trainingSituation != null">training_situation = #{trainingSituation},</if>
+            <if test="myOpinion != null">my_opinion = #{myOpinion},</if>
+            <if test="evaluationLevelStamp != null">evaluation_level_stamp=#{evaluationLevelStamp},</if>
+            <if test="institutionalReviewStamp != null">institutional_review_stamp=#{institutionalReviewStamp},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="selectYears" resultMap="bizAssessAnnualAssessmentVo">
+        select year
+        from biz_assess_annual_assessment group by year order by year DESC;
+    </select>
+    <delete id="deleteBizAssessAnnualAssessmentById" parameterType="String">
+        delete from biz_assess_annual_assessment where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessAnnualAssessmentByIds" parameterType="String">
+        delete from biz_assess_annual_assessment where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.EscalationMapper">
+
+    <resultMap id="EscalationResult" type="com.cb.assess.domain.vo.EscalationVo">
+        <result property="taskId" column="task_id"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="belongYear" column="belong_year"/>
+        <result property="special" column="special"/>
+        <result property="escalationFlag" column="escalation_flag"/>
+        <result property="options" column="options"/>
+    </resultMap>
+
+    <sql id="selectEscalation">
+        SELECT DISTINCT
+            null task_id,
+            null AS title,
+            T.belong_year,
+            T.cycle,
+            T.cycle_desc,
+            T.special,
+            ifnull( sm.escalation_flag, '-1' ) AS escalation_flag,
+            sm.options,
+            T.status,
+            T.del_flag
+        FROM
+            (
+                SELECT DISTINCT
+                    m.belong_year,
+                    m.assess_cycle AS cycle,
+                    CASE
+                        m.assess_cycle
+                        WHEN '1' THEN
+                            m.task_moth
+                        WHEN '2' THEN
+                            m.task_quarter
+                        WHEN '3' THEN
+                            m.task_year ELSE 'special'
+                        END AS cycle_desc,
+                    m.special,
+                    m.status,
+                    m.del_flag
+                FROM
+                    biz_assess_task_manage m
+                where 1=1
+                   <if test="deptId != null">
+                        AND find_in_set(#{deptId}, (select group_concat(dept_id) from biz_assess_indicator_pro_duty where type ='0' and pro_id = m.pro_id))
+                   </if>
+                  AND m.special = '0'
+            ) AS T
+                LEFT JOIN biz_assess_evaluation_grade_save_mark sm ON T.belong_year = sm.YEAR
+                AND T.cycle_desc = sm.cycle_desc
+                <if test="deptId != null">
+                  and sm.dept_id = #{deptId}
+                </if>
+                where  not EXISTS (select * from biz_assess_promulgate p where p.quarter = T.cycle_desc)
+        UNION ALL
+        SELECT
+            T.task_id,
+            T.title,
+            T.belong_year,
+            T.cycle,
+            T.cycle_desc,
+            T.special,
+            ifnull( sm.escalation_flag, '-1' ) AS escalation_flag,
+            sm.options,
+            T.status,
+            T.del_flag
+        FROM
+            (
+                SELECT DISTINCT
+                    m.task_id,
+                    m.task_name AS title,
+                    m.belong_year,
+                    NULL AS cycle,
+                    NULL AS cycle_desc,
+                    m.special,
+                    m.status,
+                    m.del_flag
+                FROM
+                    biz_assess_task_manage m
+                where 1=1
+                    <if test="deptId != null">
+                      and find_in_set(#{deptId}, (
+                        select group_concat(dept_id) from sys_user where user_id in  (
+                            select user_id from biz_assess_indicator_pro_duty where type ='1' and pro_id = m.pro_id
+                        )
+                      ))
+                    </if>
+                    AND m.special = '1'
+            ) AS T
+                LEFT JOIN biz_assess_evaluation_grade_save_mark sm ON sm.task_id = T.task_id
+                <if test="deptId != null">
+                  and sm.dept_id = #{deptId}
+                </if>
+                where  not EXISTS (select * from biz_assess_promulgate p where  p.task_id = T.task_id)
+    </sql>
+    <sql id="selectEscalation" databaseId="dm">
+        SELECT DISTINCT
+            null task_id,
+            null AS title,
+            T.belong_year,
+            T.cycle,
+            T.cycle_desc,
+            T.special,
+            ifnull( sm.escalation_flag, '-1' ) AS escalation_flag,
+            sm.options,
+            T.status,
+            T.del_flag
+        FROM
+            (
+                SELECT DISTINCT
+                    m.belong_year,
+                    m.assess_cycle AS cycle,
+                    CASE
+                        m.assess_cycle
+                        WHEN '1' THEN
+                            m.task_moth
+                        WHEN '2' THEN
+                            m.task_quarter
+                        WHEN '3' THEN
+                            m.task_year ELSE 'special'
+                        END AS cycle_desc,
+                    m.special,
+                    m.status,
+                    m.del_flag
+                FROM
+                    biz_assess_task_manage m
+                    where 1=1
+                    <if test="deptId != null">
+                        AND find_in_set(#{deptId}, (select wm_concat(dept_id) from biz_assess_indicator_pro_duty where type ='0' and pro_id = m.pro_id))
+                    </if>
+                    AND m.special = '0'
+            ) AS T
+                LEFT JOIN biz_assess_evaluation_grade_save_mark sm ON T.belong_year = sm.YEAR
+                AND T.cycle_desc = sm.cycle_desc
+                <if test="deptId != null">
+                    and sm.dept_id = #{deptId}
+                </if>
+                where  not EXISTS (select * from biz_assess_promulgate p where p.quarter = T.cycle_desc)
+        UNION ALL
+        SELECT
+            T.task_id,
+            T.title,
+            T.belong_year,
+            T.cycle,
+            T.cycle_desc,
+            T.special,
+            ifnull( sm.escalation_flag, '-1' ) AS escalation_flag,
+            sm.options,
+            T.status,
+            T.del_flag
+        FROM
+            (
+                SELECT DISTINCT
+                    m.task_id,
+                    m.task_name AS title,
+                    m.belong_year,
+                    NULL AS cycle,
+                    NULL AS cycle_desc,
+                    m.special,
+                    m.status,
+                    m.del_flag
+                FROM
+                    biz_assess_task_manage m
+                    where 1=1
+                    <if test="deptId != null">
+                        and find_in_set(#{deptId}, (
+                        select wm_concat(dept_id) from sys_user where user_id in  (
+                        select user_id from biz_assess_indicator_pro_duty where type ='1' and pro_id = m.pro_id
+                        )
+                        ))
+                    </if>
+                    AND m.special = '1'
+            ) AS T
+                LEFT JOIN biz_assess_evaluation_grade_save_mark sm ON sm.task_id = T.task_id
+                <if test="deptId != null">
+                    and sm.dept_id = #{deptId}
+                </if>
+                where  not EXISTS (select * from biz_assess_promulgate p where  p.task_id = T.task_id)
+    </sql>
+
+    <select id="selectEscalationList" resultMap="EscalationResult">
+        select K.* from(
+            <include refid="selectEscalation"></include>
+        ) as K
+        <where>
+            <if test="et.special != null and et.special != ''">
+                <choose>
+                    <when test="et.special == '0'.toString()">
+                        <if test="et.belongYear != null and et.belongYear != ''">and K.belong_year = #{et.belongYear}</if>
+                        <if test="et.cycleDesc != null and et.cycleDesc!= ''">and K.cycle_desc = #{et.cycleDesc}</if>
+                        <if test="et.escalationFlag != null and et.escalationFlag!= ''">and K.escalation_flag = #{et.escalationFlag}</if>
+                    </when>
+                    <otherwise>
+                        <if test="et.belongYear != null and et.belongYear != ''">and K.belong_year = #{et.belongYear}</if>
+                    </otherwise>
+                </choose>
+                and K.special=#{et.special}
+            </if>
+            and K.status = '1' and K.del_flag = '1'
+        </where>
+    </select>
+
+    <select id="selectExamineEscalationList" resultMap="EscalationResult">
+        select K.* from (
+                select Tb.*,
+                if(Tb.task_id is null,
+                    (
+                        SELECT
+                            count( 0 )
+                        FROM
+                            biz_assess_evaluation_grade_save_mark sm
+                            JOIN sys_dept d ON d.dept_id = sm.dept_id
+                        WHERE
+                            sm.year = Tb.belong_year
+                            AND sm.cycle_desc = Tb.cycle_desc
+                            AND sm.escalation_flag = '1'
+                ),(
+                    SELECT
+                        count( 0 )
+                    FROM
+                        biz_assess_evaluation_grade_save_mark sm
+                        JOIN sys_dept d ON d.dept_id = sm.dept_id
+                    WHERE
+                        sm.task_id = Tb.task_id
+                        AND sm.escalation_flag = '1'
+                )) as counts
+                from(
+                <include refid="selectEscalation"></include>
+                ) as Tb
+        ) as K
+        <where>
+            <if test="et.special != null and et.special != ''">
+                <choose>
+                    <when test="et.special == '0'.toString()">
+                        <if test="et.belongYear != null and et.belongYear != ''">and K.belong_year = #{et.belongYear}</if>
+                        <if test="et.cycleDesc != null and et.cycleDesc!= ''">and K.cycle_desc = #{et.cycleDesc}</if>
+                    </when>
+                    <otherwise>
+                        <if test="et.belongYear != null and et.belongYear != ''">and K.belong_year = #{et.belongYear}</if>
+                    </otherwise>
+                </choose>
+                and K.special=#{et.special}
+            </if>
+            <if test="et.escalationFlag != null and et.escalationFlag!= ''">and K.escalation_flag = #{et.escalationFlag}</if>
+            and K.status = '1' and K.del_flag = '1'
+            and K.counts >0
+        </where>
+    </select>
+
+    <resultMap id="EscalationVoterResult" type="com.cb.assess.domain.vo.EscalationVo$Voter">
+        <result property="taskId" column="task_id"/>
+        <result property="evaluateTagId" column="evaluate_tag_id"/>
+        <result property="voter" column="voter"/>
+        <result property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="voteType" column="vote_type"/>
+        <result property="weight" column="weight"/>
+        <result property="status" column="status"/>
+        <result property="score" column="score"/>
+        <result property="special" column="special"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="proId" column="pro_id"/>
+        <result property="personnelType" column="personnel_type"/>
+    </resultMap>
+    <select id="selectVoterList" resultMap="EscalationVoterResult">
+        select T.* from (
+            SELECT
+            vs.*,
+            m.special,
+            m.cycle,
+            m.cycle_desc,
+            m.pro_id,
+            m.type as personnel_type,
+            cf.dept_id
+            FROM
+            v_evaluate_score vs
+            JOIN v_ordinary_assess_task m ON m.task_id = vs.task_id
+            join v_task_assess_user_confirm cf on cf.task_id = m.task_id and cf.user_id =vs.user_id and cf.confirm_status = '1'
+            join sys_dept d on d.dept_id =cf.dept_id
+            order by d.order_num asc
+        ) as T
+        <where>
+            <if test="et.special != null and et.special != ''">
+                <choose>
+                    <when test="et.special == '0'.toString()">
+                        <if test="et.cycle != null and et.cycle != ''">and T.cycle =#{et.cycle}</if>
+                        <if test="et.cycleDesc != null and et.cycleDesc != ''">and T.cycle_desc =#{et.cycleDesc}</if>
+                        and T.dept_id = #{deptId}
+                    </when>
+                    <otherwise>
+                        and T.task_id = #{et.taskId}
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectVoterListByKeys" resultMap="EscalationVoterResult">
+        select T.* from (
+            SELECT
+                vs.*,
+                m.special,
+                m.cycle,
+                m.cycle_desc,
+                m.pro_id,
+                m.type as personnel_type,
+                cf.dept_id
+            FROM
+                v_evaluate_score vs
+                JOIN v_ordinary_assess_task m ON m.task_id = vs.task_id
+                join v_task_assess_user_confirm cf on cf.task_id = m.task_id and cf.user_id =vs.user_id and cf.confirm_status = '1'
+                join sys_dept d on d.dept_id =cf.dept_id
+            order by d.order_num asc
+        ) as T
+        <where>
+            <if test="taskIds != null and taskIds.size > 0">
+                and T.task_id in
+                <foreach item="item" collection="taskIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="userIds != null and userIds.size > 0">
+                and T.user_id  in
+                <foreach item="item" collection="userIds" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+    <select id="checkReported" resultType="java.lang.Boolean">
+        select count(1) from biz_assess_evaluation_grade_save_mark sm
+        where sm.dept_id = #{deptId} and sm.year=#{et.year} and sm.cycle_desc = #{et.cycleDesc}
+    </select>
+
+    <resultMap  id="ReportedEvaluateResult" type="com.cb.assess.domain.vo.EscalationVo$ReportedEvaluate">
+        <result property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="personnelType" column="personnel_type"/>
+        <result property="name" column="name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="deptScore" column="dept_score"/>
+        <result property="leaderScore" column="leader_score"/>
+        <result property="unusualScore" column="unusual_score"/>
+        <result property="evaluationScore" column="evaluation_score"/>
+        <result property="grade" column="grade"/>
+        <result property="modified" column="modified"/>
+        <result property="scoringMirror" column="scoring_mirror"/>
+    </resultMap>
+    <select id="selectReportedList" resultMap="ReportedEvaluateResult">
+        select T.* from(
+            SELECT
+                g.id,
+                m.cycle,
+                m.belong_year,
+                p.special,
+                p.personnel_type,
+                m.cycle_desc,
+                g.task_id,
+                g.user_id,
+                g.dept_score,
+                g.leader_score,
+                g.unusual_score,
+                g.discipline_score,
+                g.evaluation_score,
+                g.grade,
+                g.modified,
+                g.remark,
+                g.scoring_mirror,
+                cf.name,
+                cf.dept_id,
+                cf.dept_name
+            FROM
+                v_ordinary_assess_task m
+                join biz_assess_indicator_pro p on p.pro_id = m.pro_id
+                left join biz_assess_evaluation_grade g ON g.task_id = m.task_id
+                join v_task_assess_user_confirm cf on cf.task_id = m.task_id and cf.user_id = g.user_id and cf.confirm_status = '1'
+            ) as T
+        <where>
+            <if test="deptId != null and deptId != ''">and T.dept_id =#{deptId}</if>
+            <if test="belongYear != null and belongYear != ''">and T.belong_year =#{belongYear}</if>
+            <if test="cycleDesc != null and cycleDesc != ''">and T.cycle_desc =#{cycleDesc}</if>
+            <if test="taskId != null and taskId != ''">and T.task_id =#{taskId}</if>
+        </where>
+        order by T.evaluation_score desc
+    </select>
+    <select id="selectEvaluationGradeSaveMark" resultType="com.cb.assess.domain.BizAssessEvaluationGradeSaveMark">
+        select sm.id,
+        sm.task_id as taskId,
+        sm.dept_id as deptId,
+        sm.create_by as createBy,
+        u.name as createUserName,
+        sm.create_time as  createTime,
+        sm.year,
+        sm.update_by as updateBy,
+        sm.cycle_desc as  cycleDesc,
+        sm.update_time as updateTime,
+        sm.escalation_flag as escalationFlag,
+        sm.options,
+        d.dept_name as deptName
+        from biz_assess_evaluation_grade_save_mark sm
+        join v_sys_user u on u.user_name =  sm.create_by
+        join sys_dept d on d.dept_id = sm.dept_id
+        <where>
+            <if test="taskId != null and taskId != ''">and sm.task_id =#{taskId}</if>
+            <if test="year != null and year != ''">and sm.year =#{year}</if>
+            <if test="cycleDesc != null and cycleDesc != ''">and sm.cycle_desc =#{cycleDesc}</if>
+            <if test="deptId != null and deptId != ''">and sm.dept_id =#{deptId}</if>
+            and sm.escalation_flag =#{escalationFlag}
+        </where>
+    </select>
+
+    <resultMap id="VEvaluationVoterResult" type="com.cb.assess.domain.VEvaluationGrade$Voter">
+        <result property="taskId" column="task_id"/>
+        <result property="evaluateTagId" column="evaluate_tag_id"/>
+        <result property="voter" column="voter"/>
+        <result property="userId" column="user_id"/>
+        <result property="voteType" column="vote_type"/>
+        <result property="weight" column="weight"/>
+        <result property="status" column="status"/>
+        <result property="score" column="score"/>
+        <result property="special" column="special"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="proId" column="pro_id"/>
+    </resultMap>
+    <select id="selectVEvaluateScoreList" resultMap="VEvaluationVoterResult">
+        SELECT
+        ves.task_id,
+        ves.tag_id as evaluate_tag_id,
+        ves.voter,
+        ves.user_id,
+        ves.vote_type,
+        ves.weight,
+        ves.status,
+        ves.score,
+        m.special,
+        m.assess_cycle as cycle,
+        m.pro_id,
+        CASE m.assess_cycle
+        WHEN '1' THEN m.task_moth
+        WHEN '2' THEN m.task_quarter
+        WHEN '3' THEN m.task_year
+        ELSE 'special' END as cycle_desc
+        FROM
+        v_evaluate_score ves
+        join biz_assess_task_manage m on m.task_id = ves.task_id
+        <where>
+            and ves.task_id in
+            <foreach item="item" collection="taskIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+            and ves.user_id in
+            <foreach item="item" collection="userIds" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentExamineMapper">
+    
+    <resultMap type="com.cb.vo.StudentExamineVo" id="TransferringStudentExamineResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="assessmentNumber"    column="assessment_number"    />
+        <result property="assessmentContent"    column="assessment_content"    />
+        <result property="assessmentTime"    column="assessment_time"    />
+        <result property="assessmentAchievement"    column="assessment_achievement"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="nickName"    column="nick_name"    />
+    </resultMap>
+
+    <sql id="selectTransferringStudentExamineVo">
+        select id, user_id, assessment_number, assessment_content, assessment_time, assessment_achievement, create_time, update_time, create_by, del_flag, update_by
+        from transferring_student_examine
+    </sql>
+
+    <select id="selectTransferringStudentExamineList" resultMap="TransferringStudentExamineResult">
+        select se.id, se.user_id, se.assessment_number, se.assessment_content, se.assessment_time, se.assessment_achievement,
+        se.create_time, se.update_time, se.create_by, se.del_flag, se.update_by,u.nick_name
+        from transferring_student_examine se
+        inner join sys_user u on se.user_id=u.user_id
+        <where>  
+            <if test="userId != null  and userId != ''"> and se.user_id = #{userId}</if>
+            <if test="assessmentNumber != null  and assessmentNumber != ''"> and se.assessment_number = #{assessmentNumber}</if>
+            <if test="assessmentContent != null  and assessmentContent != ''"> and se.assessment_content = #{assessmentContent}</if>
+            <if test="assessmentTime != null  and assessmentTime != ''"> and se.assessment_time = #{assessmentTime}</if>
+            <if test="assessmentAchievement != null  and assessmentAchievement != ''"> and se.assessment_achievement = #{assessmentAchievement}</if>
+            <if test="createTime != null "> and se.create_time = #{createTime}</if>
+            <if test="createBy != null  and createBy != ''"> and se.create_by = #{createBy}</if>
+            <if test="delFlag != null  and delFlag != ''"> and se.del_flag = #{delFlag}</if>
+            <if test="updateBy != null">and se.update_by = #{updateBy}</if>
+            <if test="nickName != null and nickName != ''">and u.nick_name like concat('%',#{nickName},'%') </if>
+        </where>
+    </select>
+    
+    <select id="selectTransferringStudentExamineById" parameterType="String" resultMap="TransferringStudentExamineResult">
+        <include refid="selectTransferringStudentExamineVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTransferringStudentExamine">
+        insert into transferring_student_examine
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="assessmentNumber != null">assessment_number,</if>
+            <if test="assessmentContent != null">assessment_content,</if>
+            <if test="assessmentTime != null">assessment_time,</if>
+            <if test="assessmentAchievement != null">assessment_achievement,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="assessmentNumber != null">#{assessmentNumber},</if>
+            <if test="assessmentContent != null">#{assessmentContent},</if>
+            <if test="assessmentTime != null">#{assessmentTime},</if>
+            <if test="assessmentAchievement != null">#{assessmentAchievement},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransferringStudentExamine">
+        update transferring_student_examine
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="assessmentNumber != null">assessment_number = #{assessmentNumber},</if>
+            <if test="assessmentContent != null">assessment_content = #{assessmentContent},</if>
+            <if test="assessmentTime != null">assessment_time = #{assessmentTime},</if>
+            <if test="assessmentAchievement != null">assessment_achievement = #{assessmentAchievement},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentExamineById" parameterType="String">
+        delete from transferring_student_examine where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentExamineByIds" parameterType="String">
+        update transferring_student_examine set del_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

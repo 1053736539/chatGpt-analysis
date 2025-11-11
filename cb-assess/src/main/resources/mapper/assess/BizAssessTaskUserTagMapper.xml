@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessTaskUserTagMapper">
+
+    <resultMap type="BizAssessTaskUserTag" id="BizAssessTaskUserTagResult">
+        <result property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <association property="task" javaType="BizIndividualAssessmentTask">
+            <id property="taskId" column="task_id"/>
+            <result property="proId" column="pro_id"/>
+            <result property="type" column="type"/>
+            <result property="taskName" column="task_name"/>
+            <result property="assessCycle" column="assess_cycle"/>
+            <result property="assessCycleDesc" column="assess_cycle_desc"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+        </association>
+        <association property="user" javaType="SysUser">
+            <result property="nickName" column="nick_name"/>
+            <result property="name" column="name"/>
+        </association>
+        <association property="dept" javaType="SysDept">
+            <result property="deptName" column="dept_name"/>
+        </association>
+    </resultMap>
+
+    <sql id="selectBizAssessTaskUserTagVo">
+        select t.id,
+               t.task_id,
+               t.user_id,
+               t.create_by,
+               t.create_time,
+               t.update_by,
+               t.update_time,
+               t.remark,
+               u.nick_name,
+               u.user_name,
+               u.name,
+               m.task_name,
+               p.personnel_type          type,
+               m.assess_cycle,
+               CASE m.assess_cycle
+                   WHEN '1' THEN m.task_moth
+                   WHEN '2' THEN m.task_quarter
+                   WHEN '3' THEN m.task_year
+                   ELSE 'special' END as assess_cycle_desc,
+               m.start_time,
+               m.end_time,
+               d.dept_name
+        from biz_assess_task_user_tag t
+
+                 join sys_user u on u.user_id = t.user_id
+                 join biz_assess_task_manage m on m.task_id = t.task_id
+                 join biz_assess_indicator_pro p on m.pro_id = p.pro_id
+                 left join sys_dept d on u.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectBizAssessTaskUserTagList" parameterType="BizAssessTaskUserTag"
+            resultMap="BizAssessTaskUserTagResult">
+        <include refid="selectBizAssessTaskUserTagVo"/>
+        <where>
+            <if test="taskId != null  and taskId != ''">and t.task_id = #{taskId}</if>
+            <if test="userId != null ">and t.user_id = #{userId}</if>
+            <if test="name != null and name != ''">and u.name like concat('%',#{name},'%')</if>
+            <if test="deptName != null and deptName != ''">and d.dept_name like concat('%',#{deptName},'%')</if>
+        </where>
+    </select>
+
+    <select id="selectBizAssessTaskUserTagById" parameterType="String" resultMap="BizAssessTaskUserTagResult">
+        <include refid="selectBizAssessTaskUserTagVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizAssessTaskUserTag" parameterType="BizAssessTaskUserTag">
+        insert into biz_assess_task_user_tag
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="taskId != null and taskId != ''">task_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="taskId != null and taskId != ''">#{taskId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+    <insert id="batchInsertBizAssessTaskUserTag">
+        insert into biz_assess_task_user_tag( id, task_id, user_id, create_by, create_time,update_by,update_time,
+        remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.id}, #{item.taskId}, #{item.userId},
+            #{item.createBy},#{item.createTime},#{item.updateBy},#{item.updateTime},#{item.remark})
+        </foreach>
+    </insert>
+
+    <update id="updateBizAssessTaskUserTag" parameterType="BizAssessTaskUserTag">
+        update biz_assess_task_user_tag
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">task_id = #{taskId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssessTaskUserTagById" parameterType="String">
+        delete
+        from biz_assess_task_user_tag
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessTaskUserTagByIds" parameterType="String">
+        delete from biz_assess_task_user_tag where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="selectTaskUserTagListByTaskId" resultMap="BizAssessTaskUserTagResult">
+        select * from biz_assess_task_user_tag where task_id = #{taskId}
+    </select>
+
+    <delete id="deleteEntityByTaskId">
+        delete from biz_assess_task_user_tag where task_id = #{taskId}
+    </delete>
+</mapper>

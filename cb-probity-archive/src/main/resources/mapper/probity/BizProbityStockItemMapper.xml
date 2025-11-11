@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityStockItemMapper">
+
+    <resultMap type="BizProbityStockItem" id="BizProbityStockItemResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="holder" column="holder"/>
+        <result property="stockNameCode" column="stock_name_code"/>
+        <result property="holdNum" column="hold_num"/>
+        <result property="marketValue" column="market_value"/>
+    </resultMap>
+
+    <sql id="selectBizProbityStockItemVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               holder,
+               stock_name_code,
+               hold_num,
+               market_value
+        from biz_probity_stock_item
+    </sql>
+
+    <select id="selectBizProbityStockItemList" parameterType="BizProbityStockItem"
+            resultMap="BizProbityStockItemResult">
+        <include refid="selectBizProbityStockItemVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="holder != null  and holder != ''">and holder = #{holder}</if>
+            <if test="stockNameCode != null  and stockNameCode != ''">and stock_name_code = #{stockNameCode}</if>
+            <if test="holdNum != null  and holdNum != ''">and hold_num = #{holdNum}</if>
+            <if test="marketValue != null ">and market_value = #{marketValue}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityStockItemById" parameterType="String" resultMap="BizProbityStockItemResult">
+        <include refid="selectBizProbityStockItemVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityStockItem" parameterType="BizProbityStockItem">
+        insert into biz_probity_stock_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="holder != null">holder,</if>
+            <if test="stockNameCode != null">stock_name_code,</if>
+            <if test="holdNum != null">hold_num,</if>
+            <if test="marketValue != null">market_value,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="holder != null">#{holder},</if>
+            <if test="stockNameCode != null">#{stockNameCode},</if>
+            <if test="holdNum != null">#{holdNum},</if>
+            <if test="marketValue != null">#{marketValue},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_stock_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            holder,
+            stock_name_code,
+            hold_num,
+            market_value,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.holder},
+                #{entity.stockNameCode},
+                #{entity.holdNum},
+                #{entity.marketValue},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityStockItem" parameterType="BizProbityStockItem">
+        update biz_probity_stock_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="holder != null">holder = #{holder},</if>
+            <if test="stockNameCode != null">stock_name_code = #{stockNameCode},</if>
+            <if test="holdNum != null">hold_num = #{holdNum},</if>
+            <if test="marketValue != null">market_value = #{marketValue},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityStockItemById" parameterType="String">
+        delete
+        from biz_probity_stock_item
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityStockItemByIds" parameterType="String">
+        delete from biz_probity_stock_item where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

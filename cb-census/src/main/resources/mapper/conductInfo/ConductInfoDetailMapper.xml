@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.conductInfo.mapper.ConductInfoDetailMapper">
+
+    <resultMap type="ConductInfoDetail" id="ConductInfoDetailResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="content"    column="content"    />
+        <result property="title"    column="title"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="excerpt"    column="excerpt"    />
+        <result property="titlePic"    column="title_pic"    />
+        <result property="typeName"    column="typeName"    />
+    </resultMap>
+
+    <sql id="selectConductInfoDetailVo">
+        select bcid.id, bcid.type, bcid.content, bcid.title, bcid.del_flag, bcid.create_by, bcid.create_time, bcid.update_by, bcid.update_time, bcid.remark,
+            bcid.excerpt, bcid.title_pic, bcit.name as typeName
+        from biz_conduct_info_detail bcid
+        left join biz_conduct_info_type bcit on bcid.type = bcit.id
+    </sql>
+
+    <select id="selectConductInfoDetailList" parameterType="ConductInfoDetail" resultMap="ConductInfoDetailResult">
+        <include refid="selectConductInfoDetailVo"/>
+        <where>
+            <if test="type != null  and type != ''"> and bcid.type = #{type}</if>
+            <if test="content != null  and content != ''"> and bcid.content = #{content}</if>
+            <if test="title != null  and title != ''"> and bcid.title like concat('%', #{title}, '%')</if>
+            <if test="excerpt != null  and excerpt != ''"> and bcid.excerpt like concat('%', #{excerpt}, '%')</if>
+        </where>
+    </select>
+
+    <select id="selectConductInfoDetailById" parameterType="String" resultMap="ConductInfoDetailResult">
+        <include refid="selectConductInfoDetailVo"/>
+        where bcid.id = #{id}
+    </select>
+
+    <insert id="insertConductInfoDetail" parameterType="ConductInfoDetail">
+        insert into biz_conduct_info_detail
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="type != null and type != ''">type,</if>
+            <if test="content != null">content,</if>
+            <if test="title != null">title,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="excerpt != null">excerpt,</if>
+            <if test="titlePic != null">title_pic,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="type != null and type != ''">#{type},</if>
+            <if test="content != null">#{content},</if>
+            <if test="title != null">#{title},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="excerpt != null">#{excerpt},</if>
+            <if test="titlePic != null">#{titlePic},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateConductInfoDetail" parameterType="ConductInfoDetail">
+        update biz_conduct_info_detail
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null and type != ''">type = #{type},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="excerpt != null">excerpt = #{excerpt},</if>
+            <if test="titlePic != null">title_pic = #{titlePic},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteConductInfoDetailById" parameterType="String">
+        delete from biz_conduct_info_detail where id = #{id}
+    </delete>
+
+    <delete id="deleteConductInfoDetailByIds" parameterType="String">
+        delete from biz_conduct_info_detail where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

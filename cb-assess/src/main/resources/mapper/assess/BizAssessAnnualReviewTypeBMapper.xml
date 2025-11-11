@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessAnnualReviewTypeBMapper">
+    
+    <resultMap type="BizAssessAnnualReviewTypeB" id="BizAssessAnnualReviewTypeBResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="discussantUserId"    column="discussant_user_id"    />
+        <result property="recommendGrade"    column="recommend_grade"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="status" column="status"/>
+        <result property="type" column="type"/>
+    </resultMap>
+    <resultMap id="bizAssessAnnualReviewTypeVo" type="BizAssessAnnualReviewTypeVo"
+               extends="BizAssessAnnualReviewTypeBResult">
+        <result property="discussantUserName" column="discussantUserName"/>
+        <result property="userName" column="userName"/>
+        <result property="annualReviewTypeCount" column="annualReviewTypeCount"/>
+    </resultMap>
+    <sql id="selectBizAssessAnnualReviewTypeBVo">
+        select aar.id,
+               aar.user_id,
+               aar.discussant_user_id,
+               aar.recommend_grade,
+               aar.create_by,
+               aar.update_by,
+               aar.create_time,
+               aar.update_time,
+               aar.del_flag,
+               aar.assessment_year,
+               aar.status,
+               aar.type,
+               u1.name as userName,
+               u2.name as discussantUserName,
+               u1.work_post
+        from biz_assess_annual_review_type_b aar
+                 inner join sys_user u1 on aar.user_id = u1.user_id
+                 inner join sys_user u2 on aar.discussant_user_id = u2.user_id
+    </sql>
+    <select id="selectAnnualReviewTypeBCount"  resultMap="bizAssessAnnualReviewTypeVo">
+        select count(*) as annualReviewTypeCount
+        from biz_assess_annual_review_type_b
+        where discussant_user_id=#{discussantUserId} and  status='0'
+    </select>
+    <select id="selectBizAssessAnnualReviewTypeBList" parameterType="BizAssessAnnualReviewTypeVo" resultMap="bizAssessAnnualReviewTypeVo">
+        <include refid="selectBizAssessAnnualReviewTypeBVo"/>
+        <where>  
+            <if test="userId != null "> and aar.user_id = #{userId}</if>
+            <if test="discussantUserId != null "> and aar.discussant_user_id = #{discussantUserId}</if>
+            <if test="recommendGrade != null  and recommendGrade != ''"> and aar.recommend_grade = #{recommendGrade}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and aar.assessment_year = #{assessmentYear}</if>
+            <if test="status != null  and status != ''"> and aar.status = #{status}</if>
+            <if test="discussantUserName != null  and discussantUserName != ''">and u2.name like concat('%', #{discussantUserName},'%')
+            </if>
+            <if test="userName != null  and userName != ''">and u1.name like concat('%', #{userName},'%')
+            </if>
+            <if test="createBy != null  and createBy != ''">and aar.create_by = #{createBy}
+            </if>
+        </where>
+        order by aar.user_id,aar.create_time desc
+    </select>
+    
+    <select id="selectBizAssessAnnualReviewTypeBById" parameterType="String" resultMap="BizAssessAnnualReviewTypeBResult">
+        <include refid="selectBizAssessAnnualReviewTypeBVo"/>
+        where aar.id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessAnnualReviewTypeB" parameterType="BizAssessAnnualReviewTypeB">
+        insert into biz_assess_annual_review_type_b
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="discussantUserId != null">discussant_user_id,</if>
+            <if test="recommendGrade != null">recommend_grade,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="assessmentYear != null">assessment_year,</if>
+            <if test="type != null">type,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="discussantUserId != null">#{discussantUserId},</if>
+            <if test="recommendGrade != null">#{recommendGrade},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="assessmentYear != null">#{assessmentYear},</if>
+            <if test="type != null">#{type},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessAnnualReviewTypeB" parameterType="BizAssessAnnualReviewTypeB">
+        update biz_assess_annual_review_type_b
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="discussantUserId != null">discussant_user_id = #{discussantUserId},</if>
+            <if test="recommendGrade != null">recommend_grade = #{recommendGrade},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="assessmentYear != null">assessment_year = #{assessmentYear},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssessAnnualReviewTypeBById" parameterType="String">
+        delete from biz_assess_annual_review_type_b where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessAnnualReviewTypeBByIds" parameterType="String">
+        delete from biz_assess_annual_review_type_b where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

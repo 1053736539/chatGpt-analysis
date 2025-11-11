@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentVisitMapper">
+    
+    <resultMap type="TransferringStudentVisit" id="TransferringStudentVisitResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="visitTime"    column="visit_time"    />
+        <result property="visitAddr"    column="visit_addr"    />
+        <result property="visitContent"    column="visit_content"    />
+        <result property="visitObjJson"    column="visit_obj_json"    />
+        <result property="visitUserJson"    column="visit_user_json"    />
+        <result property="visitCauses"    column="visit_causes"    />
+
+    </resultMap>
+
+    <sql id="selectTransferringStudentVisitVo">
+        select id, user_id, create_time, update_time, del_flag, create_by, update_by, visit_time, visit_addr, visit_content, visit_user_json, visit_obj_json, visit_causes
+        from transferring_student_visit
+    </sql>
+
+    <select id="selectTransferringStudentVisitList" parameterType="TransferringStudentVisit" resultMap="TransferringStudentVisitResult">
+        <include refid="selectTransferringStudentVisitVo"/>
+        <where>  
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="visitTime != null  and visitTime != ''"> and visit_time = #{visitTime}</if>
+            <if test="visitAddr != null  and visitAddr != ''"> and visit_addr = #{visitAddr}</if>
+            <if test="visitContent != null  and visitContent != ''"> and visit_content like concat('%', #{visitContent}, '%')</if>
+            <if test="visitCauses != null  and visitCauses != ''"> and visit_causes like concat('%', #{visitUser}, '%')</if>
+            <if test="params.beginTime != null  and params.beginTime != ''"> and visit_time &gt;= #{params.beginTime}</if>
+            <if test="params.endTime != null  and params.endTime != ''"> and visit_time &lt;= #{params.endTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTransferringStudentVisitById" parameterType="String" resultMap="TransferringStudentVisitResult">
+        <include refid="selectTransferringStudentVisitVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTransferringStudentVisit" parameterType="TransferringStudentVisit">
+        insert into transferring_student_visit
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="visitTime != null">visit_time,</if>
+            <if test="visitAddr != null">visit_addr,</if>
+            <if test="visitContent != null">visit_content,</if>
+            <if test="visitUserJson != null">visit_user_json,</if>
+            <if test="visitObjJson != null">visit_obj_json,</if>
+            <if test="visitCauses != null">visit_causes,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="visitTime != null">#{visitTime},</if>
+            <if test="visitAddr != null">#{visitAddr},</if>
+            <if test="visitContent != null">#{visitContent},</if>
+            <if test="visitUserJson != null">#{visitUserJson},</if>
+            <if test="visitObjJson != null">#{visitObjJson},</if>
+            <if test="visitCauses != null">#{visitCauses},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransferringStudentVisit" parameterType="TransferringStudentVisit">
+        update transferring_student_visit
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="visitTime != null">visit_time = #{visitTime},</if>
+            <if test="visitAddr != null">visit_addr = #{visitAddr},</if>
+            <if test="visitContent != null">visit_content = #{visitContent},</if>
+            <if test="visitUserJson != null">visit_user_json = #{visitUserJson},</if>
+            <if test="visitObjJson != null">visit_obj_json = #{visitObjJson},</if>
+            <if test="visitCauses != null">visit_causes = #{visitCauses},</if>
+
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentVisitById" parameterType="String">
+        delete from transferring_student_visit where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentVisitByIds" parameterType="String">
+        delete from transferring_student_visit where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

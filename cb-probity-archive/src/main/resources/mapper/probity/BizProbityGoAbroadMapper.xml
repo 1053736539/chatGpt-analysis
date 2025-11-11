@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityGoAbroadMapper">
+
+    <resultMap type="BizProbityGoAbroad" id="BizProbityGoAbroadResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="roundTripTime" column="round_trip_time"/>
+        <result property="countryRegion" column="country_region"/>
+        <result property="content" column="content"/>
+        <result property="approvalDept" column="approval_dept"/>
+        <result property="certificateNo" column="certificate_no"/>
+    </resultMap>
+
+    <sql id="selectBizProbityGoAbroadVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               round_trip_time,
+               country_region,
+               content,
+               approval_dept,
+               certificate_no
+        from biz_probity_go_abroad
+    </sql>
+
+    <select id="selectBizProbityGoAbroadList" parameterType="BizProbityGoAbroad" resultMap="BizProbityGoAbroadResult">
+        <include refid="selectBizProbityGoAbroadVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="roundTripTime != null  and roundTripTime != ''">and round_trip_time = #{roundTripTime}</if>
+            <if test="countryRegion != null  and countryRegion != ''">and country_region = #{countryRegion}</if>
+            <if test="content != null  and content != ''">and content = #{content}</if>
+            <if test="approvalDept != null  and approvalDept != ''">and approval_dept = #{approvalDept}</if>
+            <if test="certificateNo != null  and certificateNo != ''">and certificate_no = #{certificateNo}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityGoAbroadById" parameterType="String" resultMap="BizProbityGoAbroadResult">
+        <include refid="selectBizProbityGoAbroadVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityGoAbroad" parameterType="BizProbityGoAbroad">
+        insert into biz_probity_go_abroad
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="roundTripTime != null">round_trip_time,</if>
+            <if test="countryRegion != null">country_region,</if>
+            <if test="content != null">content,</if>
+            <if test="approvalDept != null">approval_dept,</if>
+            <if test="certificateNo != null">certificate_no,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="roundTripTime != null">#{roundTripTime},</if>
+            <if test="countryRegion != null">#{countryRegion},</if>
+            <if test="content != null">#{content},</if>
+            <if test="approvalDept != null">#{approvalDept},</if>
+            <if test="certificateNo != null">#{certificateNo},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_go_abroad
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            round_trip_time,
+            country_region,
+            content,
+            approval_dept,
+            certificate_no,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.roundTripTime},
+                #{entity.countryRegion},
+                #{entity.content},
+                #{entity.approvalDept},
+                #{entity.certificateNo},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityGoAbroad" parameterType="BizProbityGoAbroad">
+        update biz_probity_go_abroad
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="roundTripTime != null">round_trip_time = #{roundTripTime},</if>
+            <if test="countryRegion != null">country_region = #{countryRegion},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="approvalDept != null">approval_dept = #{approvalDept},</if>
+            <if test="certificateNo != null">certificate_no = #{certificateNo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityGoAbroadById" parameterType="String">
+        delete
+        from biz_probity_go_abroad
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityGoAbroadByIds" parameterType="String">
+        delete from biz_probity_go_abroad where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

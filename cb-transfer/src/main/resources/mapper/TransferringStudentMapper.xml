@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentMapper">
+    
+    <resultMap type="com.cb.vo.StudentVo" id="TransferringStudentResult">
+        <result property="userId"    column="user_id"    />
+        <result property="selectedTime"    column="selected_time"    />
+        <result property="selectedStation"    column="selected_station"    />
+        <result property="partyTime"    column="party_time"    />
+        <result property="selectedAttach"    column="selected_attach"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="name"    column="name"    />
+        <result property="idcard"    column="idcard"    />
+        <result property="birthday"    column="birthday"    />
+        <result property="sex"    column="sex"    />
+        <result property="phonenumber"    column="phonenumber"    />
+        <result property="nativePlace"    column="native_place"    />
+        <collection property="sysUserEducationAndDegreeInfoList" select="com.cb.system.mapper.SysUserMapper.selectEducationAndDegreeInfoByUserId" column="user_id">
+
+        </collection>
+    </resultMap>
+
+    <sql id="selectTransferringStudentVo">
+        select user_id, selected_time, selected_station, party_time, selected_attach, create_by,
+               update_by, create_time, update_time, del_flag from transferring_student
+    </sql>
+
+    <select id="selectTransferringStudentList"  resultMap="TransferringStudentResult">
+        select u.user_id, ts.selected_station, ts.selected_attach, ts.create_by,
+        ts.update_by, ts.create_time, ts.update_time, ts.del_flag,u.nick_name as name,u.idcard,u.sex,u.birthday,
+        u.phonenumber,u.native_place
+        , ts.party_time as old_party_time, ts.selected_time as old_selected_time
+        ,u.party_join_time as party_time
+        ,u.start_work_time as selected_time
+        from sys_user u
+        left join  transferring_student ts on u.user_id=ts.user_id
+        <where>
+            u.is_selected_student='1'
+            <if test="selectedTime != null  and selectedTime != ''"> and ts.selected_time = #{selectedTime}</if>
+            <if test="selectedStation != null  and selectedStation != ''"> and ts.selected_station = #{selectedStation}</if>
+            <if test="selectedAttach != null  and selectedAttach != ''"> and ts.selected_attach = #{selectedAttach}</if>
+            <if test="delFlag != null  and delFlag != ''"> and ts.del_flag = #{delFlag}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%',#{name},'%') </if>
+        </where>
+    </select>
+    
+    <select id="selectTransferringStudentById" parameterType="String" resultMap="TransferringStudentResult">
+        select u.user_id, ts.selected_station, ts.selected_attach, ts.create_by,
+               ts.update_by, ts.create_time, ts.update_time, ts.del_flag,u.nick_name as name,u.idcard,u.sex,u.birthday,
+               u.phonenumber,u.native_place
+                , ts.party_time as old_party_time, ts.selected_time as old_selected_time
+                ,u.party_join_time as party_time
+                ,u.start_work_time as selected_time
+        from sys_user u
+        left join  transferring_student ts on u.user_id=ts.user_id
+        where u.user_id = #{userId}
+    </select>
+    <select id="selectTransferringStudentByIdNoJoin" parameterType="String" resultMap="TransferringStudentResult">
+        <include refid="selectTransferringStudentVo"></include>
+        where user_id = #{userId}
+    </select>
+    <insert id="insertTransferringStudent" >
+        insert into transferring_student
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="selectedTime != null">selected_time,</if>
+            <if test="selectedStation != null">selected_station,</if>
+            <if test="partyTime != null">party_time,</if>
+            <if test="selectedAttach != null">selected_attach,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="selectedTime != null">#{selectedTime},</if>
+            <if test="selectedStation != null">#{selectedStation},</if>
+            <if test="partyTime != null">#{partyTime},</if>
+            <if test="selectedAttach != null">#{selectedAttach},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransferringStudent" >
+        update transferring_student
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="selectedTime != null">selected_time = #{selectedTime},</if>
+            <if test="selectedStation != null">selected_station = #{selectedStation},</if>
+            party_time = #{partyTime},
+            <if test="selectedAttach != null">selected_attach = #{selectedAttach},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteTransferringStudentById" parameterType="String">
+        delete from transferring_student where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteTransferringStudentByIds" parameterType="String">
+        update  transferring_student set del_flag='1' where user_id in
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>

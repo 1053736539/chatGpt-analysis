@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.oa.mapper.SysDeptOutMapper">
+    
+    <resultMap type="SysDeptOut" id="SysDeptOutResult">
+        <result property="id"    column="id"    />
+        <result property="deptCode"    column="dept_code"    />
+        <result property="name"    column="name"    />
+        <result property="nameLetter"    column="name_letter"    />
+        <result property="sort"    column="sort"    />
+        <result property="pid"    column="pid"    />
+        <result property="treePids"    column="tree_pids"    />
+        <result property="treeLevel"    column="tree_level"    />
+        <result property="enabled"    column="enabled"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="deptId"    column="dept_id"    />
+    </resultMap>
+
+    <sql id="selectSysDeptOutVo">
+        select id, dept_code, name, name_letter, sort, pid, tree_pids, tree_level, enabled, create_by, update_by, create_time, update_time, dept_id from sys_dept_out
+    </sql>
+
+    <select id="selectSysDeptOutList" parameterType="SysDeptOut" resultMap="SysDeptOutResult">
+        <include refid="selectSysDeptOutVo"/>
+        <where>  
+            <if test="deptCode != null  and deptCode != ''"> and dept_code = #{deptCode}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="nameLetter != null  and nameLetter != ''"> and name_letter = #{nameLetter}</if>
+            <if test="sort != null "> and sort = #{sort}</if>
+            <if test="pid != null  and pid != ''"> and pid = #{pid}</if>
+            <if test="treePids != null  and treePids != ''"> and tree_pids = #{treePids}</if>
+            <if test="treeLevel != null  and treeLevel != ''"> and tree_level = #{treeLevel}</if>
+            <if test="enabled != null  and enabled != ''"> and enabled = #{enabled}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+        </where>
+    </select>
+    
+    <select id="selectSysDeptOutById" parameterType="String" resultMap="SysDeptOutResult">
+        <include refid="selectSysDeptOutVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectSysDeptOutByParam" parameterType="String" resultMap="SysDeptOutResult">
+        <include refid="selectSysDeptOutVo"/>
+        <where>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="id != null ">and id = #{id}</if>
+        </where>
+        limit 1
+    </select>
+        
+    <insert id="insertSysDeptOut" parameterType="SysDeptOut">
+        insert into sys_dept_out
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="deptCode != null">dept_code,</if>
+            <if test="name != null">name,</if>
+            <if test="nameLetter != null">name_letter,</if>
+            <if test="sort != null">sort,</if>
+            <if test="pid != null">pid,</if>
+            <if test="treePids != null">tree_pids,</if>
+            <if test="treeLevel != null">tree_level,</if>
+            <if test="enabled != null">enabled,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="deptCode != null">#{deptCode},</if>
+            <if test="name != null">#{name},</if>
+            <if test="nameLetter != null">#{nameLetter},</if>
+            <if test="sort != null">#{sort},</if>
+            <if test="pid != null">#{pid},</if>
+            <if test="treePids != null">#{treePids},</if>
+            <if test="treeLevel != null">#{treeLevel},</if>
+            <if test="enabled != null">#{enabled},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateSysDeptOut" parameterType="SysDeptOut">
+        update sys_dept_out
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptCode != null">dept_code = #{deptCode},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="nameLetter != null">name_letter = #{nameLetter},</if>
+            <if test="sort != null">sort = #{sort},</if>
+            <if test="pid != null">pid = #{pid},</if>
+            <if test="treePids != null">tree_pids = #{treePids},</if>
+            <if test="treeLevel != null">tree_level = #{treeLevel},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteSysDeptOutById" parameterType="String">
+        delete from sys_dept_out where id = #{id}
+    </delete>
+
+    <delete id="deleteSysDeptOutByIds" parameterType="String">
+        delete from sys_dept_out where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

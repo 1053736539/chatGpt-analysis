@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessEvaluationGradeSaveMarkMapper">
+
+    <resultMap type="BizAssessEvaluationGradeSaveMark" id="BizAssessEvaluationGradeSaveMarkResult">
+        <result property="taskId" column="task_id"/>
+        <result property="id" column="id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="year" column="year"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="escalationFlag" column="escalation_flag"/>
+        <result property="options" column="options"/>
+    </resultMap>
+
+    <sql id="selectBizAssessEvaluationGradeSaveMarkVo">
+        select task_id,
+               id,
+               dept_id,
+               create_by,
+               create_time, year, update_by, cycle_desc, update_time, escalation_flag,
+            options
+        from biz_assess_evaluation_grade_save_mark
+    </sql>
+
+    <select id="selectBizAssessEvaluationGradeSaveMarkList" parameterType="BizAssessEvaluationGradeSaveMark"
+            resultMap="BizAssessEvaluationGradeSaveMarkResult">
+        <include refid="selectBizAssessEvaluationGradeSaveMarkVo"/>
+        <where>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="year != null  and year != ''">and year = #{year}</if>
+            <if test="cycleDesc != null  and cycleDesc != ''">and cycle_desc = #{cycleDesc}</if>
+            <if test="escalationFlag != null  and escalationFlag != ''">and escalation_flag = #{escalationFlag}</if>
+        </where>
+    </select>
+
+    <select id="selectBizAssessEvaluationGradeSaveMarkById" parameterType="String"
+            resultMap="BizAssessEvaluationGradeSaveMarkResult">
+        <include refid="selectBizAssessEvaluationGradeSaveMarkVo"/>
+        where task_id = #{taskId}
+    </select>
+
+    <insert id="insertBizAssessEvaluationGradeSaveMark" parameterType="BizAssessEvaluationGradeSaveMark">
+        insert into biz_assess_evaluation_grade_save_mark
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">task_id,</if>
+            <if test="id != null and id != ''">id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="year != null">year,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="cycleDesc != null">cycle_desc,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="escalationFlag != null">escalation_flag,</if>
+            <if test="options != null">options,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">#{taskId},</if>
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="year != null">#{year},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="cycleDesc != null">#{cycleDesc},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="escalationFlag != null">#{escalationFlag},</if>
+            <if test="options != null">#{options},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssessEvaluationGradeSaveMark" parameterType="BizAssessEvaluationGradeSaveMark">
+        update biz_assess_evaluation_grade_save_mark
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">task_id = #{taskId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="year != null">year = #{year},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="cycleDesc != null">cycle_desc = #{cycleDesc},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="escalationFlag != null">escalation_flag =#{escalationFlag},</if>
+            <if test="options != null">options =#{options},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssessEvaluationGradeSaveMarkById" parameterType="String">
+        delete
+        from biz_assess_evaluation_grade_save_mark
+        where task_id = #{taskId}
+    </delete>
+
+    <delete id="deleteBizAssessEvaluationGradeSaveMarkByIds" parameterType="String">
+        delete from biz_assess_evaluation_grade_save_mark where task_id in
+        <foreach item="taskId" collection="array" open="(" separator="," close=")">
+            #{taskId}
+        </foreach>
+    </delete>
+
+    <select id="checkExist" resultType="java.lang.Boolean">
+        select count(1)
+        from biz_assess_evaluation_grade_save_mark
+        where year =#{year}
+          and cycle_desc = #{cycleDesc}
+          and dept_id = #{deptId}
+    </select>
+    <select id="selectOne" resultMap="BizAssessEvaluationGradeSaveMarkResult">
+        <include refid="selectBizAssessEvaluationGradeSaveMarkVo"/>
+        <where>
+            <if test="taskId != null ">and task_id = #{taskId}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="year != null  and year != ''">and year = #{year}</if>
+            <if test="cycleDesc != null  and cycleDesc != ''">and cycle_desc = #{cycleDesc}</if>
+        </where>
+    </select>
+
+</mapper>

@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbitySalaryMapper">
+
+    <resultMap type="BizProbitySalary" id="BizProbitySalaryResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="salary" column="salary"/>
+        <result property="bonus" column="bonus"/>
+        <result property="other" column="other"/>
+        <result property="total" column="total"/>
+    </resultMap>
+
+    <sql id="selectBizProbitySalaryVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               salary,
+               bonus,
+               other,
+               total
+        from biz_probity_salary
+    </sql>
+
+    <select id="selectBizProbitySalaryList" parameterType="BizProbitySalary" resultMap="BizProbitySalaryResult">
+        <include refid="selectBizProbitySalaryVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="salary != null  and salary != ''">and salary = #{salary}</if>
+            <if test="bonus != null  and bonus != ''">and bonus = #{bonus}</if>
+            <if test="other != null  and other != ''">and other = #{other}</if>
+            <if test="total != null  and total != ''">and total = #{total}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbitySalaryById" parameterType="String" resultMap="BizProbitySalaryResult">
+        <include refid="selectBizProbitySalaryVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbitySalary" parameterType="BizProbitySalary">
+        insert into biz_probity_salary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="salary != null">salary,</if>
+            <if test="bonus != null">bonus,</if>
+            <if test="other != null">other,</if>
+            <if test="total != null">total,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="salary != null">#{salary},</if>
+            <if test="bonus != null">#{bonus},</if>
+            <if test="other != null">#{other},</if>
+            <if test="total != null">#{total},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_salary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            salary,
+            bonus,
+            other,
+            total,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.salary},
+                #{entity.bonus},
+                #{entity.other},
+                #{entity.total},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbitySalary" parameterType="BizProbitySalary">
+        update biz_probity_salary
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="salary != null">salary = #{salary},</if>
+            <if test="bonus != null">bonus = #{bonus},</if>
+            <if test="other != null">other = #{other},</if>
+            <if test="total != null">total = #{total},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbitySalaryById" parameterType="String">
+        delete
+        from biz_probity_salary
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbitySalaryByIds" parameterType="String">
+        delete from biz_probity_salary where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityMigrateMapper">
+
+    <resultMap type="BizProbityMigrate" id="BizProbityMigrateResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="name" column="name"/>
+        <result property="migrateCountryRegion" column="migrate_country_region"/>
+        <result property="liveCity" column="live_city"/>
+        <result property="migrateCertificateNo" column="migrate_certificate_no"/>
+        <result property="migrateType" column="migrate_type"/>
+        <result property="migrateTime" column="migrate_time"/>
+    </resultMap>
+
+    <sql id="selectBizProbityMigrateVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               name,
+               migrate_country_region,
+               live_city,
+               migrate_certificate_no,
+               migrate_type,
+               migrate_time
+        from biz_probity_migrate
+    </sql>
+
+    <select id="selectBizProbityMigrateList" parameterType="BizProbityMigrate" resultMap="BizProbityMigrateResult">
+        <include refid="selectBizProbityMigrateVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="migrateCountryRegion != null  and migrateCountryRegion != ''">and migrate_country_region =
+                #{migrateCountryRegion}
+            </if>
+            <if test="liveCity != null  and liveCity != ''">and live_city = #{liveCity}</if>
+            <if test="migrateCertificateNo != null  and migrateCertificateNo != ''">and migrate_certificate_no =
+                #{migrateCertificateNo}
+            </if>
+            <if test="migrateType != null  and migrateType != ''">and migrate_type = #{migrateType}</if>
+            <if test="migrateTime != null  and migrateTime != ''">and migrate_time = #{migrateTime}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityMigrateById" parameterType="String" resultMap="BizProbityMigrateResult">
+        <include refid="selectBizProbityMigrateVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityMigrate" parameterType="BizProbityMigrate">
+        insert into biz_probity_migrate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="name != null">name,</if>
+            <if test="migrateCountryRegion != null">migrate_country_region,</if>
+            <if test="liveCity != null">live_city,</if>
+            <if test="migrateCertificateNo != null">migrate_certificate_no,</if>
+            <if test="migrateType != null">migrate_type,</if>
+            <if test="migrateTime != null">migrate_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="name != null">#{name},</if>
+            <if test="migrateCountryRegion != null">#{migrateCountryRegion},</if>
+            <if test="liveCity != null">#{liveCity},</if>
+            <if test="migrateCertificateNo != null">#{migrateCertificateNo},</if>
+            <if test="migrateType != null">#{migrateType},</if>
+            <if test="migrateTime != null">#{migrateTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_migrate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            name,
+            migrate_country_region,
+            live_city,
+            migrate_certificate_no,
+            migrate_type,
+            migrate_time,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.name},
+                #{entity.migrateCountryRegion},
+                #{entity.liveCity},
+                #{entity.migrateCertificateNo},
+                #{entity.migrateType},
+                #{entity.migrateTime},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityMigrate" parameterType="BizProbityMigrate">
+        update biz_probity_migrate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="migrateCountryRegion != null">migrate_country_region = #{migrateCountryRegion},</if>
+            <if test="liveCity != null">live_city = #{liveCity},</if>
+            <if test="migrateCertificateNo != null">migrate_certificate_no = #{migrateCertificateNo},</if>
+            <if test="migrateType != null">migrate_type = #{migrateType},</if>
+            <if test="migrateTime != null">migrate_time = #{migrateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityMigrateById" parameterType="String">
+        delete
+        from biz_probity_migrate
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityMigrateByIds" parameterType="String">
+        delete from biz_probity_migrate where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

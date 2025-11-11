@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentHealthMapper">
+
+    <resultMap type="TransferringStudentHealth" id="TransferringStudentHealthResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="year"    column="year"    />
+        <result property="bodyCheck"    column="body_check"    />
+        <result property="psychologyCheck"    column="psychology_check"    />
+        <result property="diseaseStatus"    column="disease_status"    />
+        <result property="diseaseInfo"    column="disease_info"    />
+    </resultMap>
+
+    <sql id="selectTransferringStudentHealthVo">
+        select id, user_id, create_time, update_time, del_flag, create_by, update_by, year, body_check, psychology_check, disease_status, disease_info from transferring_student_health
+    </sql>
+
+    <select id="selectTransferringStudentHealthList" parameterType="TransferringStudentHealth" resultMap="TransferringStudentHealthResult">
+        <include refid="selectTransferringStudentHealthVo"/>
+        <where>
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="year != null  and year != ''"> and year = #{year}</if>
+            <if test="bodyCheck != null  and bodyCheck != ''"> and body_check = #{bodyCheck}</if>
+            <if test="psychologyCheck != null  and psychologyCheck != ''"> and psychology_check = #{psychologyCheck}</if>
+            <if test="diseaseStatus != null  and diseaseStatus != ''"> and disease_status = #{diseaseStatus}</if>
+            <if test="diseaseInfo != null  and diseaseInfo != ''"> and disease_info = #{diseaseInfo}</if>
+        </where>
+    </select>
+
+    <select id="selectTransferringStudentHealthById" parameterType="String" resultMap="TransferringStudentHealthResult">
+        <include refid="selectTransferringStudentHealthVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTransferringStudentHealth" parameterType="TransferringStudentHealth">
+        insert into transferring_student_health
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="year != null">year,</if>
+            <if test="bodyCheck != null">body_check,</if>
+            <if test="psychologyCheck != null">psychology_check,</if>
+            <if test="diseaseStatus != null">disease_status,</if>
+            <if test="diseaseInfo != null">disease_info,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="year != null">#{year},</if>
+            <if test="bodyCheck != null">#{bodyCheck},</if>
+            <if test="psychologyCheck != null">#{psychologyCheck},</if>
+            <if test="diseaseStatus != null">#{diseaseStatus},</if>
+            <if test="diseaseInfo != null">#{diseaseInfo},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTransferringStudentHealth" parameterType="TransferringStudentHealth">
+        update transferring_student_health
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="year != null">year = #{year},</if>
+            <if test="bodyCheck != null">body_check = #{bodyCheck},</if>
+            <if test="psychologyCheck != null">psychology_check = #{psychologyCheck},</if>
+            <if test="diseaseStatus != null">disease_status = #{diseaseStatus},</if>
+            <if test="diseaseInfo != null">disease_info = #{diseaseInfo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentHealthById" parameterType="String">
+        delete from transferring_student_health where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentHealthByIds" parameterType="String">
+        delete from transferring_student_health where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.basedata.mapper.BasBuildingCodeMapper">
+    
+    <resultMap type="BasBuildingCode" id="BasBuildingCodeResult">
+        <result property="id"    column="id"    />
+        <result property="code"    column="code"    />
+        <result property="name"    column="name"    />
+        <result property="area"    column="area"    />
+        <result property="address"    column="address"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectBasBuildingCodeVo">
+        select id, code, name, area, address, create_by, create_time, update_by, update_time, remark from bas_building_code
+    </sql>
+
+    <select id="selectBasBuildingCodeList" parameterType="BasBuildingCode" resultMap="BasBuildingCodeResult">
+        <include refid="selectBasBuildingCodeVo"/>
+        <where>  
+            <if test="code != null  and code != ''"> and code = #{code}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="area != null  and area != ''"> and area = #{area}</if>
+            <if test="address != null  and address != ''"> and address = #{address}</if>
+        </where>
+    </select>
+    
+    <select id="selectBasBuildingCodeById" parameterType="String" resultMap="BasBuildingCodeResult">
+        <include refid="selectBasBuildingCodeVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectBasBuildingCodeByCode" parameterType="String" resultMap="BasBuildingCodeResult">
+        <include refid="selectBasBuildingCodeVo"/>
+        where code = #{code}
+    </select>
+    <select id="selectBasBuildingCodeAllList" resultMap="BasBuildingCodeResult">
+        <include refid="selectBasBuildingCodeVo"/>
+    </select>
+
+    <insert id="insertBasBuildingCode" parameterType="BasBuildingCode">
+        insert into bas_building_code
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="area != null and area != ''">area,</if>
+            <if test="address != null">address,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="area != null and area != ''">#{area},</if>
+            <if test="address != null">#{address},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBasBuildingCode" parameterType="BasBuildingCode">
+        update bas_building_code
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="area != null and area != ''">area = #{area},</if>
+            <if test="address != null">address = #{address},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBasBuildingCodeById" parameterType="String">
+        delete from bas_building_code where id = #{id}
+    </delete>
+
+    <delete id="deleteBasBuildingCodeByIds" parameterType="String">
+        delete from bas_building_code where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

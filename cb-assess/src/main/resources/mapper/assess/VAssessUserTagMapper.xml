@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.VAssessUserTagMapper">
+    <resultMap type="VAssessUserTag" id="VAssessUserTagResult">
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="mustFill" column="must_fill"/>
+        <result property="isFill" column="is_fill"/>
+        <association property="task" javaType="BizIndividualAssessmentTask">
+            <result property="taskId" column="task_id"/>
+            <result property="proId" column="pro_id"/>
+            <result property="type" column="type"/>
+            <result property="taskName" column="task_name"/>
+            <result property="startTime" column="start_time"/>
+            <result property="endTime" column="end_time"/>
+        </association>
+        <association property="user" javaType="SysUser">
+            <result property="nickName" column="nick_name"/>
+            <result property="name" column="name"/>
+        </association>
+        <association property="dept" javaType="SysDept">
+            <result property="deptName" column="dept_name"/>
+        </association>
+    </resultMap>
+
+    <sql id="TagMustFillSummaryResult">
+        select DISTINCT
+            et.task_id,
+            et.assessed_user_id as user_id,
+            (select count(0) from biz_assess_task_user_tag ut where ut.task_id =et.task_id and ut.user_id = et.assessed_user_id) as must_fill
+        from biz_assess_task_evaluate_tag et
+    </sql>
+    <sql id="selectVAssessUserTagVo">
+        SELECT vut.task_id,
+            vut.user_id,
+            cf.name  AS user_name,
+            cf.name,
+            m.task_name,
+            m.start_time,
+            m.end_time,
+            cf.dept_name,
+            vut.must_fill,
+            (select count(0)from v_regular_fill_info t where t.task_id = vut.task_id and t.user_id=vut.user_id and t.status ='1') as is_fill
+        FROM ( <include refid="TagMustFillSummaryResult"></include>) vut
+        JOIN biz_assess_task_manage m ON m.task_id = vut.task_id
+        JOIN biz_assess_indicator_pro p ON p.pro_id = m.pro_id
+        join v_task_assess_user_confirm cf on cf.task_id = m.task_id and vut.user_id = cf.user_id and cf.confirm_status = '1'
+    </sql>
+    <select id="selectVAssessUserTagList" resultMap="VAssessUserTagResult">
+        select * from (<include refid="selectVAssessUserTagVo"></include>) as T
+        <where>
+            <if test="taskId != null  and taskId != ''">and T.task_id = #{taskId}</if>
+            <if test="userId != null ">and T.user_id = #{userId}</if>
+            <if test="userName != null and userName != ''">and T.name like concat('%',#{userName},'%')</if>
+            <if test="deptName != null and deptName != ''">and T.dept_name like concat('%',#{deptName},'%')</if>
+            <if test="mustFill != null">
+                <choose>
+                    <when test="mustFill">
+                        and T.must_fill > 0
+                    </when>
+                    <otherwise>
+                        and T.must_fill = 0
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="isFill != null">
+                <choose>
+                    <when test="isFill">
+                        and T.is_fill > 0
+                    </when>
+                    <otherwise>
+                        and T.is_fill = 0
+                    </otherwise>
+                </choose>
+            </if>
+        </where>
+    </select>
+
+    <select id="selectVoteStatusList" resultType="java.util.Map">
+        SELECT
+            t.vote_user_id as voter,
+            (select name from sys_user where user_id = t.vote_user_id) as voterName,
+            status
+        FROM
+            biz_assess_task_evaluate_tag t
+        where t.task_id = #{taskId} and t.assessed_user_id = ${userId}
+    </select>
+
+</mapper>

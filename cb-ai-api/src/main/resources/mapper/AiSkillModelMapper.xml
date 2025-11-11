@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.ai.mapper.AiSkillModelMapper">
+
+    <resultMap type="AiSkillModel" id="AiSkillModelResult">
+        <result property="id" column="id"/>
+        <result property="modelName" column="model_name"/>
+        <result property="modelCode" column="model_code"/>
+        <result property="modelType" column="model_type"/>
+        <result property="tipWords" column="tip_words"/>
+        <result property="inputType"    column="input_type"    />
+        <result property="resultType"    column="result_type"    />
+        <result property="outValueScheme" column="out_value_scheme"/>
+        <result property="example" column="example"/>
+        <result property="enabled" column="enabled"/>
+
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectAiSkillModelVo">
+        select id, model_name, model_code, model_type, tip_words, out_value_scheme, create_by, example, create_time, update_by, update_time, remark, enabled, input_type, result_type from ai_skill_model
+    </sql>
+
+    <select id="selectAiSkillModelList" parameterType="AiSkillModel" resultMap="AiSkillModelResult">
+        <include refid="selectAiSkillModelVo"/>
+        <where>
+            <if test="modelName != null and modelName != ''">and model_name like concat('%', #{modelName}, '%')</if>
+            <if test="modelCode != null and modelCode != ''">and model_code = #{modelCode}</if>
+            <if test="modelType != null and modelType != ''">and model_type = #{modelType}</if>
+            <if test="enabled != null and enabled != ''">and enabled = #{enabled}</if>
+            <if test="inputType != null  and inputType != ''"> and input_type = #{inputType}</if>
+            <if test="resultType != null  and resultType != ''"> and result_type = #{resultType}</if>
+        </where>
+    </select>
+
+    <select id="selectAiSkillModelById" parameterType="String" resultMap="AiSkillModelResult">
+        <include refid="selectAiSkillModelVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectAllAiSkillModelList" resultMap="AiSkillModelResult">
+        <include refid="selectAiSkillModelVo"/>
+    </select>
+    <select id="checkModelUniqueByCode" resultType="java.lang.Boolean">
+        select count(0) from ai_skill_model
+        where model_code = #{modelCode}
+        <if test="id != null and id != ''">and id != #{id}</if>
+    </select>
+    <select id="selectAiSkillModelByModelCode" resultMap="AiSkillModelResult">
+        <include refid="selectAiSkillModelVo"/>
+        where model_code = #{modelCode}
+    </select>
+
+    <insert id="insertAiSkillModel" parameterType="AiSkillModel">
+        insert into ai_skill_model
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="modelName != null and modelName != ''">model_name,</if>
+            <if test="modelCode != null and modelCode != ''">model_code,</if>
+            <if test="modelType != null and modelType != ''">model_type,</if>
+            <if test="tipWords != null and tipWords != ''">tip_words,</if>
+            <if test="outValueScheme != null and outValueScheme != ''">out_value_scheme,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="example != null">example,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="enabled != null">enabled,</if>
+            <if test="inputType != null">input_type,</if>
+            <if test="resultType != null">result_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="modelName != null and modelName != ''">#{modelName},</if>
+            <if test="modelCode != null and modelCode != ''">#{modelCode},</if>
+            <if test="modelType != null and modelType != ''">#{modelType},</if>
+            <if test="tipWords != null and tipWords != ''">#{tipWords},</if>
+            <if test="outValueScheme != null and outValueScheme != ''">#{outValueScheme},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="example != null">#{example},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="enabled != null">#{enabled},</if>
+            <if test="inputType != null">#{inputType},</if>
+            <if test="resultType != null">#{resultType},</if>
+        </trim>
+    </insert>
+
+    <update id="updateAiSkillModel" parameterType="AiSkillModel">
+        update ai_skill_model
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="modelName != null and modelName != ''">model_name = #{modelName},</if>
+            <if test="modelCode != null and modelCode != ''">model_code = #{modelCode},</if>
+            <if test="modelType != null and modelType != ''">model_type = #{modelType},</if>
+            <if test="tipWords != null and tipWords != ''">tip_words = #{tipWords},</if>
+            <if test="outValueScheme != null and outValueScheme != ''">out_value_scheme = #{outValueScheme},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="example != null">example = #{example},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="enabled != null">enabled = #{enabled},</if>
+            <if test="inputType != null">input_type = #{inputType},</if>
+            <if test="resultType != null">result_type = #{resultType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+
+    <delete id="deleteAiSkillModelById" parameterType="String">
+        delete
+        from ai_skill_model
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteAiSkillModelByIds" parameterType="String">
+        delete from ai_skill_model where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

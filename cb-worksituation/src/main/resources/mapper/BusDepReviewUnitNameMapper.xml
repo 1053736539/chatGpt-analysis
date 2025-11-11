@@ -7,7 +7,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <resultMap type="BusDepReviewUnitName" id="BusDepReviewUnitNameResult">
         <result property="id"    column="bdrunID"    />
         <result property="unitName"    column="bdrunUNIT_NAME"    />
-        <collection property="" resultMap="" >
+        <collection property="busDepReviewMemberUnits" ofType="BusDepReviewMemberUnit" >
             <result property="id"    column="bdrmuID"    />
             <result property="memberUnit"    column="bdrmuMEMBER_UNIT"    />
             <result property="busDepReviewUnitNameId"    column="bdrmuBUS_DEP_REVIEW_UNIT_NAME_ID"    />

@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityEnterpriseMapper">
+
+    <resultMap type="BizProbityEnterprise" id="BizProbityEnterpriseResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="name" column="name"/>
+        <result property="uscc" column="uscc"/>
+        <result property="enterpriseName" column="enterprise_name"/>
+        <result property="establishmentTime" column="establishment_time"/>
+        <result property="businessScope" column="business_scope"/>
+        <result property="registeredPlace" column="registered_place"/>
+        <result property="businessPlace" column="business_place"/>
+        <result property="enterpriseType" column="enterprise_type"/>
+        <result property="registeredCapital" column="registered_capital"/>
+        <result property="enterpriseStatus" column="enterprise_status"/>
+        <result property="subscribedCapital" column="subscribed_capital"/>
+        <result property="subscribedPercent" column="subscribed_percent"/>
+    </resultMap>
+
+    <sql id="selectBizProbityEnterpriseVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               name,
+               uscc,
+               enterprise_name,
+               establishment_time,
+               business_scope,
+               registered_place,
+               business_place,
+               enterprise_type,
+               registered_capital,
+               enterprise_status,
+               subscribed_capital,
+               subscribed_percent
+        from biz_probity_enterprise
+    </sql>
+
+    <select id="selectBizProbityEnterpriseList" parameterType="BizProbityEnterprise"
+            resultMap="BizProbityEnterpriseResult">
+        <include refid="selectBizProbityEnterpriseVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="uscc != null  and uscc != ''">and uscc = #{uscc}</if>
+            <if test="enterpriseName != null  and enterpriseName != ''">and enterprise_name like concat('%',
+                #{enterpriseName}, '%')
+            </if>
+            <if test="establishmentTime != null  and establishmentTime != ''">and establishment_time =
+                #{establishmentTime}
+            </if>
+            <if test="businessScope != null  and businessScope != ''">and business_scope = #{businessScope}</if>
+            <if test="registeredPlace != null  and registeredPlace != ''">and registered_place = #{registeredPlace}</if>
+            <if test="businessPlace != null  and businessPlace != ''">and business_place = #{businessPlace}</if>
+            <if test="enterpriseType != null  and enterpriseType != ''">and enterprise_type = #{enterpriseType}</if>
+            <if test="registeredCapital != null ">and registered_capital = #{registeredCapital}</if>
+            <if test="enterpriseStatus != null  and enterpriseStatus != ''">and enterprise_status =
+                #{enterpriseStatus}
+            </if>
+            <if test="subscribedCapital != null ">and subscribed_capital = #{subscribedCapital}</if>
+            <if test="subscribedPercent != null ">and subscribed_percent = #{subscribedPercent}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityEnterpriseById" parameterType="String" resultMap="BizProbityEnterpriseResult">
+        <include refid="selectBizProbityEnterpriseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityEnterprise" parameterType="BizProbityEnterprise">
+        insert into biz_probity_enterprise
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="name != null">name,</if>
+            <if test="uscc != null">uscc,</if>
+            <if test="enterpriseName != null">enterprise_name,</if>
+            <if test="establishmentTime != null">establishment_time,</if>
+            <if test="businessScope != null">business_scope,</if>
+            <if test="registeredPlace != null">registered_place,</if>
+            <if test="businessPlace != null">business_place,</if>
+            <if test="enterpriseType != null">enterprise_type,</if>
+            <if test="registeredCapital != null">registered_capital,</if>
+            <if test="enterpriseStatus != null">enterprise_status,</if>
+            <if test="subscribedCapital != null">subscribed_capital,</if>
+            <if test="subscribedPercent != null">subscribed_percent,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="name != null">#{name},</if>
+            <if test="uscc != null">#{uscc},</if>
+            <if test="enterpriseName != null">#{enterpriseName},</if>
+            <if test="establishmentTime != null">#{establishmentTime},</if>
+            <if test="businessScope != null">#{businessScope},</if>
+            <if test="registeredPlace != null">#{registeredPlace},</if>
+            <if test="businessPlace != null">#{businessPlace},</if>
+            <if test="enterpriseType != null">#{enterpriseType},</if>
+            <if test="registeredCapital != null">#{registeredCapital},</if>
+            <if test="enterpriseStatus != null">#{enterpriseStatus},</if>
+            <if test="subscribedCapital != null">#{subscribedCapital},</if>
+            <if test="subscribedPercent != null">#{subscribedPercent},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_enterprise
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            name,
+            uscc,
+            enterprise_name,
+            establishment_time,
+            business_scope,
+            registered_place,
+            business_place,
+            enterprise_type,
+            registered_capital,
+            enterprise_status,
+            subscribed_capital,
+            subscribed_percent,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.name},
+                #{entity.uscc},
+                #{entity.enterpriseName},
+                #{entity.establishmentTime},
+                #{entity.businessScope},
+                #{entity.registeredPlace},
+                #{entity.businessPlace},
+                #{entity.enterpriseType},
+                #{entity.registeredCapital},
+                #{entity.enterpriseStatus},
+                #{entity.subscribedCapital},
+                #{entity.subscribedPercent},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityEnterprise" parameterType="BizProbityEnterprise">
+        update biz_probity_enterprise
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="uscc != null">uscc = #{uscc},</if>
+            <if test="enterpriseName != null">enterprise_name = #{enterpriseName},</if>
+            <if test="establishmentTime != null">establishment_time = #{establishmentTime},</if>
+            <if test="businessScope != null">business_scope = #{businessScope},</if>
+            <if test="registeredPlace != null">registered_place = #{registeredPlace},</if>
+            <if test="businessPlace != null">business_place = #{businessPlace},</if>
+            <if test="enterpriseType != null">enterprise_type = #{enterpriseType},</if>
+            <if test="registeredCapital != null">registered_capital = #{registeredCapital},</if>
+            <if test="enterpriseStatus != null">enterprise_status = #{enterpriseStatus},</if>
+            <if test="subscribedCapital != null">subscribed_capital = #{subscribedCapital},</if>
+            <if test="subscribedPercent != null">subscribed_percent = #{subscribedPercent},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityEnterpriseById" parameterType="String">
+        delete
+        from biz_probity_enterprise
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityEnterpriseByIds" parameterType="String">
+        delete from biz_probity_enterprise where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

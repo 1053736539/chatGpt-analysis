@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessTaskEvaluateRecordMapper">
+    
+    <resultMap type="BizAssessTaskEvaluateRecord" id="BizAssessTaskEvaluateRecordResult">
+        <result property="evaluateId"    column="evaluate_id"    />
+        <result property="evaluateTagId"    column="evaluate_tag_id"    />
+        <result property="ismConfigId"    column="ism_config_id"    />
+        <result property="score"    column="score"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectBizAssessTaskEvaluateRecordVo">
+        select evaluate_id, evaluate_tag_id, ism_config_id, score, create_by, create_time, update_by, update_time, remark from biz_assess_task_evaluate_record
+    </sql>
+
+    <select id="selectBizAssessTaskEvaluateRecordList" parameterType="BizAssessTaskEvaluateRecord" resultMap="BizAssessTaskEvaluateRecordResult">
+        <include refid="selectBizAssessTaskEvaluateRecordVo"/>
+        <where>  
+            <if test="evaluateTagId != null  and evaluateTagId != ''"> and evaluate_tag_id = #{evaluateTagId}</if>
+            <if test="ismConfigId != null  and ismConfigId != ''"> and ism_config_id = #{ismConfigId}</if>
+            <if test="score != null "> and score = #{score}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizAssessTaskEvaluateRecordById" parameterType="String" resultMap="BizAssessTaskEvaluateRecordResult">
+        <include refid="selectBizAssessTaskEvaluateRecordVo"/>
+        where evaluate_id = #{evaluateId}
+    </select>
+        
+    <insert id="insertBizAssessTaskEvaluateRecord" parameterType="BizAssessTaskEvaluateRecord">
+        insert into biz_assess_task_evaluate_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="evaluateId != null and evaluateId != ''">evaluate_id,</if>
+            <if test="evaluateTagId != null and evaluateTagId != ''">evaluate_tag_id,</if>
+            <if test="ismConfigId != null and ismConfigId != ''">ism_config_id,</if>
+            <if test="score != null">score,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="evaluateId != null and evaluateId != ''">#{evaluateId},</if>
+            <if test="evaluateTagId != null and evaluateTagId != ''">#{evaluateTagId},</if>
+            <if test="ismConfigId != null and ismConfigId != ''">#{ismConfigId},</if>
+            <if test="score != null">#{score},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <insert id="batchInsertBizAssessTaskEvaluateRecord">
+        insert into biz_assess_task_evaluate_record(evaluate_id,  evaluate_tag_id, ism_config_id, score, create_by,
+                                                    create_time, update_by, update_time,remark) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            (#{item.evaluateId},#{item.evaluateTagId},#{item.ismConfigId},#{item.score},#{item.createBy},
+                  #{item.createTime},#{item.updateBy},#{item.updateTime},#{item.remark})
+        </foreach>
+    </insert>
+
+    <update id="updateBizAssessTaskEvaluateRecord" parameterType="BizAssessTaskEvaluateRecord">
+        update biz_assess_task_evaluate_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="evaluateTagId != null and evaluateTagId != ''">evaluate_tag_id = #{evaluateTagId},</if>
+            <if test="ismConfigId != null and ismConfigId != ''">ism_config_id = #{ismConfigId},</if>
+            <if test="score != null">score = #{score},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where evaluate_id = #{evaluateId}
+    </update>
+
+    <delete id="deleteBizAssessTaskEvaluateRecordById" parameterType="String">
+        delete from biz_assess_task_evaluate_record where evaluate_id = #{evaluateId}
+    </delete>
+
+    <delete id="deleteBizAssessTaskEvaluateRecordByIds" parameterType="String">
+        delete from biz_assess_task_evaluate_record where evaluate_id in 
+        <foreach item="evaluateId" collection="array" open="(" separator="," close=")">
+            #{evaluateId}
+        </foreach>
+    </delete>
+    <delete id="deleteEvaluateRecord">
+        delete from biz_assess_task_evaluate_record where evaluate_tag_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+</mapper>

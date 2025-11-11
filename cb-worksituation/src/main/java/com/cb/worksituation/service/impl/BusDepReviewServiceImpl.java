@@ -1,7 +1,6 @@
 package com.cb.worksituation.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+import com.cb.common.core.domain.AjaxResult;
 import com.cb.common.core.domain.entity.SysDept;
 import com.cb.common.core.domain.model.LoginUser;
 import com.cb.common.utils.DateUtils;
@@ -23,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 部门评分Service业务层处理
@@ -31,8 +31,7 @@ import java.util.*;
  * @date 2025-10-11
  */
 @Service
-public class BusDepReviewServiceImpl implements IBusDepReviewService
-{
+public class BusDepReviewServiceImpl implements IBusDepReviewService {
     @Autowired
     private BusDepReviewMapper busDepReviewMapper;
 
@@ -48,6 +47,21 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
     @Autowired
     private ISysDeptService sysDeptService;
 
+    private static final String[] DESP_LIST_ONE = {"五华区纪委监委", "盘龙区纪委监委", "官渡区纪委监委", "西山区纪委监委", "呈贡区纪委监委", "东川区纪委监委", "安宁市纪委监委", "晋宁区纪委监委", "富明县纪委监委", "宜良县纪委监委", "嵩明县纪委监委", "石林县纪委监委", "禄劝县纪委监委", "寻甸县纪委监委"};
+
+
+    private static final String[] DESP_LIST_TWO = {"第一监督检查室", "第二监督检查室", "第三监督检查室", "第四监督检查室", "第五监督检查室", "第六监督检查室", "第七监督检查室"};
+
+
+    private static final String[] DESP_LIST_THREE = {"第八审查调查室", "第九审查调查室", "第十审查检查室", "第十一审查检查室", "第十二审查检查室", "第十三审查检查室", "第十四审查检查室"};
+
+    private static final String[] DESP_LIST_FOUR = {"信息技术保障室", "组织部（含离退办）", "机关党委", "案件审理室", "党风政风监督室", "办公室", "案件监督管理室", "宣传部", "法规室", "研究室", "纪检监察干部监督室", "信访室", "数字与信息化室"};
+
+    private static final String[] DESP_LIST_FIVE = {"滇中新区纪检监察工委", "滇池度假区纪检监察工委", "经开区纪检监察工委", "磨憨—磨丁合作区纪检监察工委", "高新区纪检监察工委", "昆明综保区纪检监察工委"};
+
+    private static final String[] DESP_LIST_SEVEV = {"驻市公安局纪检监察组", "驻市住房城乡建设局纪检监察组", "驻市自然资源规划局纪检监察组", "驻市农业农村局纪检监察组", "驻市国资委纪检监察组", "驻市生态环境局纪检监察组", "驻市交通运输局纪检监察组", "驻阳宗海管理局纪检监察组", "驻市教育体育局纪检监察组", "驻市委组织部纪检监察组", "驻市市场监管局纪检监察组", "驻市政务服务局纪检监察组", "驻市卫生健康委纪检监察组", "驻市水务局纪检监察组", "市直机关纪检监察工委", "驻市民政局纪检监察组", "驻市检察院纪检监察组", "驻市政协机关纪检监察组", "驻市委办公室纪检监察组", "驻市工业和信息化局纪检监察组", "驻市政府办公室纪检监察组", "驻市委宣传部纪检监察组", "驻市法院纪检监察组", "驻市财政局纪检监察组", "驻市司法局纪检监察组", "驻市应急局纪检监察组", "驻市人大机关纪检监察组", "驻市发展改革委纪检监察组", "驻市文化和旅游局纪检监察组"};
+
+
     /**
      * 查询部门评分
      *
@@ -55,8 +69,7 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
      * @return 部门评分
      */
     @Override
-    public BusDepReview selectBusDepReviewById(String id)
-    {
+    public BusDepReview selectBusDepReviewById(String id) {
         return busDepReviewMapper.selectBusDepReviewById(id);
     }
 
@@ -67,8 +80,7 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
      * @return 部门评分
      */
     @Override
-    public List<BusDepReview> selectBusDepReviewList(BusDepReview busDepReview)
-    {
+    public List<BusDepReview> selectBusDepReviewList(BusDepReview busDepReview) {
         return busDepReviewMapper.selectBusDepReviewList(busDepReview);
     }
 
@@ -84,14 +96,14 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
      * @return 结果
      */
     @Override
-    public int insertBusDepReview(BusDepReview busDepReview)
-    {
-        if(StringUtils.isBlank(busDepReview.getId())) {
+    public int insertBusDepReview(BusDepReview busDepReview) {
+        if (StringUtils.isBlank(busDepReview.getId())) {
             busDepReview.setId(IdUtils.randomUUID());
         }
-        try{
+        try {
             busDepReview.setCreateBy(SecurityUtils.getUsername());
-        } catch (Exception e){}
+        } catch (Exception e) {
+        }
         busDepReview.setCreateTime(DateUtils.getNowDate());
         return busDepReviewMapper.insertBusDepReview(busDepReview);
     }
@@ -105,13 +117,14 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
      */
     @Override
     public int insertBatch(List<BusDepReview> entities) {
-        if(null == entities || entities.isEmpty()){
+        if (null == entities || entities.isEmpty()) {
             return 0;
         }
         String userName = null;
-        try{
+        try {
             userName = SecurityUtils.getUsername();
-        } catch (Exception e){}
+        } catch (Exception e) {
+        }
         Date nowDate = DateUtils.getNowDate();
         String finalUserName = userName;
         entities.parallelStream().forEach(item -> {
@@ -126,7 +139,7 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
         for (int i = 0; i < num; i++) {
             int start = i * batchSize;
             int end = Math.min(start + batchSize, entities.size());
-            totalInserted +=  busDepReviewMapper.insertBatch(entities.subList(start, end));
+            totalInserted += busDepReviewMapper.insertBatch(entities.subList(start, end));
         }
         return totalInserted;
     }
@@ -139,13 +152,94 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
      * @return 结果
      */
     @Override
-    public int updateBusDepReview(BusDepReview busDepReview)
-    {
-        try{
-            busDepReview.setUpdateBy(SecurityUtils.getUsername());
-        } catch (Exception e){}
+    public AjaxResult updateBusDepReview(BusDepReview busDepReview) {
+        if (isEdit(busDepReview.getId())) {
+            return AjaxResult.error("该评分表已进行填报，不允许修改状态");
+        }
+        if ("1".equals(busDepReview.getBusStatus())) {
+            List<BusDepReviewData> busDepReviewDataList = new ArrayList<>();
+            BusDepReview depReview = busDepReviewMapper.selectBusDepReviewById(busDepReview.getId());
+            if ("1".equals(depReview.getDivisionDept())) {
+                for (String deptNmae : DESP_LIST_ONE) {
+                    BusDepReviewData busDepReviewData = new BusDepReviewData();
+                    busDepReviewData.setId(IdUtils.randomUUID());
+                    busDepReviewData.setBusDepReviewId(depReview.getId());
+                    busDepReviewData.setEvaluatTarget(deptNmae);
+                    busDepReviewData.setDataStatus("1");
+                    busDepReviewDataList.add(busDepReviewData);
+                }
+                // 2 委机关监督检查室 1-7
+            } else if ("2".equals(depReview.getDivisionDept())) {
+                for (String deptNmae : DESP_LIST_TWO) {
+                    BusDepReviewData busDepReviewData = new BusDepReviewData();
+                    busDepReviewData.setId(IdUtils.randomUUID());
+                    busDepReviewData.setBusDepReviewId(depReview.getId());
+                    busDepReviewData.setEvaluatTarget(deptNmae);
+                    busDepReviewData.setDataStatus("1");
+                    busDepReviewDataList.add(busDepReviewData);
+                }
+                // 3 委机关审查调查室
+            } else if ("3".equals(depReview.getDivisionDept())) {
+                for (String deptNmae : DESP_LIST_THREE) {
+                    BusDepReviewData busDepReviewData = new BusDepReviewData();
+                    busDepReviewData.setId(IdUtils.randomUUID());
+                    busDepReviewData.setBusDepReviewId(depReview.getId());
+                    busDepReviewData.setEvaluatTarget(deptNmae);
+                    busDepReviewData.setDataStatus("1");
+                    busDepReviewDataList.add(busDepReviewData);
+                }
+                // 4 委机关综合业务部门
+            } else if ("4".equals(depReview.getDivisionDept())) {
+                for (String deptNmae : DESP_LIST_FOUR) {
+                    BusDepReviewData busDepReviewData = new BusDepReviewData();
+                    busDepReviewData.setId(IdUtils.randomUUID());
+                    busDepReviewData.setBusDepReviewId(depReview.getId());
+                    busDepReviewData.setEvaluatTarget(deptNmae);
+                    busDepReviewData.setDataStatus("1");
+                    busDepReviewDataList.add(busDepReviewData);
+                }
+                // 5 开发（度假）园区
+            } else if ("5".equals(depReview.getDivisionDept())) {
+                for (String deptNmae : DESP_LIST_FIVE) {
+                    BusDepReviewData busDepReviewData = new BusDepReviewData();
+                    busDepReviewData.setId(IdUtils.randomUUID());
+                    busDepReviewData.setBusDepReviewId(depReview.getId());
+                    busDepReviewData.setEvaluatTarget(deptNmae);
+                    busDepReviewData.setDataStatus("1");
+                    busDepReviewDataList.add(busDepReviewData);
+                }
+                // 6 纪检监察组
+            } else if ("6".equals(depReview.getDivisionDept())) {
+                for (String deptNmae : DESP_LIST_SEVEV) {
+                    BusDepReviewData busDepReviewData = new BusDepReviewData();
+                    busDepReviewData.setId(IdUtils.randomUUID());
+                    busDepReviewData.setBusDepReviewId(depReview.getId());
+                    busDepReviewData.setEvaluatTarget(deptNmae);
+                    busDepReviewData.setDataStatus("1");
+                    busDepReviewDataList.add(busDepReviewData);
+                }
+            }
+            busDepReviewDataMapper.deleteByReviewIdAndCreator(depReview.getId());
+            busDepReviewDataMapper.insertBatch(busDepReviewDataList);
+        }
+        busDepReview.setUpdateBy(SecurityUtils.getUsername());
         busDepReview.setUpdateTime(DateUtils.getNowDate());
-        return busDepReviewMapper.updateBusDepReview(busDepReview);
+        busDepReviewMapper.updateBusDepReview(busDepReview);
+        return AjaxResult.success("修改成功");
+    }
+
+    private boolean isEdit(String reviewId) {
+        BusDepReviewData busDepReviewData = new BusDepReviewData();
+        busDepReviewData.setBusDepReviewId(reviewId);
+        List<BusDepReviewData> busDepReviewDataList = busDepReviewDataMapper.selectBusDepReviewDataList(busDepReviewData);
+        if (CollectionUtils.isNotEmpty(busDepReviewDataList)) {
+            for (BusDepReviewData busDepRevData : busDepReviewDataList) {
+                if (StringUtils.isNotEmpty(busDepRevData.getDataJson())) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**
@@ -155,9 +249,12 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
      * @return 结果
      */
     @Override
-    public int deleteBusDepReviewByIds(String[] ids)
-    {
-        return busDepReviewMapper.deleteBusDepReviewByIds(ids);
+    public AjaxResult deleteBusDepReviewByIds(String[] ids) {
+        if (isEdit(ids[0])) {
+            return AjaxResult.error("该评分表已进行填报，不允许删除");
+        }
+        busDepReviewMapper.deleteBusDepReviewByIds(ids);
+        return AjaxResult.success("删除成功");
     }
 
     /**
@@ -167,9 +264,12 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
      * @return 结果
      */
     @Override
-    public int deleteBusDepReviewById(String id)
-    {
-        return busDepReviewMapper.deleteBusDepReviewById(id);
+    public AjaxResult deleteBusDepReviewById(String id) {
+        if (isEdit(id)) {
+            return AjaxResult.error("该评分表已进行填报，不允许修改状态");
+        }
+        busDepReviewMapper.deleteBusDepReviewById(id);
+        return AjaxResult.success("删除成功");
     }
 
 
@@ -180,7 +280,7 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
      * @return 包含表头和数据的评分表
      */
     @Override
-    public BusDepReview getReviewTableConfig(String id) {
+    public BusDepReview getReviewTableConfig(String id, Boolean sign) {
         if (StringUtils.isBlank(id)) {
             return null;
         }
@@ -189,6 +289,9 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
             return null;
         }
 
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        boolean isAdmin = loginUserAuth();
+        Set<String> permittedDepts = isAdmin ? Collections.emptySet() : collectUserDeptNames(loginUser);
         BusDepReviewHeader headerQuery = new BusDepReviewHeader();
         headerQuery.setBusDepReviewId(id);
         List<BusDepReviewHeader> headerList = busDepReviewHeaderMapper.selectBusDepReviewHeaderList(headerQuery);
@@ -201,14 +304,24 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
                     header.setBusDepExpl(null);
                 }
             });
-            headerList.sort(Comparator.comparing(BusDepReviewHeader::getHeadOrder,
-                    Comparator.nullsLast(Comparator.naturalOrder())));
+            if (!isAdmin) {
+                headerList = headerList.stream().filter(header -> headerVisibleForUser(header, permittedDepts)).collect(Collectors.toList());
+            }
+            headerList.sort(Comparator.comparing(BusDepReviewHeader::getHeadOrder, Comparator.nullsLast(Comparator.naturalOrder())));
         }
         busDepReview.setBusDepReviewHeaderList(headerList);
 
         BusDepReviewData dataQuery = new BusDepReviewData();
         dataQuery.setBusDepReviewId(id);
+        if (sign) {
+            dataQuery.setDataStatus("2");
+        }
         List<BusDepReviewData> dataList = busDepReviewDataMapper.selectBusDepReviewDataList(dataQuery);
+        // 如果数据为空-新增默认值
+
+        if (!CollectionUtils.isEmpty(dataList)) {
+            dataList.sort(Comparator.comparing(BusDepReviewData::getCreateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+        }
         busDepReview.setBusDepReviewDataList(dataList);
         return busDepReview;
     }
@@ -219,20 +332,44 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
             busDepReview = new BusDepReview();
         }
         busDepReview.setBusStatus("1");
-
-        LoginUser loginUser = SecurityUtils.getLoginUser();
-        Long userId = loginUser.getUser().getUserId();
-        if (SecurityUtils.isAdmin(userId)) {
-            String originalEvaluationTarget = busDepReview.getEvaluationTarget();
-            try {
-                busDepReview.setEvaluationTarget(null);
-                return busDepReviewMapper.selectBusDepReviewList(busDepReview);
-            } finally {
-                busDepReview.setEvaluationTarget(originalEvaluationTarget);
-            }
+        List<BusDepReview> reviews = null;
+        if (loginUserAuth()) {
+            reviews = busDepReviewMapper.selectBusDepReviewList(busDepReview);
+        } else {
+            LoginUser loginUser = SecurityUtils.getLoginUser();
+            String deptName = loginUser.getUser().getDeptName();
+            reviews = busDepReviewMapper.selectBusDepReviewListByEvaluatTargets(busDepReview, deptName);
         }
+        return reviews;
+    }
 
+    private void enrichDataStatus(List<BusDepReview> reviews, boolean isAdmin, String username) {
+        if (CollectionUtils.isEmpty(reviews)) {
+            return;
+        }
+        if (isAdmin) {
+            reviews.stream().filter(Objects::nonNull).forEach(review -> review.setDataStatus("2"));
+            return;
+        }
+        if (StringUtils.isBlank(username)) {
+            reviews.stream().filter(Objects::nonNull).forEach(review -> review.setDataStatus("0"));
+            return;
+        }
+        reviews.stream().filter(Objects::nonNull).forEach(review -> {
+            if (StringUtils.isBlank(review.getId())) {
+                review.setDataStatus("0");
+                return;
+            }
+            List<String> statuses = busDepReviewDataMapper.selectDataStatusByReviewIdAndCreator(review.getId(), username);
+            review.setDataStatus(resolveDataStatus(statuses));
+        });
+    }
+
+    private Set<String> collectUserDeptNames(LoginUser loginUser) {
         Set<String> targetDeptNames = new HashSet<>();
+        if (loginUser == null || loginUser.getUser() == null) {
+            return targetDeptNames;
+        }
         SysDept dept = loginUser.getUser().getDept();
         if (dept != null && StringUtils.isNotBlank(dept.getDeptName())) {
             targetDeptNames.add(dept.getDeptName());
@@ -241,21 +378,88 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
             targetDeptNames.add(loginUser.getUser().getDeptName());
         }
 
-        List<SysDept> chargeDepts = sysDeptService.selectChargeDeptList(userId);
+        List<SysDept> chargeDepts = sysDeptService.selectChargeDeptList(loginUser.getUser().getUserId());
         if (CollectionUtils.isNotEmpty(chargeDepts)) {
-            chargeDepts.stream()
-                    .map(SysDept::getDeptName)
-                    .filter(StringUtils::isNotBlank)
-                    .forEach(targetDeptNames::add);
+            chargeDepts.stream().map(SysDept::getDeptName).filter(StringUtils::isNotBlank).forEach(targetDeptNames::add);
         }
-
-        if (targetDeptNames.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        return busDepReviewMapper.selectBusDepReviewListByEvaluatTargets(busDepReview, new ArrayList<>(targetDeptNames));
+        return targetDeptNames;
     }
 
+    @Override
+    public boolean loginUserAuth() {
+        // 办公室（管理员
+        LoginUser loginUser = SecurityUtils.getLoginUser();
+        String deptName = loginUser.getUser().getDeptName();
+        if (StringUtils.isBlank(deptName)) {
+            deptName = loginUser.getUser().getDept().getDeptName();
+        }
+        if ("办公室".equals(deptName) || SecurityUtils.isAdmin(loginUser.getUser().getUserId())) {
+            return true;
+        }
+        return false;
+    }
+
+    private boolean headerVisibleForUser(BusDepReviewHeader header, Set<String> permittedDepts) {
+        if (header == null) {
+            return false;
+        }
+        if (CollectionUtils.isEmpty(permittedDepts)) {
+            BusDepExpl expl = header.getBusDepExpl();
+            return expl == null || StringUtils.isBlank(expl.getEvaluationDept());
+        }
+        BusDepExpl expl = header.getBusDepExpl();
+        if (expl == null || StringUtils.isBlank(expl.getEvaluationDept())) {
+            return true;
+        }
+        String evaluationDept = expl.getEvaluationDept();
+        for (String deptName : permittedDepts) {
+            if (StringUtils.isBlank(deptName)) {
+                continue;
+            }
+            if (matchesEvaluationDept(evaluationDept, deptName)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean matchesEvaluationDept(String evaluationDept, String candidateDept) {
+        if (StringUtils.isBlank(evaluationDept) || StringUtils.isBlank(candidateDept)) {
+            return false;
+        }
+        String normalizedCandidate = candidateDept.trim();
+        if (StringUtils.isBlank(normalizedCandidate)) {
+            return false;
+        }
+        String[] parts = evaluationDept.split("[,，;；、\\s]+");
+        for (String part : parts) {
+            if (StringUtils.isNotBlank(part) && part.trim().equals(normalizedCandidate)) {
+                return true;
+            }
+        }
+        return evaluationDept.contains(normalizedCandidate);
+    }
+
+    private String resolveDataStatus(List<String> statuses) {
+        if (CollectionUtils.isEmpty(statuses)) {
+            return "0";
+        }
+        Set<String> normalized = statuses.stream().filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toSet());
+        if (CollectionUtils.isEmpty(normalized)) {
+            return "0";
+        }
+        if (normalized.size() == 1) {
+            String status = normalized.iterator().next();
+            if ("2".equals(status)) {
+                return "2";
+            }
+            if ("1".equals(status)) {
+                return "1";
+            }
+        }
+        // 混合状态或未知状态，默认为草稿状态
+        return "1";
+    }
 
 
     @Override
@@ -265,7 +469,6 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService
         }
         return busDepReviewMapper.countHeadersByReviewId(reviewId) > 0;
     }
-
 
 
 }

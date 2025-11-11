@@ -1,6 +1,7 @@
 package com.cb.worksituation.service;
 
 
+import com.cb.common.core.domain.AjaxResult;
 import com.cb.worksituation.domain.BusDepReview;
 import io.lettuce.core.dynamic.annotation.Param;
 
@@ -59,7 +60,7 @@ public interface IBusDepReviewService {
      * @param busDepReview 部门评分
      * @return 结果
      */
-    public int updateBusDepReview(BusDepReview busDepReview);
+    public AjaxResult updateBusDepReview(BusDepReview busDepReview);
 
     /**
      * 批量删除部门评分
@@ -67,7 +68,7 @@ public interface IBusDepReviewService {
      * @param ids 需要删除的部门评分ID
      * @return 结果
      */
-    public int deleteBusDepReviewByIds(String[] ids);
+    public AjaxResult deleteBusDepReviewByIds(String[] ids);
 
     /**
      * 删除部门评分信息
@@ -75,7 +76,7 @@ public interface IBusDepReviewService {
      * @param id 部门评分ID
      * @return 结果
      */
-    public int deleteBusDepReviewById(String id);
+    public AjaxResult deleteBusDepReviewById(String id);
 
     /**
      * 获取评分表表格配置信息
@@ -83,7 +84,7 @@ public interface IBusDepReviewService {
      * @param id 评分表ID
      * @return 包含表头和数据的评分表
      */
-    public BusDepReview getReviewTableConfig(String id);
+    public BusDepReview getReviewTableConfig(String id, Boolean sign);
 
     /**
      * 查询当前登录用户可操作的部门评分列表
@@ -100,5 +101,13 @@ public interface IBusDepReviewService {
      * @return true 表示存在表头数据
      */
     boolean existsReviewHeaders(String reviewId);
+
+    /**
+     * 判断评分表是否配置了表头数据
+     *
+     * @param reviewId 评分表ID
+     * @return true 表示存在表头数据
+     */
+    boolean loginUserAuth();
 
 }

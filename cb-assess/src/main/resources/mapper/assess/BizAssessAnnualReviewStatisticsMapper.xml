@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessAnnualReviewStatisticsMapper">
+
+    <resultMap type="BizAssessAnnualReviewTypeA" id="BizAssessAnnualReviewTypeAResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="discussantUserId" column="discussant_user_id"/>
+        <result property="recommendGrade" column="recommend_grade"/>
+        <result property="createBy" column="create_by"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="assessmentYear" column="assessment_year"/>
+        <result property="status" column="status"/>
+        <result property="type" column="type"/>
+    </resultMap>
+    <resultMap id="bizAssessAnnualReviewStatisticsVo" type="BizAssessAnnualReviewTypeResultVo"
+    >
+        <result property="aTypeVotes" column="excellentA"/>
+        <result property="aTotalNum" column="numA"/>
+        <result property="bTypeVotes" column="excellentB"/>
+        <result property="bTotalNum" column="numB"/>
+        <result property="workPost" column="work_post"/>
+        <result property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="name" column="name"/>
+        <result property="assessmentYear" column="assessment_year"/>
+        <result property="deptName" column="deptName"/>
+        <result property="canEdit" column="can_edit"/>
+    </resultMap>
+    <resultMap id="regularAssessmentVo" type="RegularAssessmentVo"
+    >
+        <result property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="evaluationScore" column="evaluation_score"/>
+        <result property="year" column="year"/>
+        <result property="type" column="type"/>
+        <result property="userId" column="user_id"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+    </resultMap>
+    <select id="selectStatistics" resultMap="bizAssessAnnualReviewStatisticsVo">
+        select t3.*,u.work_post,u.name,u.user_id,d.dept_name,d.dept_id,1 as can_edit
+        from
+        (
+        SELECT
+        excellentA,
+        numA,
+        excellentB,
+        numB,
+        IFNULL( t1.user_id, t2.user_id ) AS u_id,
+        IFNULL( t1.assessment_year, t2.assessment_year ) AS assessment_year
+        FROM
+        (
+        SELECT sum(IF( recommend_grade = '1', 1, 0 )) AS excellentA,count(*) AS numA,user_id,assessment_year FROM biz_assess_annual_review_type_a
+        <where>
+            <if test="assessmentYear != null and assessmentYear !=''">and assessment_year = #{assessmentYear}</if>
+            <if test="type != null and type !=''">and type = #{type}</if>
+        </where>
+        GROUP BY user_id,assessment_year
+        ) t1
+        LEFT JOIN (
+        SELECT sum(IF(recommend_grade = '1', 1, 0 )) AS excellentB,count(*) AS numB,user_id,assessment_year FROM biz_assess_annual_review_type_b
+        <where>
+            <if test="assessmentYear != null and assessmentYear !=''">and assessment_year = #{assessmentYear}</if>
+            <if test="type != null and type !=''">and type = #{type}</if>
+        </where>
+         GROUP BY user_id,assessment_year
+        ) t2 ON t1.user_id = t2.user_id
+        UNION
+        SELECT
+        excellentA,
+        numA,
+        excellentB,
+        numB,
+        IFNULL( t1.user_id, t2.user_id ) AS u_id,
+        IFNULL( t1.assessment_year, t2.assessment_year ) AS assessment_year
+        FROM
+        (
+        SELECT sum(IF( recommend_grade = '1', 1, 0 )) AS excellentA,count(*) AS numA,user_id,assessment_year FROM biz_assess_annual_review_type_a
+        <where>
+            <if test="assessmentYear != null and assessmentYear !=''">and assessment_year = #{assessmentYear}</if>
+            <if test="type != null and type !=''">and type = #{type}</if>
+        </where>
+        GROUP BY user_id,assessment_year
+        ) t1
+        LEFT JOIN (
+        SELECT sum(IF(recommend_grade = '1', 1, 0 )) AS excellentB,count(*) AS numB,user_id,assessment_year FROM biz_assess_annual_review_type_b
+        <where>
+            <if test="assessmentYear != null and assessmentYear !=''">and assessment_year = #{assessmentYear}</if>
+            <if test="type != null and type !=''">and type = #{type}</if>
+        </where>
+          GROUP BY user_id,assessment_year
+        ) t2 ON t1.user_id = t2.user_id
+<!--         select excellentA,-->
+<!--        numA,-->
+<!--        excellentB,-->
+<!--        numB,-->
+<!--        IFNULL(t1.user_id,t2.user_id) as u_id,-->
+<!--        IFNULL(t1.assessment_year,t2.assessment_year) as assessment_year-->
+
+<!--        from (select sum(if(recommend_grade='1',1,0)) as excellentA,-->
+<!--        count(*) as numA,-->
+<!--        user_id,-->
+<!--        assessment_year-->
+<!--        from biz_assess_annual_review_type_a-->
+<!--        <where>-->
+<!--            <if test="assessmentYear != null and assessmentYear !=''">and assessment_year = #{assessmentYear}</if>-->
+<!--            <if test="type != null and type !=''">and type = #{type}</if>-->
+<!--        </where>-->
+<!--        group by user_id,assessment_year) t1-->
+<!--        full join-->
+<!--        (select sum(if(recommend_grade='1',1,0)) as excellentB,-->
+<!--        count(*) as numB,-->
+<!--        user_id,-->
+<!--        assessment_year-->
+<!--        from biz_assess_annual_review_type_b-->
+<!--        <where>-->
+<!--            <if test="assessmentYear != null and assessmentYear !=''">and assessment_year = #{assessmentYear}</if>-->
+<!--            <if test="type != null and type !=''">and type = #{type}</if>-->
+<!--        </where>-->
+<!--        group by user_id,assessment_year) t2-->
+<!--        on t1.user_id=t2.user_id-->
+        ) t3
+        inner JOIN sys_user u
+        on u.user_id=t3.u_id
+        inner JOIN sys_dept d
+        on u.dept_id=d.dept_id
+        <where>
+            <if test="name != null and name !=''">u.name like concat('%',#{name},'%')</if>
+        </where>
+    </select>
+    <select id="selectYears" resultMap="bizAssessAnnualReviewStatisticsVo">
+        select DISTINCT assessment_year
+        from
+            (select assessment_year
+             from biz_assess_annual_review_type_a
+             group by assessment_year
+             UNION ALL
+             select assessment_year
+             from biz_assess_annual_review_type_b
+             group by assessment_year) t
+        order by T.ASSESSMENT_YEAR desc
+    </select>
+    <select id="regularAssessment" resultMap="regularAssessmentVo">
+        SELECT
+        lr.assessed_user_id as user_id,
+        u.dept_id,
+        lr.final_score as evaluation_score,
+        lr.final_option as grade,
+        m.belong_year AS "year",
+        p.personnel_type "type",
+        m.assess_cycle AS "cycle",
+        CASE
+        m.assess_cycle
+        WHEN '1' THEN
+        m.task_moth
+        WHEN '2' THEN
+        m.task_quarter
+        WHEN '3' THEN
+        m.task_year ELSE '专项考核'
+        END AS cycle_desc
+        FROM
+        biz_assess_task_manage m
+        JOIN biz_assess_indicator_pro p ON m.pro_id = p.pro_id
+        JOIN biz_assess_overall_score_level_record lr ON lr.task_id = m.task_id
+        join v_sys_user u on u.user_id = lr.assessed_user_id
+        where
+        lr.assessed_user_id in
+        <foreach collection="userIds" separator="," open="(" close=")" item="userId">
+            #{userId}
+        </foreach>
+        <if test="year != null and year != '' "> and m.belong_year=#{year}</if>
+    </select>
+
+    <select id="regularAssessmentListById" resultMap="regularAssessmentVo">
+        SELECT
+        lr.assessed_user_id as user_id,
+        u.dept_id,
+        lr.final_score as evaluation_score,
+        lr.final_option as grade,
+        m.belong_year AS "year",
+        p.personnel_type "type",
+        m.assess_cycle AS "cycle",
+        CASE
+        m.assess_cycle
+        WHEN '1' THEN
+        m.task_moth
+        WHEN '2' THEN
+        m.task_quarter
+        WHEN '3' THEN
+        m.task_year ELSE '专项考核'
+        END AS cycle_desc
+        FROM
+        biz_assess_task_manage m
+        JOIN biz_assess_indicator_pro p ON m.pro_id = p.pro_id
+        JOIN biz_assess_overall_score_level_record lr ON lr.task_id = m.task_id
+        join v_sys_user u on u.user_id = lr.assessed_user_id
+        where
+        lr.assessed_user_id =#{userId} and m.belong_year=#{year}
+    </select>
+</mapper>

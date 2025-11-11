@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentTalkMapper">
+    
+    <resultMap type="TransferringStudentTalk" id="TransferringStudentTalkResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="talkType"    column="talk_type"    />
+        <result property="talkLeaderId"    column="talk_leader_id"    />
+        <result property="talkTime"    column="talk_time"    />
+        <result property="talkAddr"    column="talk_addr"    />
+        <result property="talkContent"    column="talk_content"    />
+        <result property="talkLeaderPost"    column="talk_leader_post"    />
+        <result property="talkObjPost"    column="talk_obj_post"    />
+        <result property="talkOpinion"    column="talk_opinion"    />
+        <result property="remark"    column="remark"    />
+
+        <result property="talkLeaderName"    column="talkLeaderName"    />
+        <result property="talkObjName"    column="talkObjName"    />
+    </resultMap>
+
+    <sql id="selectTransferringStudentTalkVo">
+        select tst.id, tst.user_id, tst.create_time, tst.update_time, tst.del_flag, tst.create_by, tst.update_by,
+               tst.talk_type, tst.talk_leader_id, tst.talk_time, tst.talk_addr, tst.talk_content, tst.talk_leader_post,
+               tst.talk_obj_post, tst.talk_opinion, tst.remark
+        ,lu.name as talkLeaderName
+        ,ou.name as talkObjName
+        from transferring_student_talk tst
+        left join sys_user lu on tst.talk_leader_id = lu.user_id
+        left join sys_user ou on tst.user_id = ou.user_id
+    </sql>
+
+    <select id="selectTransferringStudentTalkList" parameterType="TransferringStudentTalk" resultMap="TransferringStudentTalkResult">
+        <include refid="selectTransferringStudentTalkVo"/>
+        <where>  
+            <if test="userId != null  and userId != ''"> and tst.user_id = #{userId}</if>
+            <if test="talkType != null  and talkType != ''"> and tst.talk_type = #{talkType}</if>
+            <if test="talkLeaderId != null "> and tst.talk_leader_id = #{talkLeaderId}</if>
+            <if test="talkLeaderName != null "> and lu.name like concat ('%',#{talkLeaderName},'%') </if>
+            <if test="talkTime != null  and talkTime != ''"> and tst.talk_time = #{talkTime}</if>
+            <if test="talkAddr != null  and talkAddr != ''"> and tst.talk_addr = #{talkAddr}</if>
+            <if test="talkContent != null  and talkContent != ''"> and tst.talk_content like concat ('%', #{talkContent}, '%')</if>
+            <if test="params.beginTime != null  and params.beginTime != ''"> and tst.talk_time &gt;= #{params.beginTime}</if>
+            <if test="params.endTime != null  and params.endTime != ''"> and tst.talk_time &lt;= #{params.endTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectTransferringStudentTalkById" parameterType="String" resultMap="TransferringStudentTalkResult">
+        <include refid="selectTransferringStudentTalkVo"/>
+        where tst.id = #{id}
+    </select>
+        
+    <insert id="insertTransferringStudentTalk" parameterType="TransferringStudentTalk">
+        insert into transferring_student_talk
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="talkType != null">talk_type,</if>
+            <if test="talkLeaderId != null">talk_leader_id,</if>
+            <if test="talkTime != null">talk_time,</if>
+            <if test="talkAddr != null">talk_addr,</if>
+            <if test="talkContent != null">talk_content,</if>
+            <if test="talkLeaderPost != null">talk_leader_post,</if>
+            <if test="talkObjPost != null">talk_obj_post,</if>
+            <if test="talkOpinion != null">talk_opinion,</if>
+            <if test="remark != null">remark,</if>
+
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="talkType != null">#{talkType},</if>
+            <if test="talkLeaderId != null">#{talkLeaderId},</if>
+            <if test="talkTime != null">#{talkTime},</if>
+            <if test="talkAddr != null">#{talkAddr},</if>
+            <if test="talkContent != null">#{talkContent},</if>
+            <if test="talkLeaderPost != null">#{talkLeaderPost},</if>
+            <if test="talkObjPost != null">#{talkObjPost},</if>
+            <if test="talkOpinion != null">#{talkOpinion},</if>
+            <if test="remark != null">#{remark},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransferringStudentTalk" parameterType="TransferringStudentTalk">
+        update transferring_student_talk
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="talkType != null">talk_type = #{talkType},</if>
+            <if test="talkLeaderId != null">talk_leader_id = #{talkLeaderId},</if>
+            <if test="talkTime != null">talk_time = #{talkTime},</if>
+            <if test="talkAddr != null">talk_addr = #{talkAddr},</if>
+            <if test="talkContent != null">talk_content = #{talkContent},</if>
+            <if test="talkLeaderPost != null">talk_leader_post = #{talkLeaderPost},</if>
+            <if test="talkObjPost != null">talk_obj_post = #{talkObjPost},</if>
+            <if test="talkOpinion != null">talk_opinion = #{talkOpinion},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentTalkById" parameterType="String">
+        delete from transferring_student_talk where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentTalkByIds" parameterType="String">
+        delete from transferring_student_talk where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

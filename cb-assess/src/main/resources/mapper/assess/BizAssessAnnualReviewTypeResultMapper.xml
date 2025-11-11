@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessAnnualReviewTypeResultMapper">
+    
+    <resultMap type="BizAssessAnnualReviewTypeResult" id="BizAssessAnnualReviewTypeResultResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="workPost"    column="work_post"    />
+        <result property="aTypeVotes"    column="a_type_votes"    />
+        <result property="bTypeVotes"    column="b_type_votes"    />
+        <result property="aTypeScore"    column="a_type_score"    />
+        <result property="bTypeScore"    column="b_type_score"    />
+        <result property="aTotalNum"    column="a_total_num"    />
+        <result property="bTotalNum"    column="b_total_num"    />
+        <result property="totalScore"    column="total_score"    />
+        <result property="isPublicity"    column="is_publicity"    />
+        <result property="recommendGrade"    column="recommend_grade"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="type"    column="type"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="canEdit"    column="can_edit"    />
+    </resultMap>
+
+    <resultMap id="bizAssessAnnualReviewTypeResultVo" type="BizAssessAnnualReviewTypeResultVo" extends="BizAssessAnnualReviewTypeResultResult">
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+    <sql id="selectBizAssessAnnualReviewTypeResultVo">
+        select baartr.id, baartr.user_id, baartr.assessment_year, baartr.work_post, baartr.a_type_votes,
+               baartr.b_type_votes, baartr.a_type_score, baartr.b_type_score, baartr.a_total_num, baartr.b_total_num,
+               baartr.total_score,baartr.is_publicity, baartr.recommend_grade,baartr.can_edit,
+               baartr.create_by, baartr.update_by, baartr.create_time, baartr.update_time, baartr.dept_id,
+               baartr.del_flag,baartr.type,u.name,d.dept_name
+        from biz_assess_annual_review_type_result baartr
+        inner join  sys_user u on u.user_id=baartr.user_id
+        inner join  sys_dept d on d.dept_id=baartr.dept_id
+    </sql>
+
+    <select id="selectBizAssessAnnualReviewTypeResultList" parameterType="BizAssessAnnualReviewTypeResult" resultMap="bizAssessAnnualReviewTypeResultVo">
+        <include refid="selectBizAssessAnnualReviewTypeResultVo"/>
+        <where>  
+            <if test="userId != null  and userId != ''"> and baartr.user_id = #{userId}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and baartr.assessment_year = #{assessmentYear}</if>
+            <if test="workPost != null  and workPost != ''"> and baartr.work_post = #{workPost}</if>
+            <if test="aTypeVotes != null "> and baartr.a_type_votes = #{aTypeVotes}</if>
+            <if test="bTypeVotes != null "> and baartr.b_type_votes = #{bTypeVotes}</if>
+            <if test="aTypeScore != null "> and baartr.a_type_score = #{aTypeScore}</if>
+            <if test="bTypeScore != null "> and baartr.b_type_score = #{bTypeScore}</if>
+            <if test="aTotalNum != null "> and baartr.a_total_num = #{aTotalNum}</if>
+            <if test="bTotalNum != null "> and baartr.b_total_num = #{bTotalNum}</if>
+            <if test="totalScore != null "> and baartr.total_score = #{totalScore}</if>
+            <if test="isPublicity != null  and isPublicity != ''"> and baartr.is_publicity = #{isPublicity}</if>
+            <if test="recommendGrade != null  and recommendGrade != ''"> and baartr.recommend_grade = #{recommendGrade}</if>
+            <if test="type != null  and type != ''"> and baartr.type = #{type}</if>
+            <if test="canEdit != null  and canEdit != ''"> and baartr.can_edit = #{canEdit}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizAssessAnnualReviewTypeResultById" parameterType="String" resultMap="BizAssessAnnualReviewTypeResultResult">
+        <include refid="selectBizAssessAnnualReviewTypeResultVo"/>
+        where baartr.id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessAnnualReviewTypeResult" parameterType="BizAssessAnnualReviewTypeResult">
+        insert into biz_assess_annual_review_type_result
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="assessmentYear != null">assessment_year,</if>
+            <if test="workPost != null">work_post,</if>
+            <if test="aTypeVotes != null">a_type_votes,</if>
+            <if test="bTypeVotes != null">b_type_votes,</if>
+            <if test="aTypeScore != null">a_type_score,</if>
+            <if test="bTypeScore != null">b_type_score,</if>
+            <if test="aTotalNum != null">a_total_num,</if>
+            <if test="bTotalNum != null">b_total_num,</if>
+            <if test="totalScore != null">total_score,</if>
+            <if test="isPublicity != null">is_publicity,</if>
+            <if test="recommendGrade != null">recommend_grade,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="type != null">type,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="canEdit != null">can_edit,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="assessmentYear != null">#{assessmentYear},</if>
+            <if test="workPost != null">#{workPost},</if>
+            <if test="aTypeVotes != null">#{aTypeVotes},</if>
+            <if test="bTypeVotes != null">#{bTypeVotes},</if>
+            <if test="aTypeScore != null">#{aTypeScore},</if>
+            <if test="bTypeScore != null">#{bTypeScore},</if>
+            <if test="aTotalNum != null">#{aTotalNum},</if>
+            <if test="bTotalNum != null">#{bTotalNum},</if>
+            <if test="totalScore != null">#{totalScore},</if>
+            <if test="isPublicity != null">#{isPublicity},</if>
+            <if test="recommendGrade != null">#{recommendGrade},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="type != null">#{type},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="canEdit != null">#{canEdit},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessAnnualReviewTypeResult" parameterType="BizAssessAnnualReviewTypeResult">
+        update biz_assess_annual_review_type_result
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="assessmentYear != null">assessment_year = #{assessmentYear},</if>
+            <if test="workPost != null">work_post = #{workPost},</if>
+            <if test="aTypeVotes != null">a_type_votes = #{aTypeVotes},</if>
+            <if test="bTypeVotes != null">b_type_votes = #{bTypeVotes},</if>
+            <if test="aTypeScore != null">a_type_score = #{aTypeScore},</if>
+            <if test="bTypeScore != null">b_type_score = #{bTypeScore},</if>
+            <if test="aTotalNum != null">a_total_num = #{aTotalNum},</if>
+            <if test="bTotalNum != null">b_total_num = #{bTotalNum},</if>
+            <if test="totalScore != null">total_score = #{totalScore},</if>
+            <if test="isPublicity != null">is_publicity = #{isPublicity},</if>
+            <if test="recommendGrade != null">recommend_grade = #{recommendGrade},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="canEdit != null">can_edit = #{canEdit},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateToPublicity" parameterType="BizAssessAnnualReviewTypeResult">
+        update biz_assess_annual_review_type_result
+        set is_publicity=#{isPublicity}
+        where assessment_year = #{year} and recommend_grade='1'
+    </update>
+    <update id="updateToCannotEdit" parameterType="BizAssessAnnualReviewTypeResult">
+        update biz_assess_annual_review_type_result
+        set can_edit='1'
+        where assessment_year = #{year}
+    </update>
+    <delete id="deleteBizAssessAnnualReviewTypeResultById" parameterType="String">
+        delete from biz_assess_annual_review_type_result where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessAnnualReviewTypeResultByIds" parameterType="String">
+        delete from biz_assess_annual_review_type_result where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

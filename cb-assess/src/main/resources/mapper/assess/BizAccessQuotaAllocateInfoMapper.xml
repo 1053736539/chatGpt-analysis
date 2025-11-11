@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAccessQuotaAllocateInfoMapper">
+    
+    <resultMap type="BizAccessQuotaAllocateInfo" id="BizAccessQuotaAllocateInfoResult">
+        <result property="id"    column="id"    />
+        <result property="year"    column="year"    />
+        <result property="status"    column="status"    />
+        <result property="rejectReason"    column="reject_reason"    />
+        <result property="tableInfo"    column="table_info"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="noticeFlag"    column="notice_flag"    />
+        <result property="attachId"    column="attach_id"    />
+    </resultMap>
+
+    <sql id="selectBizAccessQuotaAllocateInfoVo">
+        select id, year, status, reject_reason, table_info, create_by, create_time, update_by, update_time, remark, notice_flag, attach_id from biz_access_quota_allocate_info
+    </sql>
+
+    <select id="selectBizAccessQuotaAllocateInfoList" parameterType="BizAccessQuotaAllocateInfo" resultMap="BizAccessQuotaAllocateInfoResult">
+        <include refid="selectBizAccessQuotaAllocateInfoVo"/>
+        <where>  
+            <if test="year != null  and year != ''"> and year = #{year}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="noticeFlag != null  and noticeFlag != ''"> and notice_flag = #{noticeFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizAccessQuotaAllocateInfoById" parameterType="String" resultMap="BizAccessQuotaAllocateInfoResult">
+        <include refid="selectBizAccessQuotaAllocateInfoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizAccessQuotaAllocateInfo" parameterType="BizAccessQuotaAllocateInfo">
+        insert into biz_access_quota_allocate_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="year != null and year != ''">year,</if>
+            <if test="status != null">status,</if>
+            <if test="rejectReason != null">reject_reason,</if>
+            <if test="tableInfo != null">table_info,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="noticeFlag != null  and noticeFlag != ''">notice_flag,</if>
+            <if test="attachId != null  and attachId != ''">attach_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="year != null and year != ''">#{year},</if>
+            <if test="status != null">#{status},</if>
+            <if test="rejectReason != null">#{rejectReason},</if>
+            <if test="tableInfo != null">#{tableInfo},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="noticeFlag != null  and noticeFlag != ''">#{noticeFlag},</if>
+            <if test="attachId != null  and attachId != ''">#{attachId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAccessQuotaAllocateInfo" parameterType="BizAccessQuotaAllocateInfo">
+        update biz_access_quota_allocate_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="year != null and year != ''">year = #{year},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+            <if test="tableInfo != null">table_info = #{tableInfo},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="noticeFlag != null  and noticeFlag != ''">notice_flag = #{noticeFlag},</if>
+            <if test="attachId != null  and attachId != ''">attach_id = #{attachId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAccessQuotaAllocateInfoById" parameterType="String">
+        delete from biz_access_quota_allocate_info where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAccessQuotaAllocateInfoByIds" parameterType="String">
+        delete from biz_access_quota_allocate_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -50,7 +50,7 @@ public interface IBusDepReviewDataService {
      * @param busDepReviewData 评分数据
      * @return 结果
      */
-    public int updateBusDepReviewData(BusDepReviewData busDepReviewData);
+    public int saveBusDepReviewData(BusDepReviewData busDepReviewData);
 
     /**
      * 提交数据
@@ -75,4 +75,20 @@ public interface IBusDepReviewDataService {
      * @return 结果
      */
     public int deleteBusDepReviewDataById(String id);
+    /**
+     * 替换当前用户在指定评分表下的评分数据
+     *
+     * @param busDepReviewId 评分表ID
+     * @param busDepReviewDatas 评分数据
+     * @return 影响行数
+     */
+    int replaceReviewDataForCurrentUser(String busDepReviewId, List<BusDepReviewData> busDepReviewDatas);
+
+    /**
+     * 提交当前用户指定评分表的数据
+     *
+     * @param reviewId 评分表ID
+     * @return 影响行数
+     */
+    int submitReviewData(String reviewId);
 }

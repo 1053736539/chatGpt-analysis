@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamQuestionBankQuestionsMapper">
+    
+    <resultMap type="ExamQuestionBankQuestions" id="ExamQuestionBankQuestionsResult">
+        <result property="id"    column="id"    />
+        <result property="questionBankId"    column="question_bank_id"    />
+        <result property="examinationQuestionId"    column="examination_question_id"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyUser"    column="modify_user"    />
+        <result property="modifyTime"    column="modify_time"    />
+    </resultMap>
+
+    <sql id="selectExamQuestionBankQuestionsVo">
+        select id, question_bank_id, examination_question_id, create_user, create_time, modify_user, modify_time from exam_question_bank_questions
+    </sql>
+
+    <select id="selectExamQuestionBankQuestionsList" parameterType="ExamQuestionBankQuestions" resultMap="ExamQuestionBankQuestionsResult">
+        <include refid="selectExamQuestionBankQuestionsVo"/>
+        <where>  
+            <if test="questionBankId != null "> and question_bank_id = #{questionBankId}</if>
+            <if test="examinationQuestionId != null "> and examination_question_id = #{examinationQuestionId}</if>
+            <if test="createUser != null  and createUser != ''"> and create_user = #{createUser}</if>
+            <if test="modifyUser != null  and modifyUser != ''"> and modify_user = #{modifyUser}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+        </where>
+    </select>
+
+
+    
+    <select id="selectExamQuestionBankQuestionsById" parameterType="Long" resultMap="ExamQuestionBankQuestionsResult">
+        <include refid="selectExamQuestionBankQuestionsVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertExamQuestionBankQuestions" parameterType="ExamQuestionBankQuestions" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_question_bank_questions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="questionBankId != null">question_bank_id,</if>
+            <if test="examinationQuestionId != null">examination_question_id,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="modifyUser != null">modify_user,</if>
+            <if test="modifyTime != null">modify_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="questionBankId != null">#{questionBankId},</if>
+            <if test="examinationQuestionId != null">#{examinationQuestionId},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="modifyUser != null">#{modifyUser},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+         </trim>
+    </insert>
+
+
+    <insert id="insertBatchExamQuestionBankQuestions" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_question_bank_questions (question_bank_id,examination_question_id) values
+        <foreach collection="list" separator="," item="item" index="i">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+                #{item.questionBankId},
+                #{item.examinationQuestionId}
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateExamQuestionBankQuestions" parameterType="ExamQuestionBankQuestions">
+        update exam_question_bank_questions
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="questionBankId != null">question_bank_id = #{questionBankId},</if>
+            <if test="examinationQuestionId != null">examination_question_id = #{examinationQuestionId},</if>
+            <if test="createUser != null">create_user = #{createUser},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyUser != null">modify_user = #{modifyUser},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamQuestionBankQuestionsById" parameterType="Long">
+        delete from exam_question_bank_questions where id = #{id}
+    </delete>
+
+    <delete id="deleteExamQuestionBankQuestionsByQuestionId" parameterType="Long">
+        delete from exam_question_bank_questions where examination_question_id = #{questionId}
+    </delete>
+
+    <delete id="deleteExamQuestionBankQuestionsByIds" parameterType="String">
+        delete from exam_question_bank_questions where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

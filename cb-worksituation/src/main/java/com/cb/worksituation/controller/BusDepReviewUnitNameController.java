@@ -38,9 +38,9 @@ public class BusDepReviewUnitNameController extends BaseController
      * 获取党建业务协作单元
      */
     @GetMapping("/getBusinessCollaborationUnit")
-    public List<BusDepReviewUnitName> getBusinessCollaborationUnit(String busDepReviewId)
+    public AjaxResult getBusinessCollaborationUnit(String busDepReviewId)
     {
         List<BusDepReviewUnitName> list = busDepReviewUnitNameService.getBusinessCollaborationUnit(busDepReviewId);;
-        return list;
+        return AjaxResult.success(list);
     }
 }

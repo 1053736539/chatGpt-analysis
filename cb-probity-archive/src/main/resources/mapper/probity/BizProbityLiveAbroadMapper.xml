@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityLiveAbroadMapper">
+
+    <resultMap type="BizProbityLiveAbroad" id="BizProbityLiveAbroadResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="name" column="name"/>
+        <result property="countryRegion" column="country_region"/>
+        <result property="liveCity" column="live_city"/>
+        <result property="beginTime" column="begin_time"/>
+    </resultMap>
+
+    <sql id="selectBizProbityLiveAbroadVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               name,
+               country_region,
+               live_city,
+               begin_time
+        from biz_probity_live_abroad
+    </sql>
+
+    <select id="selectBizProbityLiveAbroadList" parameterType="BizProbityLiveAbroad"
+            resultMap="BizProbityLiveAbroadResult">
+        <include refid="selectBizProbityLiveAbroadVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="countryRegion != null  and countryRegion != ''">and country_region = #{countryRegion}</if>
+            <if test="liveCity != null  and liveCity != ''">and live_city = #{liveCity}</if>
+            <if test="beginTime != null  and beginTime != ''">and begin_time = #{beginTime}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityLiveAbroadById" parameterType="String" resultMap="BizProbityLiveAbroadResult">
+        <include refid="selectBizProbityLiveAbroadVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityLiveAbroad" parameterType="BizProbityLiveAbroad">
+        insert into biz_probity_live_abroad
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="name != null">name,</if>
+            <if test="countryRegion != null">country_region,</if>
+            <if test="liveCity != null">live_city,</if>
+            <if test="beginTime != null">begin_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="name != null">#{name},</if>
+            <if test="countryRegion != null">#{countryRegion},</if>
+            <if test="liveCity != null">#{liveCity},</if>
+            <if test="beginTime != null">#{beginTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_live_abroad
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            name,
+            country_region,
+            live_city,
+            begin_time,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.name},
+                #{entity.countryRegion},
+                #{entity.liveCity},
+                #{entity.beginTime},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityLiveAbroad" parameterType="BizProbityLiveAbroad">
+        update biz_probity_live_abroad
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="countryRegion != null">country_region = #{countryRegion},</if>
+            <if test="liveCity != null">live_city = #{liveCity},</if>
+            <if test="beginTime != null">begin_time = #{beginTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityLiveAbroadById" parameterType="String">
+        delete
+        from biz_probity_live_abroad
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityLiveAbroadByIds" parameterType="String">
+        delete from biz_probity_live_abroad where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -85,7 +85,7 @@ public class BusDepReviewController extends BaseController {
     @Log(title = "部门评分", businessType = BusinessType.UPDATE)
     @PutMapping
     public AjaxResult edit(@RequestBody BusDepReview busDepReview) {
-        return toAjax(busDepReviewService.updateBusDepReview(busDepReview));
+        return busDepReviewService.updateBusDepReview(busDepReview);
     }
 
     /**
@@ -95,20 +95,19 @@ public class BusDepReviewController extends BaseController {
     @Log(title = "部门评分", businessType = BusinessType.DELETE)
     @DeleteMapping("/{ids}")
     public AjaxResult remove(@PathVariable String[] ids) {
-        return toAjax(busDepReviewService.deleteBusDepReviewByIds(ids));
+        return busDepReviewService.deleteBusDepReviewByIds(ids);
     }
-
 
 
     /**
      * 获取评分表表格配置信息
      */
     @GetMapping("/getReviewTableConfig")
-    public AjaxResult getReviewTableConfig(@RequestParam("id") String id) {
+    public AjaxResult getReviewTableConfig(@RequestParam("id") String id, @RequestParam(value = "sign", defaultValue = "false") Boolean sign) {
         if (StringUtils.isBlank(id)) {
             return AjaxResult.error("评分表ID不能为空");
         }
-        BusDepReview busDepReview = busDepReviewService.getReviewTableConfig(id);
+        BusDepReview busDepReview = busDepReviewService.getReviewTableConfig(id, sign);
         if (busDepReview == null) {
             return AjaxResult.error("未查询到评分表信息");
         }
@@ -134,6 +133,15 @@ public class BusDepReviewController extends BaseController {
             return AjaxResult.error("评分表ID不能为空");
         }
         boolean hasHeader = busDepReviewService.existsReviewHeaders(id);
+        return AjaxResult.success(hasHeader);
+    }
+
+    /**
+     * 判断是否配置了表头数据
+     */
+    @GetMapping("/loginUserAuth")
+    public AjaxResult loginUserAuth() {
+        boolean hasHeader = busDepReviewService.loginUserAuth();
         return AjaxResult.success(hasHeader);
     }
 

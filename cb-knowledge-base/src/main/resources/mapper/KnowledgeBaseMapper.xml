@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.knowledge.base.mapper.KnowledgeBaseMapper">
+    <resultMap type="com.cb.knowledge.base.domain.entity.KnowledgeBase" id="knowledgeResult">
+        <result property="id" column="id"/>
+        <result property="fileName" column="file_name"/>
+        <result property="fileType" column="file_type"/>
+        <result property="fileLevel" column="file_level"/>
+        <result property="fileDesc" column="file_desc"/>
+        <result property="filePath" column="file_path"/>
+        <result property="fileTags" column="file_tags"/>
+        <result property="fileSize" column="file_size"/>
+        <result property="fileSuffix" column="file_suffix"/>
+        <result property="fileContent" column="file_content"/>
+        <result property="fileTokenizer" column="file_tokenizer"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="fileTypeName" column="file_type_name"/>
+        <result property="fileLevelName" column="file_level_name"/>
+    </resultMap>
+
+    <sql id="selectKnowledgeVo">
+        select
+            kb.id,
+            kb.file_name,
+            kb.file_type,
+            kb.file_level,
+            dtt.dict_name as file_type_name,
+            dtl.dict_name as file_level_name,
+            kb.file_desc,
+            kb.file_path,
+            kb.file_tags,
+            kb.file_size,
+            kb.file_suffix,
+            kb.file_content,
+            kb.file_tokenizer,
+            kb.del_flag,
+            kb.create_by,
+            kb.create_time,
+            kb.update_by,
+            kb.update_time,
+            kb.remark
+        from
+            knowledge_base kb
+         left join sys_dict_type dtt on dtt.dict_id = kb.file_type
+         left join sys_dict_type dtl on dtl.dict_id = kb.file_level
+    </sql>
+
+    <select id="selectKnowledgeList" parameterType="com.cb.knowledge.base.domain.entity.KnowledgeBase" resultMap="knowledgeResult">
+        select
+            *
+        from (
+            <include refid="selectKnowledgeVo"/>
+            where
+            kb.del_flag = '0'
+            <if test="id != null">
+                and kb.id > #{id}
+            </if>
+            <if test="fileType != null and fileType != ''">
+                and kb.file_type = #{fileType}
+            </if>
+            <if test="fileLevel != null and fileLevel != ''">
+                and kb.file_level > #{fileLevel}
+            </if>
+            <if test="fileName != null and fileName != ''">
+                and (kb.file_name like concat('%', #{fileName}, '%') or kb.file_desc like concat('%', #{fileName}, '%'))
+            </if>
+            <if test="ids != null and !ids.isEmpty()">
+                union
+                <include refid="selectKnowledgeVo"/>
+                where kb.del_flag = '0' and kb.id in
+                <foreach collection="ids" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+        ) as rs
+        order by rs.id desc
+    </select>
+
+    <select id="selectTags" parameterType="string" resultType="string">
+        select
+            file_tags
+        from
+            knowledge_base
+        where
+            file_type = #{fileType}
+    </select>
+
+    <select id="selectById" parameterType="int" resultMap="knowledgeResult">
+        <include refid="selectKnowledgeVo"/>
+        where
+            kb.del_flag = '0' and kb.id = #{id}
+    </select>
+
+    <select id="selectIdByPath" parameterType="string" resultType="int">
+        select id from knowledge_base where file_path = #{filePath}
+    </select>
+
+    <insert id="batchSave" parameterType="java.util.List">
+        insert into knowledge_base
+        (file_name, file_type, file_level, file_desc, file_path, file_tags, file_size, file_suffix, file_content, file_tokenizer, del_flag, remark, create_by, create_time,
+        update_by, update_time)
+        values
+        <foreach collection="list" item="item" separator=",">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+                #{item.fileName},
+                #{item.fileType},
+                #{item.fileLevel},
+                #{item.fileDesc},
+                #{item.filePath},
+                #{item.fileTags},
+                #{item.fileSize},
+                #{item.fileSuffix},
+                #{item.fileContent},
+                #{item.fileTokenizer},
+                #{item.delFlag},
+                #{item.remark},
+                #{item.createBy},
+                #{item.createTime},
+                #{item.updateBy},
+                #{item.updateTime}
+            </trim>
+        </foreach>
+    </insert>
+
+    <insert id="saveData" parameterType="com.cb.knowledge.base.domain.entity.KnowledgeBase">
+        insert into knowledge_base
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="fileName != null">file_name,</if>
+            <if test="fileType != null">file_type,</if>
+            <if test="fileLevel != null">file_level,</if>
+            <if test="fileDesc != null">file_desc,</if>
+            <if test="filePath != null">file_path,</if>
+            <if test="fileTags != null">file_tags,</if>
+            <if test="fileSize != null">file_size,</if>
+            <if test="fileSuffix != null">file_suffix,</if>
+            <if test="fileContent!= null">file_content,</if>
+            <if test="fileTokenizer!= null">file_tokenizer,</if>
+            <if test="delFlag!= null">del_flag,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        values
+        <trim prefix=" (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="fileName != null">#{fileName},</if>
+            <if test="fileType != null">#{fileType},</if>
+            <if test="fileLevel != null">#{fileLevel},</if>
+            <if test="fileDesc != null">#{fileDesc},</if>
+            <if test="filePath != null">#{filePath},</if>
+            <if test="fileTags != null">#{fileTags},</if>
+            <if test="fileSize != null">#{fileSize},</if>
+            <if test="fileSuffix != null">#{fileSuffix},</if>
+            <if test="fileContent!= null">#{fileContent},</if>
+            <if test="fileTokenizer!= null">#{fileTokenizer},</if>
+            <if test="delFlag!= null">#{delFlag},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateData" parameterType="com.cb.knowledge.base.domain.entity.KnowledgeBase">
+        update knowledge_base
+        <trim prefix="set" suffixOverrides=",">
+            <if test="fileName!= null"> file_name = #{fileName},</if>
+            <if test="fileType!= null">file_type = #{fileType},</if>
+            <if test="fileLevel!= null">file_level = #{fileLevel},</if>
+            <if test="fileDesc!= null">file_desc = #{fileDesc},</if>
+            <if test="filePath!= null">file_path = #{filePath},</if>
+            <if test="fileTags!= null">file_tags = #{fileTags},</if>
+            <if test="fileSize != null">file_size = #{fileSize},</if>
+            <if test="fileSuffix != null">file_suffix = #{fileSuffix},</if>
+            <if test="fileContent!= null">file_content = #{fileContent},</if>
+            <if test="fileTokenizer!= null">file_tokenizer = #{fileTokenizer},</if>
+            <if test="delFlag!= null">del_flag = #{delFlag},</if>
+            <if test="remark!= null">remark = #{remark},</if>
+            <if test="createBy!= null">create_by = #{createBy},</if>
+            <if test="createTime!= null">create_time = #{createTime},</if>
+            <if test="updateBy!= null">update_by = #{updateBy},</if>
+            <if test="updateTime!= null">update_time = #{updateTime}</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="batchDelete" parameterType="list">
+        delete from knowledge_base
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="delete" parameterType="int">
+        delete from knowledge_base where id = #{id}
+    </delete>
+
+    <select id="exportKnowledgeData" parameterType="map" resultMap="knowledgeResult">
+        <include refid="selectKnowledgeVo"/>
+        where
+        kb.del_flag = '0'
+        <if test="id != null and id != ''">
+            <choose>
+                <when test="isUpdate">
+                    <if test="historyId != null and historyId != ''">
+                        and kb.id <![CDATA[>]]> #{historyId}
+                    </if>
+                    and kb.id <![CDATA[<=]]> #{id}
+                </when>
+                <otherwise>
+                    and kb.id <![CDATA[>]]> #{id}
+                </otherwise>
+            </choose>
+        </if>
+        <if test="lastExportTime != null and lastExportTime != ''">
+            and TO_TIMESTAMP(kb.update_time, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[>=]]> TO_TIMESTAMP(#{lastExportTime},
+            'YYYY-MM-DD HH24:MI:SS')
+        </if>
+        order by kb.id asc
+        <if test="orderBy != null and orderBy != ''">
+            , #{orderBy}
+        </if>
+        <if test="limit != null and limit != ''">
+            limit #{limit}
+        </if>
+    </select>
+
+    <select id="selectFilePaths" resultType="java.lang.String">
+        select file_path from knowledge_base
+    </select>
+</mapper>

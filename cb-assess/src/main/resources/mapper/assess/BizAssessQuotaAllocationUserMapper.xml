@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessQuotaAllocationUserMapper">
+    
+    <resultMap type="BizAssessQuotaAllocationUser" id="BizAssessQuotaAllocationUserResult">
+        <result property="userId"    column="user_id"    />
+        <result property="quotaAllocationId"    column="quota_allocation_id"    />
+    </resultMap>
+
+    <sql id="selectBizAssessQuotaAllocationUserVo">
+        select user_id, quota_allocation_id from biz_assess_quota_allocation_user
+    </sql>
+
+    <select id="selectBizAssessQuotaAllocationUserList" parameterType="BizAssessQuotaAllocationUser" resultMap="BizAssessQuotaAllocationUserResult">
+        <include refid="selectBizAssessQuotaAllocationUserVo"/>
+        <where>  
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="quotaAllocationId != null  and quotaAllocationId != ''"> and quota_allocation_id = #{quotaAllocationId}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizAssessQuotaAllocationUserById" parameterType="String" resultMap="BizAssessQuotaAllocationUserResult">
+        <include refid="selectBizAssessQuotaAllocationUserVo"/>
+        where user_id = #{userId}
+    </select>
+        
+    <insert id="insertBizAssessQuotaAllocationUser" parameterType="BizAssessQuotaAllocationUser">
+        insert into biz_assess_quota_allocation_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="quotaAllocationId != null and quotaAllocationId != ''">quota_allocation_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="quotaAllocationId != null and quotaAllocationId != ''">#{quotaAllocationId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessQuotaAllocationUser" parameterType="BizAssessQuotaAllocationUser">
+        update biz_assess_quota_allocation_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="quotaAllocationId != null and quotaAllocationId != ''">quota_allocation_id = #{quotaAllocationId},</if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteBizAssessQuotaAllocationUserById" parameterType="String">
+        delete from biz_assess_quota_allocation_user where user_id = #{userId}
+    </delete>
+    <delete id="deleteByQuery" >
+        delete from biz_assess_quota_allocation_user
+        <where>
+            <if test="userId != null  and userId != ''"> and user_id = #{userId}</if>
+            <if test="quotaAllocationId != null  and quotaAllocationId != ''"> and quota_allocation_id = #{quotaAllocationId}</if>
+        </where>
+    </delete>
+
+    <delete id="deleteBizAssessQuotaAllocationUserByIds" parameterType="String">
+        delete from biz_assess_quota_allocation_user where user_id in 
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+</mapper>

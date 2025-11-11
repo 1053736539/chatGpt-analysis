@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityBasicMapper">
+
+    <resultMap type="BizProbityBasic" id="BizProbityBasicResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="name" column="name"/>
+        <result property="gender" column="gender"/>
+        <result property="birth" column="birth"/>
+        <result property="nation" column="nation"/>
+        <result property="nativePlace" column="native_place"/>
+        <result property="birthPlace" column="birth_place"/>
+        <result property="politicalStatus" column="political_status"/>
+        <result property="partyJoinTime" column="party_join_time"/>
+        <result property="startWorkTime" column="start_work_time"/>
+        <result property="fullTimeEduLevel" column="full_time_edu_level"/>
+        <result property="fullTimeEduSchoolMajor" column="full_time_edu_school_major"/>
+        <result property="onJobEduLevel" column="on_job_edu_level"/>
+        <result property="onJobEduSchoolMajor" column="on_job_edu_school_major"/>
+        <result property="workDept" column="work_dept"/>
+        <result property="currentPosition" column="current_position"/>
+        <result property="positionLevel" column="position_level"/>
+        <result property="delegateFlag" column="delegate_flag"/>
+        <result property="idNo" column="id_no"/>
+        <result property="homeAddr" column="home_addr"/>
+        <result property="workResume" column="work_resume"/>
+        <result property="rewardPunishment" column="reward_punishment"/>
+        <result property="annualAssessment" column="annual_assessment"/>
+    </resultMap>
+
+    <sql id="selectBizProbityBasicVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               name,
+               gender,
+               birth,
+               nation,
+               native_place,
+               birth_place,
+               political_status,
+               party_join_time,
+               start_work_time,
+               full_time_edu_level,
+               full_time_edu_school_major,
+               on_job_edu_level,
+               on_job_edu_school_major,
+               work_dept,
+               current_position,
+               position_level,
+               delegate_flag,
+               id_no,
+               home_addr,
+               work_resume,
+               reward_punishment,
+               annual_assessment
+        from biz_probity_basic
+    </sql>
+
+    <select id="selectBizProbityBasicList" parameterType="BizProbityBasic" resultMap="BizProbityBasicResult">
+        <include refid="selectBizProbityBasicVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="gender != null  and gender != ''">and gender = #{gender}</if>
+            <if test="birth != null  and birth != ''">and birth = #{birth}</if>
+            <if test="nation != null  and nation != ''">and nation = #{nation}</if>
+            <if test="nativePlace != null  and nativePlace != ''">and native_place = #{nativePlace}</if>
+            <if test="birthPlace != null  and birthPlace != ''">and birth_place = #{birthPlace}</if>
+            <if test="politicalStatus != null  and politicalStatus != ''">and political_status = #{politicalStatus}</if>
+            <if test="partyJoinTime != null  and partyJoinTime != ''">and party_join_time = #{partyJoinTime}</if>
+            <if test="startWorkTime != null  and startWorkTime != ''">and start_work_time = #{startWorkTime}</if>
+            <if test="fullTimeEduLevel != null  and fullTimeEduLevel != ''">and full_time_edu_level =
+                #{fullTimeEduLevel}
+            </if>
+            <if test="fullTimeEduSchoolMajor != null  and fullTimeEduSchoolMajor != ''">and full_time_edu_school_major =
+                #{fullTimeEduSchoolMajor}
+            </if>
+            <if test="onJobEduLevel != null  and onJobEduLevel != ''">and on_job_edu_level = #{onJobEduLevel}</if>
+            <if test="onJobEduSchoolMajor != null  and onJobEduSchoolMajor != ''">and on_job_edu_school_major =
+                #{onJobEduSchoolMajor}
+            </if>
+            <if test="workDept != null  and workDept != ''">and work_dept = #{workDept}</if>
+            <if test="currentPosition != null  and currentPosition != ''">and current_position = #{currentPosition}</if>
+            <if test="positionLevel != null  and positionLevel != ''">and position_level = #{positionLevel}</if>
+            <if test="delegateFlag != null  and delegateFlag != ''">and delegate_flag = #{delegateFlag}</if>
+            <if test="idNo != null  and idNo != ''">and id_no = #{idNo}</if>
+            <if test="homeAddr != null  and homeAddr != ''">and home_addr = #{homeAddr}</if>
+            <if test="workResume != null  and workResume != ''">and work_resume = #{workResume}</if>
+            <if test="rewardPunishment != null  and rewardPunishment != ''">and reward_punishment =
+                #{rewardPunishment}
+            </if>
+            <if test="annualAssessment != null  and annualAssessment != ''">and annual_assessment =
+                #{annualAssessment}
+            </if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityBasicById" parameterType="String" resultMap="BizProbityBasicResult">
+        <include refid="selectBizProbityBasicVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityBasic" parameterType="BizProbityBasic">
+        insert into biz_probity_basic
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="name != null">name,</if>
+            <if test="gender != null">gender,</if>
+            <if test="birth != null">birth,</if>
+            <if test="nation != null">nation,</if>
+            <if test="nativePlace != null">native_place,</if>
+            <if test="birthPlace != null">birth_place,</if>
+            <if test="politicalStatus != null">political_status,</if>
+            <if test="partyJoinTime != null">party_join_time,</if>
+            <if test="startWorkTime != null">start_work_time,</if>
+            <if test="fullTimeEduLevel != null">full_time_edu_level,</if>
+            <if test="fullTimeEduSchoolMajor != null">full_time_edu_school_major,</if>
+            <if test="onJobEduLevel != null">on_job_edu_level,</if>
+            <if test="onJobEduSchoolMajor != null">on_job_edu_school_major,</if>
+            <if test="workDept != null">work_dept,</if>
+            <if test="currentPosition != null">current_position,</if>
+            <if test="positionLevel != null">position_level,</if>
+            <if test="delegateFlag != null">delegate_flag,</if>
+            <if test="idNo != null">id_no,</if>
+            <if test="homeAddr != null">home_addr,</if>
+            <if test="workResume != null">work_resume,</if>
+            <if test="rewardPunishment != null">reward_punishment,</if>
+            <if test="annualAssessment != null">annual_assessment,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="name != null">#{name},</if>
+            <if test="gender != null">#{gender},</if>
+            <if test="birth != null">#{birth},</if>
+            <if test="nation != null">#{nation},</if>
+            <if test="nativePlace != null">#{nativePlace},</if>
+            <if test="birthPlace != null">#{birthPlace},</if>
+            <if test="politicalStatus != null">#{politicalStatus},</if>
+            <if test="partyJoinTime != null">#{partyJoinTime},</if>
+            <if test="startWorkTime != null">#{startWorkTime},</if>
+            <if test="fullTimeEduLevel != null">#{fullTimeEduLevel},</if>
+            <if test="fullTimeEduSchoolMajor != null">#{fullTimeEduSchoolMajor},</if>
+            <if test="onJobEduLevel != null">#{onJobEduLevel},</if>
+            <if test="onJobEduSchoolMajor != null">#{onJobEduSchoolMajor},</if>
+            <if test="workDept != null">#{workDept},</if>
+            <if test="currentPosition != null">#{currentPosition},</if>
+            <if test="positionLevel != null">#{positionLevel},</if>
+            <if test="delegateFlag != null">#{delegateFlag},</if>
+            <if test="idNo != null">#{idNo},</if>
+            <if test="homeAddr != null">#{homeAddr},</if>
+            <if test="workResume != null">#{workResume},</if>
+            <if test="rewardPunishment != null">#{rewardPunishment},</if>
+            <if test="annualAssessment != null">#{annualAssessment},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_basic
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            name,
+            gender,
+            birth,
+            nation,
+            native_place,
+            birth_place,
+            political_status,
+            party_join_time,
+            start_work_time,
+            full_time_edu_level,
+            full_time_edu_school_major,
+            on_job_edu_level,
+            on_job_edu_school_major,
+            work_dept,
+            current_position,
+            position_level,
+            delegate_flag,
+            id_no,
+            home_addr,
+            work_resume,
+            reward_punishment,
+            annual_assessment,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.name},
+                #{entity.gender},
+                #{entity.birth},
+                #{entity.nation},
+                #{entity.nativePlace},
+                #{entity.birthPlace},
+                #{entity.politicalStatus},
+                #{entity.partyJoinTime},
+                #{entity.startWorkTime},
+                #{entity.fullTimeEduLevel},
+                #{entity.fullTimeEduSchoolMajor},
+                #{entity.onJobEduLevel},
+                #{entity.onJobEduSchoolMajor},
+                #{entity.workDept},
+                #{entity.currentPosition},
+                #{entity.positionLevel},
+                #{entity.delegateFlag},
+                #{entity.idNo},
+                #{entity.homeAddr},
+                #{entity.workResume},
+                #{entity.rewardPunishment},
+                #{entity.annualAssessment},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityBasic" parameterType="BizProbityBasic">
+        update biz_probity_basic
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="gender != null">gender = #{gender},</if>
+            <if test="birth != null">birth = #{birth},</if>
+            <if test="nation != null">nation = #{nation},</if>
+            <if test="nativePlace != null">native_place = #{nativePlace},</if>
+            <if test="birthPlace != null">birth_place = #{birthPlace},</if>
+            <if test="politicalStatus != null">political_status = #{politicalStatus},</if>
+            <if test="partyJoinTime != null">party_join_time = #{partyJoinTime},</if>
+            <if test="startWorkTime != null">start_work_time = #{startWorkTime},</if>
+            <if test="fullTimeEduLevel != null">full_time_edu_level = #{fullTimeEduLevel},</if>
+            <if test="fullTimeEduSchoolMajor != null">full_time_edu_school_major = #{fullTimeEduSchoolMajor},</if>
+            <if test="onJobEduLevel != null">on_job_edu_level = #{onJobEduLevel},</if>
+            <if test="onJobEduSchoolMajor != null">on_job_edu_school_major = #{onJobEduSchoolMajor},</if>
+            <if test="workDept != null">work_dept = #{workDept},</if>
+            <if test="currentPosition != null">current_position = #{currentPosition},</if>
+            <if test="positionLevel != null">position_level = #{positionLevel},</if>
+            <if test="delegateFlag != null">delegate_flag = #{delegateFlag},</if>
+            <if test="idNo != null">id_no = #{idNo},</if>
+            <if test="homeAddr != null">home_addr = #{homeAddr},</if>
+            <if test="workResume != null">work_resume = #{workResume},</if>
+            <if test="rewardPunishment != null">reward_punishment = #{rewardPunishment},</if>
+            <if test="annualAssessment != null">annual_assessment = #{annualAssessment},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityBasicById" parameterType="String">
+        delete
+        from biz_probity_basic
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityBasicByIds" parameterType="String">
+        delete from biz_probity_basic where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

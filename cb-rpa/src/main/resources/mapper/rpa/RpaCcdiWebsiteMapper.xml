@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.rpa.mapper.RpaCcdiWebsiteMapper">
+    
+    <resultMap type="RpaCcdiWebsite" id="RpaCcdiWebsiteResult">
+        <result property="id"    column="id"    />
+        <result property="title"    column="title"    />
+        <result property="labels"    column="labels"    />
+        <result property="content"    column="content"    />
+        <result property="originate"    column="originate"    />
+        <result property="editor"    column="editor"    />
+        <result property="releaseTime"    column="release_time"    />
+        <result property="linkUrl"    column="link_url"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="pushAiKnowledge"    column="push_ai_knowledge"    />
+    </resultMap>
+
+    <sql id="selectRpaCcdiWebsiteVo">
+        select id, title, labels, content, originate, editor, release_time, link_url, create_by, create_time, update_by, update_time, push_ai_knowledge from rpa_ccdi_website
+    </sql>
+
+    <select id="selectRpaCcdiWebsiteList" parameterType="RpaCcdiWebsite" resultMap="RpaCcdiWebsiteResult">
+        <include refid="selectRpaCcdiWebsiteVo"/>
+        <where>  
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="labels != null  and labels != ''"> and labels = #{labels}</if>
+            <if test="content != null  and content != ''"> and content = #{content}</if>
+            <if test="originate != null  and originate != ''"> and originate = #{originate}</if>
+            <if test="editor != null  and editor != ''"> and editor = #{editor}</if>
+            <if test="releaseTime != null "> and release_time = #{releaseTime}</if>
+            <if test="linkUrl != null  and linkUrl != ''"> and link_url = #{linkUrl}</if>
+            <if test="pushAiKnowledge != null  and pushAiKnowledge != ''"> and push_ai_knowledge = #{pushAiKnowledge}</if>
+
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                and date_format(release_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                and date_format(release_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+    
+    <select id="selectRpaCcdiWebsiteById" parameterType="String" resultMap="RpaCcdiWebsiteResult">
+        <include refid="selectRpaCcdiWebsiteVo"/>
+        where id = #{id}
+    </select>
+    <select id="existence" resultType="com.cb.rpa.domain.RpaCcdiWebsite">
+        <include refid="selectRpaCcdiWebsiteVo"></include>
+        where title = #{title}
+    </select>
+
+    <insert id="insertRpaCcdiWebsite" parameterType="RpaCcdiWebsite">
+        insert into rpa_ccdi_website
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="title != null and title != ''">title,</if>
+            <if test="labels != null and labels != ''">labels,</if>
+            <if test="content != null and content != ''">content,</if>
+            <if test="originate != null and originate != ''">originate,</if>
+            <if test="editor != null and editor != ''">editor,</if>
+            <if test="releaseTime != null">release_time,</if>
+            <if test="linkUrl != null and linkUrl != ''">link_url,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="pushAiKnowledge != null">push_ai_knowledge,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="title != null and title != ''">#{title},</if>
+            <if test="labels != null and labels != ''">#{labels},</if>
+            <if test="content != null and content != ''">#{content},</if>
+            <if test="originate != null and originate != ''">#{originate},</if>
+            <if test="editor != null and editor != ''">#{editor},</if>
+            <if test="releaseTime != null">#{releaseTime},</if>
+            <if test="linkUrl != null and linkUrl != ''">#{linkUrl},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="pushAiKnowledge != null">#{pushAiKnowledge},</if>
+        </trim>
+    </insert>
+
+    <update id="updateRpaCcdiWebsite" parameterType="RpaCcdiWebsite">
+        update rpa_ccdi_website
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="title != null and title != ''">title = #{title},</if>
+            <if test="labels != null and labels != ''">labels = #{labels},</if>
+            <if test="content != null and content != ''">content = #{content},</if>
+            <if test="originate != null and originate != ''">originate = #{originate},</if>
+            <if test="editor != null and editor != ''">editor = #{editor},</if>
+            <if test="releaseTime != null">release_time = #{releaseTime},</if>
+            <if test="linkUrl != null and linkUrl != ''">link_url = #{linkUrl},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="pushAiKnowledge != null">push_ai_knowledge = #{pushAiKnowledge},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRpaCcdiWebsiteById" parameterType="String">
+        delete from rpa_ccdi_website where id = #{id}
+    </delete>
+
+    <delete id="deleteRpaCcdiWebsiteByIds" parameterType="String">
+        delete from rpa_ccdi_website where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

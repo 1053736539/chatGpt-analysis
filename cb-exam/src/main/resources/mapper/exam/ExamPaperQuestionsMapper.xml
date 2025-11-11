@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamPaperQuestionsMapper">
+    
+    <resultMap type="ExamPaperQuestions" id="ExamPaperQuestionsResult">
+        <result property="id"    column="id"    />
+        <result property="examinationPaperId"    column="examination_paper_id"    />
+        <result property="examinationQuestionsId"    column="examination_questions_id"    />
+        <result property="examinationQuestionsType"    column="examination_questions_type"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyUser"    column="modify_user"    />
+        <result property="modifyTime"    column="modify_time"    />
+        <result property="score"    column="score"    />
+    </resultMap>
+
+    <resultMap type="paperQuestion" id="paperQuestionResult">
+        <result property="id"    column="id"    />
+        <result property="paperId"    column="examination_paper_id"    />
+        <result property="questionsId"    column="examination_questions_id"    />
+        <result property="title"    column="name"    />
+        <result property="images"    column="images"    />
+        <result property="questionsType"    column="examination_questions_type"    />
+        <result property="score"    column="score"    />
+        <result property="analysis"    column="analysis"    />
+        <result property="answer"    column="answer"    />
+        <result property="judgeAnswer"    column="judge_answer"    />
+        <result property="selectAnswer"    column="select_answer"    />
+    </resultMap>
+
+    <sql id="selectExamPaperQuestionsVo">
+        select id, examination_paper_id, examination_questions_id, examination_questions_type, create_user, create_time, modify_user, modify_time, score from exam_paper_questions
+    </sql>
+
+    <select id="selectExamPaperQuestionsList" parameterType="ExamPaperQuestions" resultMap="ExamPaperQuestionsResult">
+        <include refid="selectExamPaperQuestionsVo"/>
+        <where>  
+            <if test="examinationPaperId != null "> and examination_paper_id = #{examinationPaperId}</if>
+            <if test="examinationQuestionsId != null "> and examination_questions_id = #{examinationQuestionsId}</if>
+            <if test="examinationQuestionsType != null  and examinationQuestionsType != ''"> and examination_questions_type = #{examinationQuestionsType}</if>
+            <if test="createUser != null  and createUser != ''"> and create_user = #{createUser}</if>
+            <if test="modifyUser != null  and modifyUser != ''"> and modify_user = #{modifyUser}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+            <if test="score != null "> and score = #{score}</if>
+        </where>
+    </select>
+    
+    <select id="selectExamPaperQuestionsById" parameterType="Long" resultMap="ExamPaperQuestionsResult">
+
+        where id = #{id}
+    </select>
+
+    <select id="selectPaperQuestionByPaperId" parameterType="Long" resultMap="paperQuestionResult">
+        SELECT
+        pap.id,
+        pap.examination_paper_id,
+        pap.examination_questions_id,
+        que.name,
+        que.images,
+        pap.examination_questions_type,
+        pap.score,
+        que.analysis,
+        que.answer,
+        que.judge_answer,
+        que.select_answer
+        from
+        exam_paper_questions as pap
+        JOIN exam_questions as que
+        on que.id = pap.examination_questions_id
+        where pap.examination_paper_id = #{id}
+    </select>
+
+    <select id="selectPaperQuestionByPaperIds" parameterType="Long" resultMap="paperQuestionResult">
+        SELECT
+            *
+        from
+            exam_paper_questions as pap
+        where pap.examination_paper_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="insertExamPaperQuestions" parameterType="ExamPaperQuestions" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_paper_questions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examinationPaperId != null">examination_paper_id,</if>
+            <if test="examinationQuestionsId != null">examination_questions_id,</if>
+            <if test="examinationQuestionsType != null">examination_questions_type,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="modifyUser != null">modify_user,</if>
+            <if test="modifyTime != null">modify_time,</if>
+            <if test="score != null">score,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examinationPaperId != null">#{examinationPaperId},</if>
+            <if test="examinationQuestionsId != null">#{examinationQuestionsId},</if>
+            <if test="examinationQuestionsType != null">#{examinationQuestionsType},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="modifyUser != null">#{modifyUser},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+            <if test="score != null">#{score},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatchExamPaperQuestions" parameterType="java.util.List"
+            useGeneratedKeys="true" keyProperty="id" >
+        insert into exam_paper_questions (examination_paper_id,examination_questions_id,
+        examination_questions_type,score,
+        create_user,create_time)
+        values
+        <foreach collection="list" separator="," item="item" index="i">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+                #{item.examinationPaperId},
+                #{item.examinationQuestionsId},
+                #{item.examinationQuestionsType},
+                #{item.score},
+                #{item.createUser},
+                #{item.createTime}
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateExamPaperQuestions" parameterType="ExamPaperQuestions">
+        update exam_paper_questions
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examinationPaperId != null">examination_paper_id = #{examinationPaperId},</if>
+            <if test="examinationQuestionsId != null">examination_questions_id = #{examinationQuestionsId},</if>
+            <if test="examinationQuestionsType != null">examination_questions_type = #{examinationQuestionsType},</if>
+            <if test="createUser != null">create_user = #{createUser},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyUser != null">modify_user = #{modifyUser},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+            <if test="score != null">score = #{score},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamPaperQuestionsById" parameterType="Long">
+        delete from exam_paper_questions where id = #{id}
+    </delete>
+
+    <delete id="deleteExamPaperQuestionsByIds" parameterType="String">
+        delete from exam_paper_questions where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteExamPaperQuestionsByPaperIds" parameterType="String">
+        delete from exam_paper_questions where examination_paper_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

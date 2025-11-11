@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityChildSpouseMapper">
+
+    <resultMap type="BizProbityChildSpouse" id="BizProbityChildSpouseResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="name" column="name"/>
+        <result property="spouseName" column="spouse_name"/>
+        <result property="spouseContryRegion" column="spouse_contry_region"/>
+        <result property="spouseWorkStudyDept" column="spouse_work_study_dept"/>
+        <result property="spousePosition" column="spouse_position"/>
+        <result property="spouseMarriageTime" column="spouse_marriage_time"/>
+    </resultMap>
+
+    <sql id="selectBizProbityChildSpouseVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               name,
+               spouse_name,
+               spouse_contry_region,
+               spouse_work_study_dept,
+               spouse_position,
+               spouse_marriage_time
+        from biz_probity_child_spouse
+    </sql>
+
+    <select id="selectBizProbityChildSpouseList" parameterType="BizProbityChildSpouse"
+            resultMap="BizProbityChildSpouseResult">
+        <include refid="selectBizProbityChildSpouseVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="spouseName != null  and spouseName != ''">and spouse_name like concat('%', #{spouseName}, '%')
+            </if>
+            <if test="spouseContryRegion != null  and spouseContryRegion != ''">and spouse_contry_region =
+                #{spouseContryRegion}
+            </if>
+            <if test="spouseWorkStudyDept != null  and spouseWorkStudyDept != ''">and spouse_work_study_dept =
+                #{spouseWorkStudyDept}
+            </if>
+            <if test="spousePosition != null  and spousePosition != ''">and spouse_position = #{spousePosition}</if>
+            <if test="spouseMarriageTime != null  and spouseMarriageTime != ''">and spouse_marriage_time =
+                #{spouseMarriageTime}
+            </if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityChildSpouseById" parameterType="String" resultMap="BizProbityChildSpouseResult">
+        <include refid="selectBizProbityChildSpouseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityChildSpouse" parameterType="BizProbityChildSpouse">
+        insert into biz_probity_child_spouse
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="name != null">name,</if>
+            <if test="spouseName != null">spouse_name,</if>
+            <if test="spouseContryRegion != null">spouse_contry_region,</if>
+            <if test="spouseWorkStudyDept != null">spouse_work_study_dept,</if>
+            <if test="spousePosition != null">spouse_position,</if>
+            <if test="spouseMarriageTime != null">spouse_marriage_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="name != null">#{name},</if>
+            <if test="spouseName != null">#{spouseName},</if>
+            <if test="spouseContryRegion != null">#{spouseContryRegion},</if>
+            <if test="spouseWorkStudyDept != null">#{spouseWorkStudyDept},</if>
+            <if test="spousePosition != null">#{spousePosition},</if>
+            <if test="spouseMarriageTime != null">#{spouseMarriageTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_child_spouse
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            name,
+            spouse_name,
+            spouse_contry_region,
+            spouse_work_study_dept,
+            spouse_position,
+            spouse_marriage_time,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.name},
+                #{entity.spouseName},
+                #{entity.spouseContryRegion},
+                #{entity.spouseWorkStudyDept},
+                #{entity.spousePosition},
+                #{entity.spouseMarriageTime},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityChildSpouse" parameterType="BizProbityChildSpouse">
+        update biz_probity_child_spouse
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="spouseName != null">spouse_name = #{spouseName},</if>
+            <if test="spouseContryRegion != null">spouse_contry_region = #{spouseContryRegion},</if>
+            <if test="spouseWorkStudyDept != null">spouse_work_study_dept = #{spouseWorkStudyDept},</if>
+            <if test="spousePosition != null">spouse_position = #{spousePosition},</if>
+            <if test="spouseMarriageTime != null">spouse_marriage_time = #{spouseMarriageTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityChildSpouseById" parameterType="String">
+        delete
+        from biz_probity_child_spouse
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityChildSpouseByIds" parameterType="String">
+        delete from biz_probity_child_spouse where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamPaperQuestionsOptionMapper">
+    
+    <resultMap type="ExamPaperQuestionsOption" id="ExamPaperQuestionsOptionResult">
+        <result property="id"    column="id"    />
+        <result property="optionId"    column="option_id"    />
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="examinationPaperQuestionsId"    column="examination_paper_questions_id"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyUser"    column="modify_user"    />
+        <result property="modifyTime"    column="modify_time"    />
+    </resultMap>
+
+    <resultMap type="paperOption" id="paperOptionResult">
+        <result property="questionsId"    column="examination_paper_questions_id"    />
+        <result property="optionId"    column="option_id"    />
+        <result property="serialNumber"    column="serial_number"    />
+        <result property="optionContent"    column="option_content"    />
+    </resultMap>
+
+
+    <sql id="selectExamPaperQuestionsOptionVo">
+        select id, option_id, serial_number, examination_paper_questions_id, create_user, create_time, modify_user, modify_time from exam_paper_questions_option
+    </sql>
+
+    <select id="selectExamPaperQuestionsOptionList" parameterType="ExamPaperQuestionsOption" resultMap="ExamPaperQuestionsOptionResult">
+        <include refid="selectExamPaperQuestionsOptionVo"/>
+        <where>  
+            <if test="optionId != null "> and option_id = #{optionId}</if>
+            <if test="serialNumber != null  and serialNumber != ''"> and serial_number = #{serialNumber}</if>
+            <if test="examinationPaperQuestionsId != null "> and examination_paper_questions_id = #{examinationPaperQuestionsId}</if>
+            <if test="createUser != null  and createUser != ''"> and create_user = #{createUser}</if>
+            <if test="modifyUser != null  and modifyUser != ''"> and modify_user = #{modifyUser}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectExamPaperQuestionsOptionByid" parameterType="Long" resultMap="ExamPaperQuestionsOptionResult">
+        <include refid="selectExamPaperQuestionsOptionVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectPaperOptionByQuestionIdList" parameterType="java.util.List" resultMap="paperOptionResult">
+        SELECT
+            pap.examination_paper_questions_id,
+            pap.option_id,
+            pap.serial_number,
+            opt.option_content
+            FROM
+            exam_paper_questions_option as pap
+            join exam_option as opt
+            on pap.option_id = opt.id
+            where
+            pap.examination_paper_questions_id in
+        <foreach collection="questionIds"   index="i" item="id"  open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+        
+    <insert id="insertExamPaperQuestionsOption" parameterType="ExamPaperQuestionsOption" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_paper_questions_option
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="optionId != null">option_id,</if>
+            <if test="serialNumber != null">serial_number,</if>
+            <if test="examinationPaperQuestionsId != null">examination_paper_questions_id,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="modifyUser != null">modify_user,</if>
+            <if test="modifyTime != null">modify_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="optionId != null">#{optionId},</if>
+            <if test="serialNumber != null">#{serialNumber},</if>
+            <if test="examinationPaperQuestionsId != null">#{examinationPaperQuestionsId},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="modifyUser != null">#{modifyUser},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+         </trim>
+    </insert>
+
+
+    <insert id="insertBatchExamPaperQuestionsOption" parameterType="java.util.List"
+            useGeneratedKeys="true" keyProperty="id" >
+        insert into exam_paper_questions_option (option_id,serial_number,
+        examination_paper_questions_id,create_user,create_time)
+        values
+        <foreach collection="list" separator="," item="item" index="i">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+                #{item.optionId},
+                #{item.serialNumber},
+                #{item.examinationPaperQuestionsId},
+                #{item.createUser},
+                #{item.createTime}
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateExamPaperQuestionsOption" parameterType="ExamPaperQuestionsOption">
+        update exam_paper_questions_option
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="optionId != null">option_id = #{optionId},</if>
+            <if test="serialNumber != null">serial_number = #{serialNumber},</if>
+            <if test="examinationPaperQuestionsId != null">examination_paper_questions_id = #{examinationPaperQuestionsId},</if>
+            <if test="createUser != null">create_user = #{createUser},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyUser != null">modify_user = #{modifyUser},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamPaperQuestionsOptionByid" parameterType="Long">
+        delete from exam_paper_questions_option where id = #{id}
+    </delete>
+
+    <delete id="deleteExamPaperQuestionsOptionByids" parameterType="String">
+        delete from exam_paper_questions_option where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="deleteExamPaperQuestionsOptionByPaperIds" parameterType="String">
+        delete from exam_paper_questions_option where examination_paper_questions_id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+</mapper>

@@ -1,0 +1,410 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.task.mapper.BizTaskHandleMapper">
+    
+    <resultMap type="BizTaskHandle" id="BizTaskHandleResult">
+        <result property="id"    column="id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="handleType"    column="handle_type"    />
+        <result property="handleDept"    column="handle_dept"    />
+        <result property="handleUser"    column="handle_user"    />
+        <result property="scorePercent"    column="score_percent"    />
+        <result property="progress"    column="progress"    />
+        <result property="handleStatus"    column="handle_status"    />
+        <result property="assignStatus"    column="assign_status"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="receiveTime"    column="receive_time"    />
+        <result property="completeTime"    column="complete_time"    />
+        <result property="resultAttach"    column="result_attach"    />
+        <result property="completeSituation"    column="complete_situation"    />
+        <result property="parentId"    column="parent_id"    />
+        <result property="transferUser"    column="transfer_user"    />
+        <result property="transferRemark"    column="transfer_remark"    />
+        <result property="handleRole"    column="handle_role"    />
+        <result property="masterFlag"    column="master_flag"  javaType="boolean"  />
+        <result property="claimStatus"    column="claim_status"    />
+        <result property="claimType"    column="claim_type"    />
+
+        <result property="taskName"    column="taskName"    />
+        <result property="taskBeginTime"    column="taskBeginTime"    />
+        <result property="taskEndTime"    column="taskEndTime"    />
+        <result property="taskAttach"    column="taskAttach"    />
+        <result property="extInfo"    column="extInfo"    />
+        <result property="handleDeptName"    column="handleDeptName"    />
+        <result property="handleUserName"    column="handleUserName"    />
+        <result property="transferUserName"    column="transferUserName"    />
+    </resultMap>
+
+    <sql id="selectBizTaskHandleVo">
+        select t.id, t.task_id, t.handle_type, t.handle_dept, t.handle_user, t.score_percent, t.progress, t.handle_status, t.assign_status, t.create_by, t.create_time, t.update_by, t.update_time, t.remark, t.receive_time, t.complete_time, t.result_attach, t.complete_situation,
+               t.parent_id, t.transfer_user, t.transfer_remark, t.handle_role, t.master_flag, t.claim_status, t.claim_type
+            ,ti.causation as causation
+            ,ti.title as taskName
+            ,ti.begin_time as taskBeginTime
+            ,ti.end_time as taskEndTime
+            ,ti.attach as taskAttach
+            ,ti.ext_info as extInfo
+            ,hd.dept_name as handleDeptName
+            ,hu.name as handleUserName
+            ,tu.name as transferUserName
+        from biz_task_handle t
+        left join biz_task_info ti on t.task_id = ti.id
+        left join sys_dept hd on t.handle_dept = hd.dept_id
+        left join v_sys_user hu on t.handle_user = hu.user_name and hu.del_flag != '2'
+        left join sys_user tu on t.transfer_user = tu.user_name and tu.del_flag != '2'
+    </sql>
+
+    <select id="selectBizTaskHandleList" parameterType="BizTaskHandle" resultMap="BizTaskHandleResult">
+        <include refid="selectBizTaskHandleVo"/>
+        <where>  
+            <if test="taskId != null  and taskId != ''"> and t.task_id = #{taskId}</if>
+            <if test="taskName != null  and taskName != ''"> and ti.title like concat('%',  #{taskName}, '%')</if>
+            <if test="handleType != null  and handleType != ''"> and t.handle_type = #{handleType}</if>
+            <if test="handleDept != null  and handleDept != ''"> and t.handle_dept = #{handleDept}</if>
+            <if test="handleUser != null  and handleUser != ''"> and t.handle_user = #{handleUser}</if>
+            <if test="scorePercent != null "> and t.score_percent = #{scorePercent}</if>
+            <if test="progress != null "> and t.progress = #{progress}</if>
+            <if test="handleStatus != null  and handleStatus != ''"> and t.handle_status = #{handleStatus}</if>
+            <if test="assignStatus != null  and assignStatus != ''"> and t.assign_status = #{assignStatus}</if>
+            <if test="parentId != null  and parentId != ''"> and t.parent_id = #{parentId}</if>
+            <if test="transferUser != null  and transferUser != ''"> and t.transfer_user = #{transferUser}</if>
+            <if test="handleRole != null  and handleRole != ''"> and t.handle_role = #{handleRole}</if>
+            <if test="masterFlag != null"> and t.master_flag = #{masterFlag}</if>
+            <if test="claimStatus != null and  claimStatus != ''"> and t.claim_status = #{claimStatus}</if>
+            <if test="claimType != null and  claimType != ''"> and t.claim_type = #{claimType}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizTaskHandleById" parameterType="String" resultMap="BizTaskHandleResult">
+        <include refid="selectBizTaskHandleVo"/>
+        where t.id = #{id}
+    </select>
+        
+    <insert id="insertBizTaskHandle" parameterType="BizTaskHandle">
+        insert into biz_task_handle
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="taskId != null and taskId != ''">task_id,</if>
+            <if test="handleType != null">handle_type,</if>
+            <if test="handleDept != null">handle_dept,</if>
+            <if test="handleUser != null">handle_user,</if>
+            <if test="scorePercent != null">score_percent,</if>
+            <if test="progress != null">progress,</if>
+            <if test="handleStatus != null and handleStatus != ''">handle_status,</if>
+            <if test="assignStatus != null and assignStatus != ''">assign_status,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="receiveTime != null and receiveTime != ''">receive_time,</if>
+            <if test="completeTime != null and completeTime != ''">complete_time,</if>
+            <if test="resultAttach != null">result_attach,</if>
+            <if test="completeSituation != null">complete_situation,</if>
+            <if test="parentId != null">parent_id,</if>
+            <if test="transferUser != null">transfer_user,</if>
+            <if test="transferRemark != null">transfer_remark,</if>
+            <if test="handleRole != null">handle_role,</if>
+            <if test="masterFlag != null">master_flag,</if>
+            <if test="claimStatus != null and  claimStatus != ''">claim_status,</if>
+            <if test="claimType != null and  claimType != ''">claim_type,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="taskId != null and taskId != ''">#{taskId},</if>
+            <if test="handleType != null">#{handleType},</if>
+            <if test="handleDept != null">#{handleDept},</if>
+            <if test="handleUser != null">#{handleUser},</if>
+            <if test="scorePercent != null">#{scorePercent},</if>
+            <if test="progress != null">#{progress},</if>
+            <if test="handleStatus != null and handleStatus != ''">#{handleStatus},</if>
+            <if test="assignStatus != null and assignStatus != ''">#{assignStatus},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="receiveTime != null and receiveTime != ''">#{receiveTime},</if>
+            <if test="completeTime != null and completeTime != ''">#{completeTime},</if>
+            <if test="resultAttach != null">#{resultAttach},</if>
+            <if test="completeSituation != null">#{completeSituation},</if>
+            <if test="parentId != null">#{parentId},</if>
+            <if test="transferUser != null">#{transferUser},</if>
+            <if test="transferRemark != null">#{transferRemark},</if>
+            <if test="handleRole != null">#{handleRole},</if>
+            <if test="masterFlag != null">#{masterFlag},</if>
+            <if test="claimStatus != null and  claimStatus != ''">#{claimStatus},</if>
+            <if test="claimType != null and  claimType != ''">#{claimType},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizTaskHandle" parameterType="BizTaskHandle">
+        update biz_task_handle
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">task_id = #{taskId},</if>
+            <if test="handleType != null">handle_type = #{handleType},</if>
+            <if test="handleDept != null">handle_dept = #{handleDept},</if>
+            <if test="handleUser != null">handle_user = #{handleUser},</if>
+            <if test="scorePercent != null">score_percent = #{scorePercent},</if>
+            <if test="progress != null">progress = #{progress},</if>
+            <if test="handleStatus != null and handleStatus != ''">handle_status = #{handleStatus},</if>
+            <if test="assignStatus != null and assignStatus != ''">assign_status = #{assignStatus},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="receiveTime != null and receiveTime != ''">receive_time = #{receiveTime},</if>
+            <if test="completeTime != null and completeTime != ''">complete_time = #{completeTime},</if>
+            <if test="resultAttach != null">result_attach = #{resultAttach},</if>
+            <if test="completeSituation != null">complete_situation = #{completeSituation},</if>
+            <if test="parentId != null">parent_id = #{parentId},</if>
+            <if test="transferUser != null">transfer_user = #{transferUser},</if>
+            <if test="transferRemark != null">transfer_remark = #{transferRemark},</if>
+            <if test="handleRole != null">handle_role = #{handleRole},</if>
+            <if test="masterFlag != null">master_flag = #{masterFlag},</if>
+            <if test="claimStatus != null and  claimStatus != ''">claim_status = #{claimStatus},</if>
+            <if test="claimType != null and  claimType != ''">claim_type = #{claimType},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizTaskHandleById" parameterType="String">
+        delete from biz_task_handle where id = #{id}
+    </delete>
+
+    <delete id="deleteBizTaskHandleByTaskId" parameterType="String">
+        delete from biz_task_handle where task_id = #{taskId}
+    </delete>
+
+    <delete id="deleteBizTaskHandleByIds" parameterType="String">
+        delete from biz_task_handle where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="listMyUnClaimList"  resultMap="BizTaskHandleResult" >
+        <include refid="selectBizTaskHandleVo"/>
+        <where>
+            and ti.audit_status = '3'
+            and t.handle_status = '1' and t.claim_status = '0'
+            <if test="entity.taskId != null  and entity.taskId != ''"> and t.task_id = #{entity.taskId}</if>
+            <if test="entity.taskName != null  and entity.taskName != ''"> and ti.title like concat('%',  #{entity.taskName}, '%')</if>
+            <if test="entity.handleType != null  and entity.handleType != ''"> and t.handle_type = #{entity.handleType}</if>
+            <if test="entity.handleDept != null  and entity.handleDept != ''"> and t.handle_dept = #{entity.handleDept}</if>
+            <if test="entity.handleUser != null  and entity.handleUser != ''"> and t.handle_user = #{entity.handleUser}</if>
+            <if test="entity.handleStatus != null  and entity.handleStatus != ''"> and t.handle_status = #{entity.handleStatus}</if>
+            <if test="entity.assignStatus != null  and entity.assignStatus != ''"> and t.assign_status = #{entity.assignStatus}</if>
+            <if test="entity.parentId != null  and entity.parentId != ''"> and t.parent_id = #{entity.parentId}</if>
+            <if test="entity.transferUser != null  and entity.transferUser != ''"> and t.transfer_user = #{entity.transferUser}</if>
+            <if test="entity.handleRole != null  and entity.handleRole != ''"> and t.handle_role = #{entity.handleRole}</if>
+            <if test="entity.masterFlag != null"> and t.master_flag = #{entity.masterFlag}</if>
+            and t.handle_user = #{userName}
+        </where>
+        order by t.receive_time desc
+    </select>
+
+    <select id="listMyReadList"  resultMap="BizTaskHandleResult" >
+        <include refid="selectBizTaskHandleVo"/>
+        <where>
+            and ti.audit_status = '3'
+            and t.handle_status = '1' and t.claim_status = '1' and t.claim_type = '2'
+            <if test="entity.taskId != null  and entity.taskId != ''"> and t.task_id = #{entity.taskId}</if>
+            <if test="entity.taskName != null  and entity.taskName != ''"> and ti.title like concat('%',  #{entity.taskName}, '%')</if>
+            <if test="entity.handleType != null  and entity.handleType != ''"> and t.handle_type = #{entity.handleType}</if>
+            <if test="entity.handleDept != null  and entity.handleDept != ''"> and t.handle_dept = #{entity.handleDept}</if>
+            <if test="entity.handleUser != null  and entity.handleUser != ''"> and t.handle_user = #{entity.handleUser}</if>
+            <if test="entity.handleStatus != null  and entity.handleStatus != ''"> and t.handle_status = #{entity.handleStatus}</if>
+            <if test="entity.assignStatus != null  and entity.assignStatus != ''"> and t.assign_status = #{entity.assignStatus}</if>
+            <if test="entity.parentId != null  and entity.parentId != ''"> and t.parent_id = #{entity.parentId}</if>
+            <if test="entity.transferUser != null  and entity.transferUser != ''"> and t.transfer_user = #{entity.transferUser}</if>
+            <if test="entity.handleRole != null  and entity.handleRole != ''"> and t.handle_role = #{entity.handleRole}</if>
+            <if test="entity.masterFlag != null"> and t.master_flag = #{entity.masterFlag}</if>
+            and t.handle_user = #{userName}
+        </where>
+        order by t.receive_time desc
+    </select>
+
+    <select id="listMyTodoList"  resultMap="BizTaskHandleResult" >
+        <include refid="selectBizTaskHandleVo"/>
+        <where>
+            and ti.audit_status = '3'
+            and t.handle_status = '1'
+            and (t.claim_status = '0' or (t.claim_type = '1' and t.claim_status = '1'))
+            <if test="entity.causation != null and entity.causation != ''"> and ti.causation = #{entity.causation} </if>
+            <if test="entity.taskId != null  and entity.taskId != ''"> and t.task_id = #{entity.taskId}</if>
+            <if test="entity.taskName != null  and entity.taskName != ''"> and ti.title like concat('%',  #{entity.taskName}, '%')</if>
+            <if test="entity.handleType != null  and entity.handleType != ''"> and t.handle_type = #{entity.handleType}</if>
+            <if test="entity.handleDept != null  and entity.handleDept != ''"> and t.handle_dept = #{entity.handleDept}</if>
+            <if test="entity.handleUser != null  and entity.handleUser != ''"> and t.handle_user = #{entity.handleUser}</if>
+            <if test="entity.handleStatus != null  and entity.handleStatus != ''"> and t.handle_status = #{entity.handleStatus}</if>
+            <if test="entity.assignStatus != null  and entity.assignStatus != ''"> and t.assign_status = #{entity.assignStatus}</if>
+            <if test="entity.parentId != null  and entity.parentId != ''"> and t.parent_id = #{entity.parentId}</if>
+            <if test="entity.transferUser != null  and entity.transferUser != ''"> and t.transfer_user = #{entity.transferUser}</if>
+            <if test="entity.handleRole != null  and entity.handleRole != ''"> and t.handle_role = #{entity.handleRole}</if>
+            <if test="entity.masterFlag != null"> and t.master_flag = #{entity.masterFlag}</if>
+            and (
+                t.handle_user = #{userName}
+                <if test="leaderDeptId != null">
+                    or (t.assign_status = '0' and t.handle_dept = #{leaderDeptId})
+                </if>
+            )
+        </where>
+        order by t.receive_time desc
+    </select>
+
+    <select id="listMyCompleteList"  resultMap="BizTaskHandleResult" >
+        <include refid="selectBizTaskHandleVo"/>
+        <where>
+            and (t.handle_status = '2' or (t.claim_type = '2' and t.claim_status = '1'))
+            <if test="entity.causation != null and entity.causation != ''"> and ti.causation = #{entity.causation} </if>
+            <if test="entity.taskId != null  and entity.taskId != ''"> and t.task_id = #{entity.taskId}</if>
+            <if test="entity.taskName != null  and entity.taskName != ''"> and ti.title like concat('%',  #{entity.taskName}, '%')</if>
+            <if test="entity.handleType != null  and entity.handleType != ''"> and t.handle_type = #{entity.handleType}</if>
+            <if test="entity.handleDept != null  and entity.handleDept != ''"> and t.handle_dept = #{entity.handleDept}</if>
+            <if test="entity.handleUser != null  and entity.handleUser != ''"> and t.handle_user = #{entity.handleUser}</if>
+            <if test="entity.handleStatus != null  and entity.handleStatus != ''"> and t.handle_status = #{entity.handleStatus}</if>
+            <if test="entity.assignStatus != null  and entity.assignStatus != ''"> and t.assign_status = #{entity.assignStatus}</if>
+            <if test="entity.parentId != null  and entity.parentId != ''"> and t.parent_id = #{entity.parentId}</if>
+            <if test="entity.transferUser != null  and entity.transferUser != ''"> and t.transfer_user = #{entity.transferUser}</if>
+            <if test="entity.handleRole != null  and entity.handleRole != ''"> and t.handle_role = #{entity.handleRole}</if>
+            <if test="entity.masterFlag != null"> and t.master_flag = #{entity.masterFlag}</if>
+            and (
+            t.handle_user = #{userName}
+            <if test="leaderDeptId != null">
+                or (t.handle_dept = #{leaderDeptId})
+            </if>
+            )
+        </where>
+        order by t.complete_time desc
+    </select>
+
+
+    <resultMap id="List4AssessRespResult" type="com.cb.task.vo.TaskHandleVo$List4AssessResp">
+        <result property="taskId"    column="taskId"    />
+        <result property="taskName"    column="taskName"    />
+        <result property="urgency"    column="urgency"    />
+        <result property="handleStatus"    column="handleStatus"    />
+        <result property="status"    column="status"    />
+        <result property="createTime"    column="createTime"    />
+    </resultMap>
+
+    <select id="list4Assess" resultMap="List4AssessRespResult" >
+        select * from (
+            select t.task_id as taskId, ti.urgency, t.handle_status as handleStatus, ti.status as status,ti.title as taskName,ti.create_time as createTime
+            from biz_task_handle t
+            left join biz_task_info ti on t.task_id = ti.id
+            <where>
+                and t.handle_user = #{req.userName}
+                and t.claim_status = '1' and t.claim_type = '1'
+                and t.handle_status in ('1','2')
+                and t.receive_time between #{req.begin} and #{req.end}
+            </where>
+            union
+            select t.id as taskId, t.urgency, null as handleStatus, t.status as status, t.title as taskName,t.create_time as createTime
+            from biz_task_info t
+            where not exists (
+                    select th.id from biz_task_handle th where th.task_id = t.id and th.handle_user = #{req.userName}
+                  )
+                  and t.audit_status = '3' and t.status in ('1','2')
+                  and t.create_time between #{req.begin} and #{req.end}
+                  and t.create_by = #{req.userName}
+        ) tt
+        <where>
+            <if test="req.taskName != null and req.taskName != ''">
+                and tt.taskName like concat('%', #{req.taskName}, '%')
+            </if>
+            <if test="req.urgency != null and req.urgency != ''">
+                and tt.urgency = #{req.urgency}
+            </if>
+            <if test="req.handleStatus != null and req.handleStatus != ''">
+                and tt.handleStatus = #{req.handleStatus}
+            </if>
+            <if test="req.status != null and req.status != ''">
+                and tt.status = #{req.status}
+            </if>
+        </where>
+        order by tt.createTime asc
+    </select>
+
+    <select id="listDeptOrUserList4Statistics"  resultMap="BizTaskHandleResult" >
+        <include refid="selectBizTaskHandleVo"/>
+        <where>
+            and t.claim_status = '1' and t.claim_type = '1'
+            and t.handle_status in ('1','2')
+            and hu.work_title_code not in ('111','112')
+            <if test="entity.taskId != null  and entity.taskId != ''"> and t.task_id = #{entity.taskId}</if>
+            <if test="entity.taskName != null  and entity.taskName != ''"> and ti.title like concat('%',  #{entity.taskName}, '%')</if>
+            <if test="entity.handleType != null  and entity.handleType != ''"> and t.handle_type = #{entity.handleType}</if>
+            <if test="entity.handleDept != null  and entity.handleDept != ''"> and t.handle_dept = #{entity.handleDept}</if>
+            <if test="entity.handleUser != null  and entity.handleUser != ''"> and t.handle_user = #{entity.handleUser}</if>
+            <if test="entity.handleStatus != null  and entity.handleStatus != ''"> and t.handle_status = #{entity.handleStatus}</if>
+            <if test="entity.assignStatus != null  and entity.assignStatus != ''"> and t.assign_status = #{entity.assignStatus}</if>
+            <if test="entity.parentId != null  and entity.parentId != ''"> and t.parent_id = #{entity.parentId}</if>
+            <if test="entity.transferUser != null  and entity.transferUser != ''"> and t.transfer_user = #{entity.transferUser}</if>
+            <if test="entity.handleRole != null  and entity.handleRole != ''"> and t.handle_role = #{entity.handleRole}</if>
+            <if test="entity.masterFlag != null"> and t.master_flag = #{entity.masterFlag}</if>
+            <if test="entity.taskBeginTime != null and entity.taskBeginTime != ''">
+                and t.receive_time &gt;= #{entity.taskBeginTime}
+            </if>
+            <if test="entity.taskEndTime != null and entity.taskEndTime != ''">
+                and t.receive_time &lt;= #{entity.taskEndTime}
+            </if>
+            <choose>
+                <when test="userId != null">
+                    and hu.user_id = #{userId}
+                </when>
+                <when test="userName != null and userName != ''">
+                    and t.handle_user = #{userName}
+                </when>
+                <when test="deptId != null">
+                    and t.handle_user in (
+                        select user_name from sys_user where dept_id = #{deptId}
+                    )
+                </when>
+            </choose>
+
+        </where>
+        order by t.complete_time desc,t.receive_time desc
+    </select>
+
+    <select id="listMyExpireList"  resultMap="BizTaskHandleResult" >
+        <include refid="selectBizTaskHandleVo"/>
+        <where>
+            and t.handle_status = '1' and t.claim_type = '1'
+            and ti.end_time &lt;= #{currDateTime}
+            <if test="entity.causation != null and entity.causation != ''"> and ti.causation = #{entity.causation} </if>
+            <if test="entity.taskId != null  and entity.taskId != ''"> and t.task_id = #{entity.taskId}</if>
+            <if test="entity.taskName != null  and entity.taskName != ''"> and ti.title like concat('%',  #{entity.taskName}, '%')</if>
+            <if test="entity.handleType != null  and entity.handleType != ''"> and t.handle_type = #{entity.handleType}</if>
+            <if test="entity.handleDept != null  and entity.handleDept != ''"> and t.handle_dept = #{entity.handleDept}</if>
+            <if test="entity.handleUser != null  and entity.handleUser != ''"> and t.handle_user = #{entity.handleUser}</if>
+            <if test="entity.handleStatus != null  and entity.handleStatus != ''"> and t.handle_status = #{entity.handleStatus}</if>
+            <if test="entity.assignStatus != null  and entity.assignStatus != ''"> and t.assign_status = #{entity.assignStatus}</if>
+            <if test="entity.parentId != null  and entity.parentId != ''"> and t.parent_id = #{entity.parentId}</if>
+            <if test="entity.transferUser != null  and entity.transferUser != ''"> and t.transfer_user = #{entity.transferUser}</if>
+            <if test="entity.handleRole != null  and entity.handleRole != ''"> and t.handle_role = #{entity.handleRole}</if>
+            <if test="entity.masterFlag != null"> and t.master_flag = #{entity.masterFlag}</if>
+            and t.handle_user = #{userName}
+            order by ti.end_time asc
+        </where>
+
+    </select>
+
+    <select id="list4ExpireNotice" resultMap="BizTaskHandleResult" >
+        <include refid="selectBizTaskHandleVo"/>
+        <where>
+            and t.handle_status = '1' and t.claim_type = '1'
+            and ti.audit_status = '3'
+            and ti.begin_time &lt;= #{now} and ti.end_time &lt;= #{endTime}
+        </where>
+    </select>
+
+</mapper>

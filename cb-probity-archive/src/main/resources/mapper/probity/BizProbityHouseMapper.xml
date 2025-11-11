@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityHouseMapper">
+
+    <resultMap type="BizProbityHouse" id="BizProbityHouseResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="owner" column="owner"/>
+        <result property="houseSourceDest" column="house_source_dest"/>
+        <result property="addr" column="addr"/>
+        <result property="buildArea" column="build_area"/>
+        <result property="houseNature" column="house_nature"/>
+        <result property="tradeDate" column="trade_date"/>
+        <result property="tradePrice" column="trade_price"/>
+        <result property="houseTargetDest" column="house_target_dest"/>
+    </resultMap>
+
+    <sql id="selectBizProbityHouseVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               owner,
+               house_source_dest,
+               addr,
+               build_area,
+               house_nature,
+               trade_date,
+               trade_price,
+               house_target_dest
+        from biz_probity_house
+    </sql>
+
+    <select id="selectBizProbityHouseList" parameterType="BizProbityHouse" resultMap="BizProbityHouseResult">
+        <include refid="selectBizProbityHouseVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="owner != null  and owner != ''">and owner = #{owner}</if>
+            <if test="houseSourceDest != null  and houseSourceDest != ''">and house_source_dest = #{houseSourceDest}
+            </if>
+            <if test="addr != null  and addr != ''">and addr = #{addr}</if>
+            <if test="buildArea != null  and buildArea != ''">and build_area = #{buildArea}</if>
+            <if test="houseNature != null  and houseNature != ''">and house_nature = #{houseNature}</if>
+            <if test="tradeDate != null  and tradeDate != ''">and trade_date = #{tradeDate}</if>
+            <if test="tradePrice != null  and tradePrice != ''">and trade_price = #{tradePrice}</if>
+            <if test="houseTargetDest!= null  and houseTargetDest!= ''">and house_target_dest = #{houseTargetDest}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityHouseById" parameterType="String" resultMap="BizProbityHouseResult">
+        <include refid="selectBizProbityHouseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityHouse" parameterType="BizProbityHouse">
+        insert into biz_probity_house
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="owner != null">owner,</if>
+            <if test="houseSourceDest != null">house_source_dest,</if>
+            <if test="addr != null">addr,</if>
+            <if test="buildArea != null">build_area,</if>
+            <if test="houseNature != null">house_nature,</if>
+            <if test="tradeDate != null">trade_date,</if>
+            <if test="tradePrice != null">trade_price,</if>
+            <if test="houseTargetDest!= null">house_target_dest,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="owner != null">#{owner},</if>
+            <if test="houseSourceDest != null">#{houseSourceDest},</if>
+            <if test="addr != null">#{addr},</if>
+            <if test="buildArea != null">#{buildArea},</if>
+            <if test="houseNature != null">#{houseNature},</if>
+            <if test="tradeDate != null">#{tradeDate},</if>
+            <if test="tradePrice != null">#{tradePrice},</if>
+            <if test="houseTargetDest!= null">#{houseTargetDest},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_house
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            owner,
+            house_source_dest,
+            addr,
+            build_area,
+            house_nature,
+            trade_date,
+            trade_price,
+            house_target_dest,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.owner},
+                #{entity.houseSourceDest},
+                #{entity.addr},
+                #{entity.buildArea},
+                #{entity.houseNature},
+                #{entity.tradeDate},
+                #{entity.tradePrice},
+                #{entity.houseTargetDest},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityHouse" parameterType="BizProbityHouse">
+        update biz_probity_house
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="owner != null">owner = #{owner},</if>
+            <if test="houseSourceDest != null">house_source_dest = #{houseSourceDest},</if>
+            <if test="addr != null">addr = #{addr},</if>
+            <if test="buildArea != null">build_area = #{buildArea},</if>
+            <if test="houseNature != null">house_nature = #{houseNature},</if>
+            <if test="tradeDate != null">trade_date = #{tradeDate},</if>
+            <if test="tradePrice != null">trade_price = #{tradePrice},</if>
+            <if test="houseTargetDest!= null">house_target_dest = #{houseTargetDest},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityHouseById" parameterType="String">
+        delete
+        from biz_probity_house
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityHouseByIds" parameterType="String">
+        delete from biz_probity_house where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

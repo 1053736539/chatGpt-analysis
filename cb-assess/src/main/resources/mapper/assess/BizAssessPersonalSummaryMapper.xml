@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessPersonalSummaryMapper">
+    
+    <resultMap type="BizAssessPersonalSummary" id="BizAssessPersonalSummaryResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="reportTime"    column="report_time"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="content"    column="content"    />
+        <result property="isReport"    column="is_report"    />
+        <result property="isPublicity"    column="is_publicity"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="publicityStartTime"    column="publicity_start_time"    />
+        <result property="publicityEndTime"    column="publicity_end_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="auditFlag" column="audit_flag" />
+        <result property="rejectReason" column="reject_reason" />
+
+    </resultMap>
+    <resultMap id="bizAssessPersonalSummaryVo" type="BizAssessPersonalSummaryVo" extends="BizAssessPersonalSummaryResult">
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+    <sql id="selectBizAssessPersonalSummaryVo">
+        select aes.id, aes.user_id, aes.report_time, aes.dept_id, aes.content, aes.is_report, aes.is_publicity,
+               aes.assessment_year, aes.publicity_start_time, aes.publicity_end_time, aes.create_time,
+               aes.update_time, aes.create_by, aes.update_by, aes.del_flag, aes.audit_flag, aes.reject_reason
+               ,u.name,d.dept_name
+        from biz_assess_personal_summary aes
+        left join sys_user u on aes.user_id=u.user_id
+        left join sys_dept d on aes.dept_id=d.dept_id
+    </sql>
+
+    <select id="selectBizAssessPersonalSummaryList" parameterType="BizAssessPersonalSummary" resultMap="bizAssessPersonalSummaryVo">
+        <include refid="selectBizAssessPersonalSummaryVo"/>
+        <where>
+            <if test="userId != null "> and aes.user_id = #{userId}</if>
+            <if test="reportTime != null  and reportTime != ''"> and aes.report_time = #{reportTime}</if>
+            <if test="deptId != null "> and aes.dept_id = #{deptId}</if>
+            <if test="content != null  and content != ''"> and aes.content = #{content}</if>
+            <if test="isReport != null  and isReport != ''"> and aes.is_report = #{isReport}</if>
+            <if test="isPublicity != null  and isPublicity != ''"> and aes.is_publicity = #{isPublicity}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and aes.assessment_year = #{assessmentYear}</if>
+            <if test="publicityStartTime != null  and publicityStartTime != ''"> and aes.publicity_start_time = #{publicityStartTime}</if>
+            <if test="publicityEndTime != null  and publicityEndTime != ''"> and aes.publicity_end_time = #{publicityEndTime}</if>
+            <if test="deptName != null  and deptName != ''"> and d.dept_name = #{deptName}</if>
+            <if test="name != null  and name != ''"> and u.name = #{name}</if>
+            <if test="auditFlag != null  and auditFlag != ''"> and aes.audit_flag = #{auditFlag}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizAssessPersonalSummaryById" parameterType="String" resultMap="BizAssessPersonalSummaryResult">
+        <include refid="selectBizAssessPersonalSummaryVo"/>
+        where aes.id = #{id}
+    </select>
+        <select id="selectYears" resultMap="bizAssessPersonalSummaryVo">
+            select assessment_year from biz_assess_personal_summary group by assessment_year order by assessment_year desc
+        </select>
+    <select id="checkSummaryExist" resultType="java.lang.Boolean">
+        select count(0) from biz_assess_personal_summary
+        <where>
+            <if test="id != null and id != ''">and id != #{id}</if>
+            <if test="assessmentYear != null and assessmentYear != ''"> and assessment_year = #{assessmentYear}</if>
+            <if test="userId != null and userId != ''">and user_id = #{userId}</if>
+        </where>
+    </select>
+    <insert id="insertBizAssessPersonalSummary" parameterType="BizAssessPersonalSummary">
+        insert into biz_assess_personal_summary
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="reportTime != null">report_time,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="content != null">content,</if>
+            <if test="isReport != null">is_report,</if>
+            <if test="isPublicity != null">is_publicity,</if>
+            <if test="assessmentYear != null">assessment_year,</if>
+            <if test="publicityStartTime != null">publicity_start_time,</if>
+            <if test="publicityEndTime != null">publicity_end_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="auditFlag != null">audit_flag,</if>
+            <if test="rejectReason != null">reject_reason,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="reportTime != null">#{reportTime},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="content != null">#{content},</if>
+            <if test="isReport != null">#{isReport},</if>
+            <if test="isPublicity != null">#{isPublicity},</if>
+            <if test="assessmentYear != null">#{assessmentYear},</if>
+            <if test="publicityStartTime != null">#{publicityStartTime},</if>
+            <if test="publicityEndTime != null">#{publicityEndTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="auditFlag != null">#{auditFlag},</if>
+            <if test="rejectReason != null">#{rejectReason},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessPersonalSummary" parameterType="BizAssessPersonalSummary">
+        update biz_assess_personal_summary
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="reportTime != null">report_time = #{reportTime},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="content != null">content = #{content},</if>
+            <if test="isReport != null">is_report = #{isReport},</if>
+            <if test="isPublicity != null">is_publicity = #{isPublicity},</if>
+            <if test="assessmentYear != null">assessment_year = #{assessmentYear},</if>
+            <if test="publicityStartTime != null">publicity_start_time = #{publicityStartTime},</if>
+            <if test="publicityEndTime != null">publicity_end_time = #{publicityEndTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="auditFlag != null">audit_flag = #{auditFlag},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateToPublicity" parameterType="BizAssessPersonalSummary">
+        update biz_assess_personal_summary
+        set
+            is_publicity = '1'
+        where assessment_year = #{year} and is_report='1'
+    </update>
+
+    <delete id="deleteBizAssessPersonalSummaryById" parameterType="String">
+        delete from biz_assess_personal_summary where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessPersonalSummaryByIds" parameterType="String">
+        delete from biz_assess_personal_summary where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

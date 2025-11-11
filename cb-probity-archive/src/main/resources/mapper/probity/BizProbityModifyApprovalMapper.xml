@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityModifyApprovalMapper">
+
+    <resultMap type="BizProbityModifyApproval" id="BizProbityModifyApprovalResult">
+        <result property="id" column="id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="applyUser" column="apply_user"/>
+        <result property="year" column="year"/>
+        <result property="remark" column="remark"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="status" column="status"/>
+        <result property="approvalTime" column="approval_time"/>
+        <result property="rejectReason" column="reject_reason"/>
+        <result property="deptName" column="dept_name"/>
+    </resultMap>
+
+    <sql id="selectBizProbityModifyApprovalVo">
+        select id,
+               create_by,
+               dept_name,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               probity_id,
+               status,
+               approval_time,
+               reject_reason,
+               apply_user,
+               year
+        from biz_probity_modify_approval
+    </sql>
+
+    <select id="selectBizProbityModifyApprovalList" parameterType="BizProbityModifyApproval"
+            resultMap="BizProbityModifyApprovalResult">
+        <include refid="selectBizProbityModifyApprovalVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="status != null ">and status = #{status}</if>
+            <if test="approvalTime != null ">and approval_time = #{approvalTime}</if>
+            <if test="rejectReason != null  and rejectReason != ''">and reject_reason = #{rejectReason}</if>
+            <if test="applyUser != null  and applyUser != ''">and apply_user like concat('%',#{applyUser},'%')</if>
+            <if test="deptName != null and deptName != ''">and dept_name like concat('%',#{deptName},'%')</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityModifyApprovalById" parameterType="String" resultMap="BizProbityModifyApprovalResult">
+        <include refid="selectBizProbityModifyApprovalVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityModifyApproval" parameterType="BizProbityModifyApproval">
+        insert into biz_probity_modify_approval
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="status != null">status,</if>
+            <if test="approvalTime != null">approval_time,</if>
+            <if test="rejectReason != null">reject_reason,</if>
+            <if test="applyUser != null">apply_user,</if>
+            <if test="year != null">year,</if>
+            <if test="deptName != null">dept_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="status != null">#{status},</if>
+            <if test="approvalTime != null">#{approvalTime},</if>
+            <if test="applyUser != null">#{applyUser},</if>
+            <if test="year != null">#{year},</if>
+            <if test="deptName != null">#{deptName},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_modify_approval
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            probity_id,
+            status,
+            approval_time,
+            reject_reason,
+            apply_user,
+            year,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.probityId},
+                #{entity.status},
+                #{entity.approvalTime},
+                #{entity.rejectReason},
+                #{entity.applyUser},
+                #{entity.year},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityModifyApproval" parameterType="BizProbityModifyApproval">
+        update biz_probity_modify_approval
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="approvalTime != null">approval_time = #{approvalTime},</if>
+            <if test="rejectReason != null">reject_reason = #{rejectReason},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityModifyApprovalById" parameterType="String">
+        delete
+        from biz_probity_modify_approval
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityModifyApprovalByIds" parameterType="String">
+        delete from biz_probity_modify_approval where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityOperateMapper">
+
+    <resultMap type="BizProbityOperate" id="BizProbityOperateResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="operateItem" column="operate_item"/>
+        <result property="operateTime" column="operate_time"/>
+        <result property="operateAddr" column="operate_addr"/>
+        <result property="peopleNum" column="people_num"/>
+        <result property="filingFlag" column="filing_flag"/>
+    </resultMap>
+
+    <sql id="selectBizProbityOperateVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               operate_item,
+               operate_time,
+               operate_addr,
+               people_num,
+               filing_flag
+        from biz_probity_operate
+    </sql>
+
+    <select id="selectBizProbityOperateList" parameterType="BizProbityOperate" resultMap="BizProbityOperateResult">
+        <include refid="selectBizProbityOperateVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="operateItem != null  and operateItem != ''">and operate_item = #{operateItem}</if>
+            <if test="operateTime != null  and operateTime != ''">and operate_time = #{operateTime}</if>
+            <if test="operateAddr != null  and operateAddr != ''">and operate_addr = #{operateAddr}</if>
+            <if test="peopleNum != null  and peopleNum != ''">and people_num = #{peopleNum}</if>
+            <if test="filingFlag != null  and filingFlag != ''">and filing_flag = #{filingFlag}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityOperateById" parameterType="String" resultMap="BizProbityOperateResult">
+        <include refid="selectBizProbityOperateVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityOperate" parameterType="BizProbityOperate">
+        insert into biz_probity_operate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="operateItem != null">operate_item,</if>
+            <if test="operateTime != null">operate_time,</if>
+            <if test="operateAddr != null">operate_addr,</if>
+            <if test="peopleNum != null">people_num,</if>
+            <if test="filingFlag != null">filing_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="operateItem != null">#{operateItem},</if>
+            <if test="operateTime != null">#{operateTime},</if>
+            <if test="operateAddr != null">#{operateAddr},</if>
+            <if test="peopleNum != null">#{peopleNum},</if>
+            <if test="filingFlag != null">#{filingFlag},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_operate
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            operate_item,
+            operate_time,
+            operate_addr,
+            people_num,
+            filing_flag,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.operateItem},
+                #{entity.operateTime},
+                #{entity.operateAddr},
+                #{entity.peopleNum},
+                #{entity.filingFlag},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityOperate" parameterType="BizProbityOperate">
+        update biz_probity_operate
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="operateItem != null">operate_item = #{operateItem},</if>
+            <if test="operateTime != null">operate_time = #{operateTime},</if>
+            <if test="operateAddr != null">operate_addr = #{operateAddr},</if>
+            <if test="peopleNum != null">people_num = #{peopleNum},</if>
+            <if test="filingFlag != null">filing_flag = #{filingFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityOperateById" parameterType="String">
+        delete
+        from biz_probity_operate
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityOperateByIds" parameterType="String">
+        delete from biz_probity_operate where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

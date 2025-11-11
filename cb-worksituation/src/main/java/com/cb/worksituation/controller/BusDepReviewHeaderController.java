@@ -107,11 +107,30 @@ public class BusDepReviewHeaderController extends BaseController {
 
         // 校验数据库中是否存在重复编码
         for (BusDepReviewHeader busDepReviewHeader : busDepReviewHeaders) {
-            if (busDepReviewHeader == null || StringUtils.isBlank(busDepReviewHeader.getHeadCode())) {
-                continue;
-            }
             BusDepReviewHeader depReviewHeader = new BusDepReviewHeader();
+            // 同一个模板下，编码不能重复
             depReviewHeader.setHeadCode(busDepReviewHeader.getHeadCode());
+            depReviewHeader.setBusDepReviewId(busDepReviewHeader.getBusDepReviewId());
+            // 特殊定义
+            if ("1".equals(busDepReviewHeader.getHeadType())) {
+                busDepReviewHeader.setHeadCode("jsdw");
+                busDepReviewHeader.setHeadName("角色定位");
+            }
+
+            if ("3".equals(busDepReviewHeader.getHeadType())) {
+                busDepReviewHeader.setHeadCode("qualitative_evaluation_score");
+                busDepReviewHeader.setHeadName("定性评价得分（30分）");
+            }
+
+            if ("5".equals(busDepReviewHeader.getHeadType())) {
+                busDepReviewHeader.setHeadCode("deduct_points");
+                busDepReviewHeader.setHeadName("扣分");
+            }
+
+            if ("6".equals(busDepReviewHeader.getHeadType())) {
+                busDepReviewHeader.setHeadCode("business_collaboration_unit");
+                busDepReviewHeader.setHeadName("党建业务协作单元加分");
+            }
             List<BusDepReviewHeader> list = busDepReviewHeaderService.selectBusDepReviewHeaderList(depReviewHeader);
             if (!CollectionUtils.isEmpty(list)) {
                 return AjaxResult.error("编码不能重复");

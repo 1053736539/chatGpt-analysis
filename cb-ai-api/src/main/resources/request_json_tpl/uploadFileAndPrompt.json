@@ -1,0 +1,20 @@
+{
+  "inputs": {
+    "question": "提示词。示例：根据已知文档内容，编写一份纪委监委的案件审理报告。xxx",
+    "report_name": ""
+  },
+  "tweaks": {
+    "InputFileNode-db8ca": {
+      "file_path":"文件的filePath"
+    },
+    "ElemUnstructuredLoaderV0-6d4c7": {},
+    "BishengLLM-c26e3": {},
+    "BishengEmbedding-cd766": {},
+    "Milvus-ebaec": {},
+    "CombineDocsChain-555d2": {},
+    "RetrievalQA-8e50a": {},
+    "RecursiveCharacterTextSplitter-6d4b3": {},
+    "PromptTemplate-d10a3": {},
+    "Report-57863":{}
+  }
+}

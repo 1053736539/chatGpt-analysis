@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessIndicatorProRatGroupMapper">
+
+    <resultMap type="BizAssessIndicatorProRatGroup" id="BizAssessIndicatorProRatGroupResult">
+        <result property="groupId" column="group_id"/>
+        <result property="name" column="name"/>
+        <result property="deptAssess" column="dept_assess"/>
+        <result property="weight" column="weight"/>
+    </resultMap>
+
+    <sql id="selectBizAssessIndicatorProRatGroupVo">
+        select group_id, name, dept_assess,weight
+        from biz_assess_indicator_pro_rat_group
+    </sql>
+    <insert id="batchInsertProRatGroup">
+        insert into biz_assess_indicator_pro_rat_group( group_id, pro_id,name,dept_assess,weight) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.groupId}, #{item.proId},#{item.name},#{item.deptAssess},#{item.weight})
+        </foreach>
+    </insert>
+
+    <delete id="deleteBizAssessIndicatorProRatGroupById" parameterType="String">
+        delete
+        from biz_assess_indicator_pro_rat_group
+        where pro_id = #{proId}
+    </delete>
+
+    <delete id="deleteBizAssessIndicatorProRatGroupByIds" parameterType="String">
+        delete from biz_assess_indicator_pro_rat_group where id in
+        <foreach item="proId" collection="array" open="(" separator="," close=")">
+            #{proId}
+        </foreach>
+    </delete>
+    <select id="selectListByProId" resultMap="BizAssessIndicatorProRatGroupResult">
+        select name,weight
+        from biz_assess_indicator_pro_rat_group where pro_id =#{proId}
+    </select>
+    <select id="selectListByProIds" resultType="com.cb.assess.domain.BizAssessIndicatorProRatGroup">
+        select pro_id as proId,name,weight
+        from biz_assess_indicator_pro_rat_group where pro_id in
+        <foreach item="item" collection="list" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

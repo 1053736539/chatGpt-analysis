@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamLabelQuestionsMapper">
+    
+    <resultMap type="ExamLabelQuestions" id="ExamLabelQuestionsResult">
+        <result property="id"    column="id"    />
+        <result property="examinationQuestionsId"    column="examination_questions_id"    />
+        <result property="labelId"    column="label_id"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyUser"    column="modify_user"    />
+        <result property="modifyTime"    column="modify_time"    />
+    </resultMap>
+
+    <sql id="selectExamLabelQuestionsVo">
+        select id, examination_questions_id, label_id, create_user, create_time, modify_user, modify_time from exam_label_questions
+    </sql>
+
+    <select id="selectExamLabelQuestionsList" parameterType="ExamLabelQuestions" resultMap="ExamLabelQuestionsResult">
+        <include refid="selectExamLabelQuestionsVo"/>
+        <where>  
+            <if test="examinationQuestionsId != null "> and examination_questions_id = #{examinationQuestionsId}</if>
+            <if test="labelId != null "> and label_id = #{labelId}</if>
+            <if test="createUser != null  and createUser != ''"> and create_user = #{createUser}</if>
+            <if test="modifyUser != null  and modifyUser != ''"> and modify_user = #{modifyUser}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectExamLabelQuestionsById" parameterType="Long" resultMap="ExamLabelQuestionsResult">
+        <include refid="selectExamLabelQuestionsVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertExamLabelQuestions" parameterType="ExamLabelQuestions" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_label_questions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="examinationQuestionsId != null">examination_questions_id,</if>
+            <if test="labelId != null">label_id,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="modifyUser != null">modify_user,</if>
+            <if test="modifyTime != null">modify_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="examinationQuestionsId != null">#{examinationQuestionsId},</if>
+            <if test="labelId != null">#{labelId},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="modifyUser != null">#{modifyUser},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatchExamLabelQuestions" parameterType="java.util.List" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_label_questions(examination_questions_id,label_id)
+        values
+        <foreach collection="list" separator="," item="item" index="i">
+            <trim prefix=" (" suffix=")" suffixOverrides=",">
+                #{item.examinationQuestionsId},
+                #{item.labelId}
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateExamLabelQuestions" parameterType="ExamLabelQuestions">
+        update exam_label_questions
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examinationQuestionsId != null">examination_questions_id = #{examinationQuestionsId},</if>
+            <if test="labelId != null">label_id = #{labelId},</if>
+            <if test="createUser != null">create_user = #{createUser},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyUser != null">modify_user = #{modifyUser},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamLabelQuestionsById" parameterType="Long">
+        delete from exam_label_questions where id = #{id}
+    </delete>
+
+    <delete id="deleteExamLabelQuestionsByQuestionId" parameterType="Long">
+        delete from exam_label_questions where examination_questions_id = #{questionId}
+    </delete>
+
+    <delete id="deleteExamLabelQuestionsByIds" parameterType="String">
+        delete from exam_label_questions where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.adopt.mapper.BizAdoptScoreRuleMapper">
+    
+    <resultMap type="BizAdoptScoreRule" id="BizAdoptScoreRuleResult">
+        <result property="id"    column="id"    />
+        <result property="level"    column="level"    />
+        <result property="carrier"    column="carrier"    />
+        <result property="mainScore"    column="main_score"    />
+        <result property="adoptScore"    column="adopt_score"    />
+        <result property="otherScore"    column="other_score"    />
+
+    </resultMap>
+
+    <sql id="selectBizAdoptScoreRuleVo">
+        select id, level, carrier, main_score, adopt_score, other_score from biz_adopt_score_rule
+    </sql>
+
+    <select id="selectBizAdoptScoreRuleList" parameterType="BizAdoptScoreRule" resultMap="BizAdoptScoreRuleResult">
+        <include refid="selectBizAdoptScoreRuleVo"/>
+        <where>  
+            <if test="level != null  and level != ''"> and level = #{level}</if>
+            <if test="carrier != null  and carrier != ''"> and carrier = #{carrier}</if>
+            <if test="mainScore != null "> and main_score = #{mainScore}</if>
+             <if test="adoptScore != null "> and adopt_score = #{adoptScore}</if>
+            <if test="otherScore != null "> and other_score = #{otherScore}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+    
+    <select id="selectBizAdoptScoreRuleById" parameterType="Integer" resultMap="BizAdoptScoreRuleResult">
+        <include refid="selectBizAdoptScoreRuleVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizAdoptScoreRule" parameterType="BizAdoptScoreRule">
+        insert into biz_adopt_score_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="level != null">level,</if>
+            <if test="carrier != null">carrier,</if>
+            <if test="mainScore != null">main_score,</if>
+            <if test="adoptScore != null">adopt_score,</if>
+            <if test="otherScore != null">other_score,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="level != null">#{level},</if>
+            <if test="carrier != null">#{carrier},</if>
+            <if test="mainScore != null">#{mainScore},</if>
+            <if test="adoptScore != null">#{adoptScore},</if>
+            <if test="otherScore != null">#{otherScore},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_adopt_score_rule
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+                            id,
+                            level,
+                            carrier,
+                            main_score,
+                            adopt_score,
+                            other_score,
+                    </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                                    #{entity.id},
+                                    #{entity.level},
+                                    #{entity.carrier},
+                                    #{entity.mainScore},
+                                    #{entity.adoptScore},
+                                    #{entity.otherScore},
+                            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizAdoptScoreRule" parameterType="BizAdoptScoreRule">
+        update biz_adopt_score_rule
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="level != null">level = #{level},</if>
+            <if test="carrier != null">carrier = #{carrier},</if>
+            <if test="mainScore != null">main_score = #{mainScore},</if>
+            <if test="adoptScore != null">adopt_score = #{adoptScore},</if>
+            <if test="otherScore != null">other_score = #{otherScore},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAdoptScoreRuleById" parameterType="Integer">
+        delete from biz_adopt_score_rule where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAdoptScoreRuleByIds" parameterType="String">
+        delete from biz_adopt_score_rule where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

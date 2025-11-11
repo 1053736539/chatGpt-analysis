@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.basedata.mapper.BasicDataCleanTaskLogMapper">
+
+    <resultMap type="BasicDataCleanTaskLog" id="BasicDataCleanTaskLogResult">
+        <result property="logId" column="log_id"/>
+        <result property="cleanTaskId" column="clean_task_id"/>
+        <result property="cleanTaskName" column="clean_task_name"/>
+        <result property="startTime" column="start_time"/>
+        <result property="status" column="status"/>
+        <result property="endTime" column="end_time"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="cleanResult"    column="clean_result"    />
+    </resultMap>
+
+    <sql id="selectBasicDataCleanTaskLogVo">
+        SELECT l.log_id,
+               l.clean_task_id,
+               t.task_name AS clean_task_name,
+               l.start_time,
+               l.STATUS,
+               l.end_time,
+               l.create_by,
+               l.create_time,
+               l.clean_result
+        FROM basic_data_clean_task_log l
+                 JOIN basic_data_clean_task t ON t.task_id = l.clean_task_id
+    </sql>
+
+    <select id="selectBasicDataCleanTaskLogList" parameterType="BasicDataCleanTaskLog"
+            resultMap="BasicDataCleanTaskLogResult">
+        <include refid="selectBasicDataCleanTaskLogVo"/>
+        <where>
+            <if test="cleanTaskId != null  and cleanTaskId != ''">and l.clean_task_id =#{cleanTaskId}</if>
+            <if test="cleanTaskName != null  and cleanTaskName != ''">and t.task_name like concat('%',#{cleanTaskName},'%')</if>
+            <if test="startTime != null ">and l.start_time = #{startTime}</if>
+            <if test="status != null  and status != ''">and l.status = #{status}</if>
+            <if test="endTime != null ">and l.end_time = #{endTime}</if>
+        </where>
+        order by l.create_time desc
+    </select>
+
+    <select id="selectBasicDataCleanTaskLogById" parameterType="String" resultMap="BasicDataCleanTaskLogResult">
+        <include refid="selectBasicDataCleanTaskLogVo"/>
+        where l.log_id = #{logId}
+    </select>
+
+    <insert id="insertBasicDataCleanTaskLog" parameterType="BasicDataCleanTaskLog">
+        insert into basic_data_clean_task_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="logId != null and logId != ''">log_id,</if>
+            <if test="cleanTaskId != null and cleanTaskId != ''">clean_task_id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="status != null">status,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="cleanResult != null">clean_result,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="logId != null and logId != ''">#{logId},</if>
+            <if test="cleanTaskId != null and cleanTaskId != ''">#{cleanTaskId},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="cleanResult != null">#{cleanResult},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBasicDataCleanTaskLog" parameterType="BasicDataCleanTaskLog">
+        update basic_data_clean_task_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="cleanTaskId != null and cleanTaskId != ''">clean_task_id = #{cleanTaskId},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="cleanResult != null">clean_result = #{cleanResult},</if>
+        </trim>
+        where log_id = #{logId}
+    </update>
+
+    <delete id="deleteBasicDataCleanTaskLogById" parameterType="String">
+        delete
+        from basic_data_clean_task_log
+        where log_id = #{logId}
+    </delete>
+
+    <delete id="deleteBasicDataCleanTaskLogByIds" parameterType="String">
+        delete from basic_data_clean_task_log where log_id in
+        <foreach item="logId" collection="array" open="(" separator="," close=")">
+            #{logId}
+        </foreach>
+    </delete>
+</mapper>

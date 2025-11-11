@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizIndividualAssessmentTaskMapper">
+    <resultMap type="BizIndividualAssessmentTask" id="IndividualAssessmentTaskResult">
+        <result property="taskId" column="task_id"/>
+        <result property="proId" column="pro_id"/>
+        <result property="type" column="type"/>
+        <result property="taskName" column="task_name"/>
+        <result property="assessCycle" column="assess_cycle"/>
+        <result property="assessCycleDesc" column="assess_cycle_desc"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="enableEditSummarize" column="enable_edit_summarize"/>
+        <result property="enableEditEvaluate" column="enable_edit_evaluate"/>
+        <association property="pro" javaType="BizAssessIndicatorPro">
+            <result property="proName" column="pro_name"></result>
+            <result property="special" column="special"></result>
+            <result property="score" column="score"></result>
+        </association>
+    </resultMap>
+
+    <select id="selectAllToDoTaskList" resultMap="IndividualAssessmentTaskResult">
+        select T.* from (
+            SELECT DISTINCT
+                a.task_id,
+                a.pro_id,
+                a.task_name,
+                a.belong_year,
+                a.special,
+                a.type,
+                a.cycle AS assess_cycle,
+                a.cycle_desc AS assess_cycle_desc,
+                a.start_time,
+                a.end_time,
+                (select count(0) from v_assess_task_handle where task_id = a.task_id and voter = h.voter and biz_type = '1' and enable_edit=1) as enable_edit_summarize,
+                (select count(0) from v_assess_task_handle where task_id = a.task_id and voter = h.voter and biz_type = '0' and enable_edit=1) as enable_edit_evaluate
+        FROM
+                v_ordinary_assess_task AS a
+                    join v_assess_task_handle h on h.task_id = a.task_id
+            where sysdate() BETWEEN a.start_time AND a.end_time
+              and a.task_status = '1'
+              and a.del_flag = '1'
+              and h.handle_status = #{et.status}
+              and h.voter = #{userId}
+              <if test="et.taskId != null and et.taskId != ''">and a.task_id = #{et.taskId}</if>
+              <if test="et.belongYear != null and et.belongYear != ''"> and a.belong_year = #{et.belongYear}</if>
+              <if test="et.assessCycleDesc != null and et.assessCycleDesc != ''"> and a.cycle_desc = #{et.assessCycleDesc}</if>
+        ) AS T
+          <if test="et.status == '0'.toString()">
+              where NOT EXISTS(select * from biz_assess_promulgate p where p.quarter = T.assess_cycle_desc or p.task_id = T.task_id)
+          </if>
+
+    </select>
+    <select id="selectVRegularFillInfoList" resultType="com.cb.assess.domain.VRegularFillInfo" >
+        select fi.user_id as userId,
+               fi.audit_status as auditStatus,
+               fi.evaluation_level_suggest as evaluationLevelSuggest
+        from  v_regular_fill_info fi
+        where fi.task_id = #{taskId} and user_id = #{userId} and status = '1'
+    </select>
+    <select id="selectVRegularFillInfoList" resultType="com.cb.assess.domain.VRegularFillInfo" databaseId="dm">
+        select fi.user_id as userId,
+               fi.audit_status as auditStatus,
+               to_char(fi.evaluation_level_suggest) as evaluationLevelSuggest
+            from  v_regular_fill_info fi
+        where fi.task_id = #{taskId} and user_id = #{userId} and status = '1'
+    </select>
+    <resultMap type="EvaluateVo" id="EvaluateVoResult">
+        <result property="tagId" column="tag_id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="proId" column="pro_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="cycleType" column="cycle_type"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="scoring" column="scoring"/>
+        <result property="maxScore" column="max_score"/>
+        <result property="mustFill" column="must_fill"/>
+        <result property="isFill" column="is_fill"/>
+        <association property="user" javaType="SysUser" resultMap="UserResult"/>
+    </resultMap>
+    <resultMap type="SysUser" id="UserResult">
+        <result property="userName" column="user_name"/>
+        <result property="name" column="name"/>
+        <result property="education" column="education"/>
+        <result property="workPost" column="work_post"/>
+        <result property="phonenumber" column="phonenumber"/>
+        <result property="sex" column="sex"/>
+        <result property="avatar" column="avatar"/>
+        <result property="identityType" column="identity_type"/>
+        <association property="dept" javaType="SysDept">
+            <id property="deptId" column="dept_id"/>
+            <result property="deptName" column="dept_name"></result>
+        </association>
+    </resultMap>
+
+    <select id="selectEvaluateList" resultMap="EvaluateVoResult">
+        SELECT distinct
+            t.id AS tag_id,
+            t.task_id,
+            t.assessed_user_id as user_id,
+            m.pro_id,
+            m.task_name ,
+            m.cycle as cycle_type,
+            m.cycle_desc,
+            m.start_time,
+            m.end_time,
+            p.score as max_score,
+            CASE WHEN #{status} ='1' THEN (select sum(rd.score) from biz_assess_task_evaluate_record rd where rd.evaluate_tag_id =t.id  ) ELSE 0 END as scoring,
+            u.user_name,u.name,u.avatar, u.phonenumber, u.sex, u.identity_type,u.education,u.work_post,
+            u.dept_id,u.dept_name,
+            (select count(0) from v_regular_fill_info where task_id = m.task_id and user_id = t.assessed_user_id) as must_fill,
+            (select count(0) from v_regular_fill_info where task_id = m.task_id and user_id = t.assessed_user_id and status ='1') as is_fill
+        FROM
+            biz_assess_task_evaluate_tag t
+                JOIN v_ordinary_assess_task m ON t.task_id = m.task_id
+                join biz_assess_indicator_pro p ON p.pro_id = m.pro_id
+                join v_task_assess_user_confirm as u on u.user_id = t.assessed_user_id and u.del_flag = '0' AND u.status='0' AND u.user_type = '00'
+        where sysdate() BETWEEN m.start_time AND m.end_time
+          AND t.status = #{status}
+          AND m.task_status = '1'
+          AND m.del_flag = '1'
+          and t.vote_user_id= #{userId}
+          and m.task_id =#{taskId}
+          <if test="status == '1'.toString()">
+              AND NOT EXISTS(
+              SELECT * FROM biz_assess_evaluation_grade g where g.task_id = t.task_id and g.user_id =t.assessed_user_id
+              )
+          </if>
+    </select>
+
+    <select id="selectCompleteEvaluateList" resultMap="EvaluateVoResult">
+        SELECT distinct
+        t.id AS tag_id,
+        t.task_id,
+        t.assessed_user_id as user_id,
+        m.pro_id,
+        m.task_name ,
+        m.cycle as cycle_type,
+        m.cycle_desc,
+        m.start_time,
+        m.end_time,
+        p.score as max_score,
+         u.user_name,u.name,u.avatar, u.phonenumber, u.sex, u.identity_type,u.education,u.work_post,
+        u.dept_id,u.dept_name,
+        (select count(0) from v_regular_fill_info where task_id = m.task_id and user_id = t.assessed_user_id) as must_fill,
+        (select count(0) from v_regular_fill_info where task_id = m.task_id and user_id = t.assessed_user_id and status ='1') as is_fill
+        FROM
+        biz_assess_task_evaluate_tag t
+        JOIN v_ordinary_assess_task m ON t.task_id = m.task_id
+        join biz_assess_indicator_pro p ON p.pro_id = m.pro_id
+        join v_task_assess_user_confirm as u on u.user_id = t.assessed_user_id and u.del_flag = '0' AND u.status='0' AND u.user_type = '00'
+        where sysdate() BETWEEN m.start_time AND m.end_time
+        AND t.status = '1'
+        AND m.task_status = '1'
+        AND m.del_flag = '1'
+        and t.vote_user_id= #{userId}
+        and m.task_id =#{taskId}
+    </select>
+    <select id="checkEnableSummary" resultType="java.lang.Boolean">
+        select count(0) from biz_assess_task_user_tag t  where  t.user_id =#{userId} and t.task_id =#{taskId}
+    </select>
+    <select id="isFillIn" resultType="java.lang.Boolean">
+        SELECT
+            count( 0 )
+        FROM
+            biz_assess_task_user_tag t
+        WHERE
+            EXISTS ( SELECT * FROM biz_assess_regular_info r WHERE r.user_tag_id = t.id )
+          AND t.user_id = #{userId} and t.task_id =#{taskId}
+    </select>
+    <select id="checkEnableEvaluate" resultType="java.lang.Boolean">
+        select count(0) from  biz_assess_task_evaluate_tag et where  et.vote_user_id = #{userId} and et.task_id =#{taskId}
+    </select>
+
+    <resultMap type="BizAssessRegularInfo" id="BizAssessRegularInfoResult">
+        <result property="id" column="id"/>
+        <result property="userTagId" column="user_tag_id"/>
+        <result property="deptAndPost" column="dept_and_post"/>
+        <result property="responsibilities" column="responsibilities"/>
+        <result property="personalSummary" column="personal_summary"/>
+        <result property="absenteeismNum" column="absenteeism_num"/>
+        <result property="leaveNum" column="leave_num"/>
+        <result property="lateArrivalEarlyDepartureNum" column="late_arrival_early_departure_num"/>
+        <result property="rewardsPunishMisconduct" column="rewards_punish_misconduct"/>
+        <result property="evaluationLevelSuggest" column="evaluation_level_suggest"/>
+        <result property="organOpinions" column="organ_opinions"/>
+        <result property="othersRemark" column="others_remark"/>
+        <result property="auditStatus" column="audit_status"/>
+        <result property="establishType" column="establish_type"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+    <select id="initRegularTask" resultMap="BizAssessRegularInfoResult">
+        select a.id,
+               ifnull(a.user_tag_id,t.id ) as user_tag_id,
+               a.dept_and_post, a.responsibilities, a.personal_summary, a.absenteeism_num, a.leave_num,
+               a.late_arrival_early_departure_num, a.rewards_punish_misconduct,a.evaluation_level_suggest, a.organ_opinions,
+               a.others_remark, a.audit_status, a.establish_type, a.create_by, a.create_time, a.update_by, a.update_time,
+               a.auditer_seal,a.organ_seal,a.sign_img,a.audit_time
+        FROM
+            biz_assess_task_user_tag t
+                JOIN biz_assess_task_manage m ON t.task_id = m.task_id
+                LEFT JOIN biz_assess_regular_info a ON t.id = a.user_tag_id
+        where t.user_id = #{userId} and m.task_id = #{taskId}
+    </select>
+    <select id="listTaskGrade" resultMap="IndividualAssessmentTaskResult">
+        select T.* from (
+            SELECT
+            a.task_id,
+            a.pro_id,
+            p.pro_name,
+            p.score,
+            a.task_name as task_name,
+            p.personnel_type "type",
+            p.special,
+            (select wm_concat(dept_id) from biz_assess_indicator_pro_duty where pro_id = p.pro_id) as duty,
+            a.assess_cycle,
+            CASE a.assess_cycle
+            WHEN '1' THEN a.task_moth
+            WHEN '2' THEN a.task_quarter
+            WHEN '3' THEN a.task_year
+            ELSE '专项考核' END as assess_cycle_desc,
+            a.status,
+            a.del_flag,
+            a.start_time,
+            a.end_time
+            from biz_assess_task_manage a
+            join biz_assess_indicator_pro p on a.pro_id =p.pro_id
+        ) as T
+        <where>
+            <if test="et.taskName != null and et.taskName != ''">and T.task_name like concat('%',#{et.taskName},'%')</if>
+            <choose>
+                <when test="isExclude">
+                    <if test="et.type != null and et.type != ''">
+                        and T.type not like concat('%',#{et.type},'%')
+                    </if>
+                </when>
+                <otherwise>
+                    <if test="et.type != null and et.type != ''">
+                        and T.type like concat('%',#{et.type},'%')
+                    </if>
+                </otherwise>
+            </choose>
+
+            <if test="et.assessCycle != null and et.assessCycle != ''">and T.assess_cycle = #{et.assessCycle}</if>
+            <if test="deptId != null">find_in_set(#{deptId}, T.duty)</if>
+            and T.status = '1' and T.del_flag = '1'
+        </where>
+    </select>
+
+    <select id="listTaskGrade" resultMap="IndividualAssessmentTaskResult" databaseId="dm">
+        select T.* from (
+        SELECT
+        a.task_id,
+        a.pro_id,
+        p.pro_name,
+        p.score,
+        a.task_name as task_name,
+        p.personnel_type "type",
+        p.special,
+        (select group_concat(dept_id) from biz_assess_indicator_pro_duty where pro_id = p.pro_id) as duty,
+        a.assess_cycle,
+        CASE a.assess_cycle
+        WHEN '1' THEN a.task_moth
+        WHEN '2' THEN a.task_quarter
+        WHEN '3' THEN a.task_year
+        ELSE '专项考核' END as assess_cycle_desc,
+        a.status,
+        a.del_flag,
+        a.start_time,
+        a.end_time
+        from biz_assess_task_manage a
+        join biz_assess_indicator_pro p on a.pro_id =p.pro_id
+        ) as T
+        <where>
+            <if test="et.taskName != null and et.taskName != ''">and T.task_name like concat('%',#{et.taskName},'%')</if>
+            <choose>
+                <when test="isExclude">
+                    <if test="et.type != null and et.type != ''">
+                        and T.type not like concat('%',#{et.type},'%')
+                    </if>
+                </when>
+                <otherwise>
+                    <if test="et.type != null and et.type != ''">
+                        and T.type like concat('%',#{et.type},'%')
+                    </if>
+                </otherwise>
+            </choose>
+
+            <if test="et.assessCycle != null and et.assessCycle != ''">and T.assess_cycle = #{et.assessCycle}</if>
+            <if test="deptId != null">find_in_set(#{deptId}, T.duty)</if>
+            and T.status = '1' and T.del_flag = '1'
+        </where>
+    </select>
+
+
+    <resultMap type="BizAssessTaskVo" id="BizAssessTaskVoResult">
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <collection property="summaryUsers"  column="{taskId=task_id}" select="selectUnfilledSummary"/>
+        <collection property="evaluationUsers"  column="{taskId=task_id}" select=""/>
+    </resultMap>
+    <select id="selectUnfilledSummary" resultType="com.cb.assess.domain.vo.BizAssessTaskVo$SummaryUser">
+        SELECT
+            u.user_id AS userId, u.name
+        FROM
+            biz_assess_task_user_tag t
+                JOIN sys_user u ON t.user_id = u.user_id
+        WHERE
+            NOT EXISTS (
+                    SELECT
+                        *
+                    FROM
+                        biz_assess_regular_info t1
+                            JOIN biz_assess_task_user_tag t2 ON t1.user_tag_id = t2.id
+                            AND t2.task_id = t.task_id
+                            AND t2.user_id = u.user_id
+                )
+          AND u.del_flag = '0' AND u.status='0' AND u.user_type = '00'
+          AND t.task_id = #{taskId}
+    </select>
+    <select id="selectUnfilledEvaluation" resultType="com.cb.assess.domain.vo.BizAssessTaskVo$EvaluationUser">
+        SELECT
+            distinct u.user_id as userId, u.name
+        FROM
+            biz_assess_task_evaluate_tag t join sys_user u on t.vote_user_id = u.user_id
+            where t.status = '0' AND u.del_flag = '0' AND u.status='0' AND u.user_type = '00' and t.task_id = #{taskId}
+    </select>
+    <select id="list4TimedReminderTask" resultMap="BizAssessTaskVoResult">
+        SELECT
+            a.task_id,
+            a.task_name  as task_name,
+            a.assess_cycle as "cycle",
+            CASE a.assess_cycle
+                WHEN '1' THEN a.task_moth
+                WHEN '2' THEN a.task_quarter
+                WHEN '3' THEN a.task_year
+                ELSE '专项考核' END as cycle_desc,
+            a.start_time,
+            a.end_time
+        from biz_assess_task_manage a
+        where sysdate() BETWEEN a.start_time AND a.end_time
+          and a.status = '1'
+          and a.del_flag = '1'
+    </select>
+    <select id="countAssessToDoNum" resultType="java.lang.Integer">
+        select count(1) from (
+                    SELECT
+                        a.task_id,
+                        a.pro_id,
+                        a.task_name  as task_name,
+                        p.personnel_type type,
+                        a.assess_cycle,
+                        CASE a.assess_cycle
+                            WHEN '1' THEN a.task_moth
+                            WHEN '2' THEN a.task_quarter
+                            WHEN '3' THEN a.task_year
+                            ELSE '专项考核' END as assess_cycle_desc,
+                        a.start_time,
+                        a.end_time
+                    from biz_assess_task_manage a
+                             join biz_assess_indicator_pro p on a.pro_id =p.pro_id
+                    where sysdate() BETWEEN a.start_time AND a.end_time
+                      and a.status = '1'
+                      and a.del_flag = '1'
+                      and (
+                            EXISTS(select * from  biz_assess_task_evaluate_tag et where et.status='0' and et.task_id = a.task_id and et.vote_user_id = #{userId})
+                            OR
+                            EXISTS(
+                                    select * from biz_assess_task_user_tag ut
+                                    where ut.task_id = a.task_id and ut.user_id =#{userId}
+                                      and NOT EXISTS (select * from biz_assess_regular_info t1 where  t1.user_tag_id = ut.id )
+                                )
+                        )
+                ) AS T
+        where NOT EXISTS(
+                select * from biz_assess_promulgate p where p.quarter = T.assess_cycle_desc or p.task_id = T.task_id
+            )
+    </select>
+
+
+
+</mapper>

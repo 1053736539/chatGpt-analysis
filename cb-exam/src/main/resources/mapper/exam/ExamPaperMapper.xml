@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamPaperMapper">
+    
+    <resultMap type="ExamPaper" id="ExamPaperResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="duration"    column="duration"    />
+        <result property="totalPoint"    column="total_point"    />
+        <result property="questionBankIds"    column="question_bank_ids"    />
+        <result property="questionCount"    column="question_count"    />
+        <result property="isIssue"    column="is_issue"    />
+        <result property="labelIds"    column="label_ids"    />
+        <result property="passingScore"    column="passing_score"    />
+        <result property="goodScore"    column="good_score"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="modifyTime"    column="modify_time"    />
+        <result property="modifyUser"    column="modify_user"    />
+        <result property="selectsScore"    column="selects_score"    />
+        <result property="selectScore"    column="select_score"    />
+        <result property="judgeScore"    column="judge_score"    />
+        <result property="answerScore"    column="answer_score"    />
+    </resultMap>
+
+    <sql id="selectExamPaperVo">
+        select id, name, selects_score,select_score, judge_score,answer_score, duration, total_point, question_bank_ids,
+        question_count, is_issue, label_ids, passing_score, good_score, create_time, create_user, modify_time, modify_user from exam_paper
+    </sql>
+
+    <select id="selectExamPaperList" parameterType="ExamPaper" resultMap="ExamPaperResult">
+        <include refid="selectExamPaperVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="duration != null "> and duration = #{duration}</if>
+            <if test="totalPoint != null "> and total_point = #{totalPoint}</if>
+            <if test="questionBankIds != null  and questionBankIds != ''"> and question_bank_ids = #{questionBankIds}</if>
+            <if test="questionCount != null "> and question_count = #{questionCount}</if>
+            <if test="isIssue != null "> and is_issue = #{isIssue}</if>
+            <if test="labelIds != null  and labelIds != ''"> and label_ids = #{labelIds}</if>
+            <if test="passingScore != null "> and passing_score = #{passingScore}</if>
+            <if test="goodScore != null "> and good_score = #{goodScore}</if>
+            <if test="createUser != null  and createUser != ''"> and create_user = #{createUser}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+            <if test="modifyUser != null  and modifyUser != ''"> and modify_user = #{modifyUser}</if>
+        </where>
+    </select>
+    
+    <select id="selectExamPaperById" parameterType="Long" resultMap="ExamPaperResult">
+        <include refid="selectExamPaperVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertExamPaper" parameterType="ExamPaper" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_paper
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="duration != null">duration,</if>
+            <if test="totalPoint != null">total_point,</if>
+            <if test="questionBankIds != null">question_bank_ids,</if>
+            <if test="questionCount != null">question_count,</if>
+            <if test="isIssue != null">is_issue,</if>
+            <if test="labelIds != null">label_ids,</if>
+            <if test="passingScore != null">passing_score,</if>
+            <if test="goodScore != null">good_score,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="modifyTime != null">modify_time,</if>
+            <if test="modifyUser != null">modify_user,</if>
+            <if test="selectScore != null">select_score,</if>
+            <if test="selectsScore != null">selects_score,</if>
+            <if test="judgeScore != null">judge_score,</if>
+            <if test="answerScore != null">answer_score,</if>
+            <if test="createUserId != null">create_user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="duration != null">#{duration},</if>
+            <if test="totalPoint != null">#{totalPoint},</if>
+            <if test="questionBankIds != null">#{questionBankIds},</if>
+            <if test="questionCount != null">#{questionCount},</if>
+            <if test="isIssue != null">#{isIssue},</if>
+            <if test="labelIds != null">#{labelIds},</if>
+            <if test="passingScore != null">#{passingScore},</if>
+            <if test="goodScore != null">#{goodScore},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+            <if test="modifyUser != null">#{modifyUser},</if>
+            <if test="selectScore != null">#{selectScore},</if>
+            <if test="selectsScore != null">#{selectsScore},</if>
+            <if test="judgeScore != null">#{judgeScore},</if>
+            <if test="answerScore != null">#{answerScore},</if>
+            <if test="createUserId != null">#{createUserId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExamPaper" parameterType="ExamPaper">
+        update exam_paper
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="duration != null">duration = #{duration},</if>
+            <if test="totalPoint != null">total_point = #{totalPoint},</if>
+            <if test="questionBankIds != null">question_bank_ids = #{questionBankIds},</if>
+            <if test="questionCount != null">question_count = #{questionCount},</if>
+            <if test="isIssue != null">is_issue = #{isIssue},</if>
+            <if test="labelIds != null">label_ids = #{labelIds},</if>
+            <if test="passingScore != null">passing_score = #{passingScore},</if>
+            <if test="goodScore != null">good_score = #{goodScore},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="createUser != null">create_user = #{createUser},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+            <if test="modifyUser != null">modify_user = #{modifyUser},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamPaperById" parameterType="Long">
+        delete from exam_paper where id = #{id}
+    </delete>
+
+    <delete id="deleteExamPaperByIds" parameterType="String">
+        delete from exam_paper where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.task.mapper.BizTaskDocTypeMapper">
+    
+    <resultMap type="BizTaskDocType" id="BizTaskDocTypeResult">
+        <result property="id"    column="id"    />
+        <result property="moduleType"    column="module_type"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="code"    column="code"    />
+        <result property="label"    column="label"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="score"    column="score"    />
+
+        <result property="deptName"    column="deptName"    />
+    </resultMap>
+
+    <sql id="selectBizTaskDocTypeVo">
+        select t.id, t.module_type, t.dept_id, t.code, t.label, t.create_by, t.create_time, t.update_by, t.update_time, t.remark, t.del_flag, t.score
+            ,d.dept_name as deptName
+        from biz_task_doc_type t
+        left join sys_dept d on t.dept_id = d.dept_id
+    </sql>
+
+    <select id="selectBizTaskDocTypeList" parameterType="BizTaskDocType" resultMap="BizTaskDocTypeResult">
+        <include refid="selectBizTaskDocTypeVo"/>
+        <where>
+            and t.del_flag = '0'
+            <if test="moduleType != null  and moduleType != ''"> and t.module_type = #{moduleType}</if>
+            <if test="deptId != null "> and t.dept_id = #{deptId}</if>
+            <if test="code != null  and code != ''"> and t.code = #{code}</if>
+            <if test="label != null  and label != ''"> and t.label like concat('%', #{label}, '%')</if>
+        </where>
+        order by t.module_type desc
+    </select>
+
+    <select id="listMy" parameterType="BizTaskDocType" resultMap="BizTaskDocTypeResult">
+        <include refid="selectBizTaskDocTypeVo"/>
+        <where>
+            and  t.del_flag = '0'
+            and ( t.module_type = 'system' or t.dept_id = #{deptId} )
+            <if test="moduleType != null  and moduleType != ''"> and t.module_type = #{moduleType}</if>
+            <if test="code != null  and code != ''"> and t.code = #{code}</if>
+            <if test="label != null  and label != ''"> and t.label like concat('%', #{label}, '%')</if>
+        </where>
+        order by t.module_type desc
+    </select>
+
+    <select id="selectBizTaskDocTypeById" parameterType="Long" resultMap="BizTaskDocTypeResult">
+        <include refid="selectBizTaskDocTypeVo"/>
+        where t.id = #{id}
+    </select>
+
+    <select id="selectBizTaskDocTypeByCode" parameterType="string" resultType="com.cb.task.domain.BizTaskDocType">
+        <include refid="selectBizTaskDocTypeVo"/>
+        where t.code = #{code}
+    </select>
+
+    <insert id="insertBizTaskDocType" parameterType="BizTaskDocType">
+        insert into biz_task_doc_type
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="moduleType != null and moduleType != ''">module_type,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="code != null and code != ''">code,</if>
+            <if test="label != null and label != ''">label,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="score != null">score,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="moduleType != null and moduleType != ''">#{moduleType},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="code != null and code != ''">#{code},</if>
+            <if test="label != null and label != ''">#{label},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="score != null">#{score},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizTaskDocType" parameterType="BizTaskDocType">
+        update biz_task_doc_type
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="moduleType != null and moduleType != ''">module_type = #{moduleType},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="code != null and code != ''">code = #{code},</if>
+            <if test="label != null and label != ''">label = #{label},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="score != null">score = #{score},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizTaskDocTypeById" parameterType="Long">
+        delete from biz_task_doc_type where id = #{id}
+    </delete>
+
+    <delete id="deleteBizTaskDocTypeByIds" parameterType="String">
+        delete from biz_task_doc_type where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <delete id="vDeleteByIds" parameterType="String">
+        update biz_task_doc_type set del_flag = '1'
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

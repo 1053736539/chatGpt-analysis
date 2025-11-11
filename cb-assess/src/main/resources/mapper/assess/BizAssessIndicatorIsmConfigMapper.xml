@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessIndicatorIsmConfigMapper">
+
+    <resultMap type="BizAssessIndicatorIsmConfig" id="BizAssessIndicatorIsmConfigResult">
+        <result property="configId" column="config_id"/>
+        <result property="ismId" column="ism_id"/>
+        <result property="indicatorType" column="indicator_type"/>
+        <result property="scoreWeight" column="score_weight"/>
+        <result property="content" column="content"/>
+        <result property="indicatorSnapshot" column="indicator_snapshot"/>
+    </resultMap>
+
+    <sql id="selectBizAssessIndicatorIsmConfigVo">
+        select config_id, ism_id, indicator_type, score_weight, content,indicator_snapshot
+        from biz_assess_indicator_ism_config
+    </sql>
+    <update id="updateIndicatorIsmConfig">
+        update biz_assess_indicator_ism_config set indicator_snapshot = #{indicatorSnapshot} where config_id = #{configId}
+    </update>
+    <select id="selectListByIsmId" resultMap="BizAssessIndicatorIsmConfigResult">
+        <include refid="selectBizAssessIndicatorIsmConfigVo"/>
+        where ism_id = #{ismId}
+    </select>
+
+    <!--处理指标配置-->
+    <insert id="batchInsertIndicatorIsmConfig">
+        insert into biz_assess_indicator_ism_config( config_id, ism_id, indicator_type, score_weight, content,indicator_snapshot) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.configId}, #{item.ismId}, #{item.indicatorType}, #{item.scoreWeight}, #{item.content},#{item.indicatorSnapshot})
+        </foreach>
+    </insert>
+    <delete id="deleteIndicatorIsmConfigById" parameterType="String">
+        delete from biz_assess_indicator_ism_config where ism_id = #{ismId}
+    </delete>
+
+    <delete id="deleteIndicatorIsmConfigByIds" parameterType="String">
+        delete from biz_assess_indicator_ism_config where ism_id in
+        <foreach item="ismId" collection="array" open="(" separator="," close=")">
+            #{ismId}
+        </foreach>
+    </delete>
+
+
+</mapper>

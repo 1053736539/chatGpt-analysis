@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentCultureMapper">
+    
+    <resultMap type="com.cb.vo.StudentCultureVo" id="TransferringStudentCultureResult">
+        <result property="userId"    column="user_id"    />
+        <result property="trainingNumber"    column="training_number"    />
+        <result property="id"    column="id"    />
+        <result property="trainingMode"    column="training_mode"    />
+        <result property="trainingAddr"    column="training_addr"    />
+        <result property="trainingTheme"    column="training_theme"    />
+        <result property="trainingTime"    column="training_time"    />
+        <result property="trainingDuration"    column="training_duration"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="trainingAttach"    column="training_attach"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+    </resultMap>
+
+    <sql id="selectTransferringStudentCultureVo">
+        select user_id, training_number, id, training_mode, training_addr, training_theme, training_time, training_duration, training_attach, create_time, update_time, del_flag, create_by,update_by
+        from transferring_student_culture
+    </sql>
+
+    <select id="selectTransferringStudentCultureList" resultMap="TransferringStudentCultureResult">
+        select st.user_id, training_number, id, st.training_mode, st.training_addr,training_theme, training_time, training_duration,
+               training_attach, st.create_time, st.update_time, st.del_flag, st.create_by,st.update_by,
+               u.nick_name
+        from transferring_student_culture st
+        inner join sys_user u on st.user_id=u.user_id
+        <where>  
+            <if test="userId != null  and userId != ''"> and st.user_id = #{userId}</if>
+            <if test="trainingNumber != null  and trainingNumber != ''"> and st.training_number = #{trainingNumber}</if>
+            <if test="trainingMode != null  and trainingMode != ''"> and st.training_mode = #{trainingMode}</if>
+            <if test="trainingAddr != null  and trainingAddr != ''"> and st.training_addr like concat('%', #{trainingMode}, '%')</if>
+            <if test="trainingTheme != null  and trainingTheme != ''"> and st.training_theme = #{trainingTheme}</if>
+            <if test="trainingTime != null  and trainingTime != ''"> and st.training_time = #{trainingTime}</if>
+            <if test="trainingDuration != null "> and st.training_duration = #{trainingDuration}</if>
+            <if test="trainingAttach != null  and trainingAttach != ''"> and st.training_attach = #{trainingAttach}</if>
+            <if test="delFlag != null and delFlag != ''">and st.del_flag = #{delFlag}</if>
+            <if test="createBy != null  and createBy != ''"> and st.create_by = #{createBy}</if>
+            <if test="updateBy != null">and st.update_by = #{updateBy},</if>
+            <if test="nickName != null and nickName != ''">and u.nick_name like concat('%',#{nickName},'%') </if>
+        </where>
+    </select>
+    
+    <select id="selectTransferringStudentCultureById" parameterType="String" resultMap="TransferringStudentCultureResult">
+        <include refid="selectTransferringStudentCultureVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTransferringStudentCulture" >
+        insert into transferring_student_culture
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="trainingNumber != null">training_number,</if>
+            <if test="id != null and id != ''">id,</if>
+            <if test="trainingMode != null">training_mode,</if>
+            <if test="trainingAddr != null">training_addr,</if>
+            <if test="trainingTheme != null">training_theme,</if>
+            <if test="trainingTime != null">training_time,</if>
+            <if test="trainingDuration != null">training_duration,</if>
+            <if test="trainingAttach != null">training_attach,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="trainingNumber != null">#{trainingNumber},</if>
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="trainingMode != null">#{trainingMode},</if>
+            <if test="trainingAddr != null">#{trainingAddr},</if>
+            <if test="trainingTheme != null">#{trainingTheme},</if>
+            <if test="trainingTime != null">#{trainingTime},</if>
+            <if test="trainingDuration != null">#{trainingDuration},</if>
+            <if test="trainingAttach != null">#{trainingAttach},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransferringStudentCulture" >
+        update transferring_student_culture
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="trainingNumber != null">training_number = #{trainingNumber},</if>
+            <if test="trainingMode != null">training_mode = #{trainingMode},</if>
+            <if test="trainingAddr != null">training_addr = #{trainingAddr},</if>
+            <if test="trainingTheme != null">training_theme = #{trainingTheme},</if>
+            <if test="trainingTime != null">training_time = #{trainingTime},</if>
+            <if test="trainingDuration != null">training_duration = #{trainingDuration},</if>
+            <if test="trainingAttach != null">training_attach = #{trainingAttach},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentCultureById" parameterType="String">
+        delete from transferring_student_culture where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentCultureByIds" parameterType="String">
+        update transferring_student_culture set del_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

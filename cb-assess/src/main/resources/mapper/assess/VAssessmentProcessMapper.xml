@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.VAssessmentProcessMapper">
+    <resultMap id="VAssessmentProcessResult" type="com.cb.assess.domain.VAssessmentProcess">
+        <result property="taskId" column="task_id"/>
+        <result property="name" column="name"/>
+        <result property="belongYear" column="belong_year"/>
+        <result property="special" column="special"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="process" column="process"/>
+        <result property="otherStatus" column="other_status"/>
+        <result property="otherText" column="other_text"/>
+    </resultMap>
+
+    <sql id="BaseQueryVo">
+        <!--0.用户确认-->
+        SELECT DISTINCT
+            case when special='0' THEN null ELSE task_id END as task_id,
+            case when special='0' THEN null ELSE task_name END as name,
+            belong_year,
+            special,
+            cycle,
+            cycle_desc,
+            process,
+            -1 as other_status,
+            null as other_text
+        FROM
+            v_assessment_process
+        WHERE
+            del_flag = '1' AND process = 0 AND dept_id = #{vo.deptId}
+            and find_in_set('liaison_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and sysdate() BETWEEN start_time AND end_time
+                    and CAST(task_status AS UNSIGNED) =0
+                </when>
+                <otherwise>
+                    and CAST(task_status AS UNSIGNED) >= 0
+                </otherwise>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+        <!--1.总结审核-->
+        UNION ALL
+        SELECT DISTINCT
+            case when special='0' THEN null ELSE task_id END as task_id,
+            case when special='0' THEN null ELSE task_name END as name,
+            belong_year,
+            special,
+            cycle,
+            cycle_desc,
+            process,
+            -1 as other_status,
+            null as other_text
+        FROM
+        v_assessment_process vp
+        <where>
+            and del_flag = '1'  AND process = 1 AND task_status ='1'
+            <choose>
+                <when test="roleKeys.contains('leader_charge')">
+                    and EXISTS(
+                        select * from v_regular_fill_info a
+                        join v_ordinary_assess_task m on m.task_id = a.task_id and m.type in('civil_servant_special','institution_special')
+                        join v_sys_user u on u.user_id = a.user_id
+                        join v_task_assess_user_confirm cf on cf.user_id =u.user_id and cf.task_id = m.task_id and cf.confirm_status ='1'
+                        where 1=1
+                        and a.task_id  = vp.task_id
+                        <choose>
+                            <when test="vo.handleStatus == 0">
+                                and a.step =0 and audit_status ='0'
+                            </when>
+                            <otherwise>
+                                and a.step >=1 and audit_status ='1'
+                            </otherwise>
+                        </choose>
+                        and cf.dept_id in( select d.dept_id from sys_dept d where d.leader_charge = #{vo.userId})
+                        and (
+                            u.work_title_code in ('121', '212') or u.work_title_code is null
+                            or u.is_hosting_work ='1'
+                            or u.is_main_leader ='1'
+                            )
+                    )
+                </when>
+                <when test="roleKeys.contains('dept_master_leader')">
+                    and EXISTS(
+                        select * from v_regular_fill_info a
+                        join v_ordinary_assess_task m on m.task_id = a.task_id and m.type in('institution_other','civil_servant_other')
+                        join v_sys_user u on u.user_id = a.user_id
+                        join v_task_assess_user_confirm cf on cf.user_id =u.user_id and cf.task_id = m.task_id and cf.confirm_status ='1'
+                        where 1=1
+                        and a.task_id  = vp.task_id
+                        <choose>
+                            <when test="vo.handleStatus == 0">
+                                and a.step =0 and audit_status ='0'
+                            </when>
+                            <otherwise>
+                                and a.step  >= 1 and audit_status ='1'
+                            </otherwise>
+                        </choose>
+                        and cf.dept_id =#{vo.deptId}
+                        and (u.work_title_code is null OR u.work_title_code not in ('111', '112', '121', '212'))
+                        and u.is_hosting_work ='0'
+                        and u.is_main_leader ='0'
+                    )
+                </when>
+                <otherwise>
+                    and false
+                </otherwise>
+            </choose>
+            <if test="vo.handleStatus != null">
+                <choose>
+                    <when test="vo.handleStatus == 0">
+                        and sysdate() BETWEEN start_time AND end_time
+                    </when>
+                </choose>
+            and handle_status = #{vo.handleStatus}
+            </if>
+        </where>
+        <!--2.总结审定-->
+        UNION ALL
+        SELECT DISTINCT
+            case when special='0' THEN null ELSE task_id END as task_id,
+            case when special='0' THEN null ELSE task_name END as name,
+            belong_year,
+            special,
+            cycle,
+            cycle_desc,
+            process,
+            -1 as other_status,
+            null as other_text
+        FROM
+            v_assessment_process
+        WHERE
+            del_flag = '1'  AND process = 2 AND task_status ='1'
+            and find_in_set('assessment_admin_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and sysdate() BETWEEN start_time AND end_time
+                </when>
+            </choose>
+          and handle_status = #{vo.handleStatus}
+        </if>
+        <!--3.待办考评-->
+        UNION ALL
+        SELECT DISTINCT
+            case when special='0' THEN null ELSE task_id END as task_id,
+            case when special='0' THEN null ELSE task_name END as name,
+            belong_year,
+            special,
+            cycle,
+            cycle_desc,
+            process,
+            -1 as other_status,
+            null as other_text
+        FROM
+            v_assessment_process vp
+        WHERE
+            del_flag = '1'  AND process = 3 AND task_status ='1' AND voter = #{vo.userId}
+            <if test="vo.handleStatus != null">
+                <choose>
+                    <when test="vo.handleStatus == 0">
+                        and sysdate() BETWEEN start_time AND end_time
+                        and NOT EXISTS(select * from biz_assess_promulgate p where p.quarter = cycle_desc or p.task_id = task_id)
+                    </when>
+                </choose>
+              and handle_status = #{vo.handleStatus}
+            </if>
+
+        UNION ALL
+
+        <!--4.数据上报-->
+        SELECT DISTINCT
+            case when p.special='0' THEN null ELSE p.task_id END as task_id,
+            case when p.special='0' THEN null ELSE p.task_name END as name,
+            p.belong_year,
+            p.special,
+            p.cycle,
+            p.cycle_desc,
+            p.process,
+            ifnull (sm.audit_status,-1) as other_status,
+            sm.options as other_text
+        FROM v_assessment_process p
+            LEFT JOIN v_assess_report sm ON sm.task_id = p.task_id and sm.dept_id =#{vo.deptId}
+            WHERE
+            p.del_flag = '1'  AND p.process = 4 AND p.task_status ='1' and p.dept_id = #{vo.deptId}
+            and find_in_set('liaison_role',#{roleKeys})
+            AND NOT EXISTS(
+                select * from v_assess_task_handle h join v_task_assess_user_confirm cf on cf.task_id = h.task_id and cf.user_id = h.user_id and cf.confirm_status ='1'
+                where h.task_id = p.task_id and h.user_id = p.user_id  and h.handle_status = 0
+            )
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where  task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+        <!--5.数据审核-->
+        UNION ALL
+        SELECT DISTINCT
+            case when p.special='0' THEN null ELSE p.task_id END as task_id,
+            case when p.special='0' THEN null ELSE p.task_name END as name,
+            p.belong_year,
+            p.special,
+            p.cycle,
+            p.cycle_desc,
+            p.process,
+            -1 as other_status,
+            null as other_text
+        FROM v_assessment_process p
+        WHERE
+            p.del_flag = '1'  AND p.process = 5 AND p.task_status ='1'
+        and find_in_set('organ',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+          and handle_status = #{vo.handleStatus}
+        </if>
+        <!--6.纪委评分-->
+        UNION ALL
+        SELECT DISTINCT
+            case when p.special='0' THEN null ELSE p.task_id END as task_id,
+            case when p.special='0' THEN null ELSE p.task_name END as name,
+            p.belong_year,
+            p.special,
+            p.cycle,
+            p.cycle_desc,
+            p.process,
+            -1 as other_status,
+            null as other_text
+        FROM v_assessment_process p
+        WHERE
+            p.del_flag = '1'  AND p.process = 6 AND p.task_status ='1'
+        and find_in_set('jiwei_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+          and handle_status = #{vo.handleStatus}
+        </if>
+
+        <!--7.主要负责人评定等次-->
+        UNION ALL
+        SELECT DISTINCT
+            case when p.special='0' THEN null ELSE p.task_id END as task_id,
+            case when p.special='0' THEN null ELSE p.task_name END as name,
+            p.belong_year,
+            p.special,
+            p.cycle,
+            p.cycle_desc,
+            p.process,
+            -1 as other_status,
+            null as other_text
+        FROM v_assessment_process p
+        WHERE
+            p.del_flag = '1'  AND p.process = 7 AND p.task_status ='1'
+            and find_in_set('leader_charge',#{roleKeys})
+            <if test="vo.handleStatus != null">
+                <choose>
+                    <when test="vo.handleStatus == 0">
+                        and EXISTS(select id from v_evaluation_grade g where g.task_id =p.task_id
+                            and g.personnel_type in('civil_servant_special','institution_special')
+                            and g.step ='1'
+                            and dept_id in (
+                                select dept_id FROM sys_dept  where leader_charge = #{vo.userId}
+                            )
+                        )
+                        and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                    </when>
+                    <otherwise>
+                        and EXISTS(select id from v_evaluation_grade g where g.task_id =p.task_id
+                            and g.personnel_type in('civil_servant_special','institution_special')
+                            and cast(g.step as UNSIGNED) >=1
+                            and dept_id in (
+                                select dept_id FROM sys_dept  where leader_charge = #{vo.userId}
+                            )
+                        )
+                    </otherwise>
+                </choose>
+
+              and handle_status = #{vo.handleStatus}
+            </if>
+        <!--8.机关党委审定意见-->
+        UNION ALL
+        SELECT DISTINCT
+            case when p.special='0' THEN null ELSE p.task_id END as task_id,
+            case when p.special='0' THEN null ELSE p.task_name END as name,
+            p.belong_year,
+            p.special,
+            p.cycle,
+            p.cycle_desc,
+            p.process,
+            -1 as other_status,
+            null as other_text
+        FROM v_assessment_process p
+        WHERE
+            p.del_flag = '1'  AND p.process = 8 AND p.task_status ='1'
+            and find_in_set('dwsd_role',#{roleKeys})
+            <if test="vo.handleStatus != null">
+                <choose>
+                    <when test="vo.handleStatus == 0">
+                        and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                    </when>
+                </choose>
+              and handle_status = #{vo.handleStatus}
+            </if>
+
+        <!--9.党组会建议等次-->
+        UNION ALL
+        SELECT DISTINCT
+            case when p.special='0' THEN null ELSE p.task_id END as task_id,
+            case when p.special='0' THEN null ELSE p.task_name END as name,
+            p.belong_year,
+            p.special,
+            p.cycle,
+            p.cycle_desc,
+            p.process,
+            ifnull(pr.finish_status,-1) as other_status,
+            null as other_text
+        FROM v_assessment_process p
+            left join biz_assess_promulgate pr on pr.task_id = p.task_id OR pr.quarter = p.cycle_desc
+        WHERE
+        p.del_flag = '1'  AND p.process = 9 AND p.task_status ='1'
+        and find_in_set('assessment_admin_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+          and handle_status = #{vo.handleStatus}
+        </if>
+
+        <!--10.公示-->
+        UNION ALL
+        SELECT DISTINCT
+            case when p.special='0' THEN null ELSE p.task_id END as task_id,
+            case when p.special='0' THEN null ELSE p.task_name END as name,
+            p.belong_year,
+            p.special,
+            p.cycle,
+            p.cycle_desc,
+            p.process,
+            -1 as other_status,
+            null as other_text
+        FROM v_assessment_process p
+        WHERE
+            p.del_flag = '1'  AND p.process = 10 AND p.task_status ='1'
+            and find_in_set('assessment_admin_role',#{roleKeys})
+            <if test="vo.handleStatus != null">and handle_status = #{vo.handleStatus}</if>
+    </sql>
+    <sql id="BaseQueryVo" databaseId="dm">
+        <!--0.用户确认-->
+        SELECT DISTINCT
+        case when special='0' THEN null ELSE task_id END as task_id,
+        case when special='0' THEN null ELSE task_name END as name,
+        belong_year,
+        special,
+        cycle,
+        cycle_desc,
+        process,
+        -1 as other_status,
+        null as other_text
+        FROM
+        v_assessment_process
+        WHERE
+        del_flag = '1' AND process = 0 AND dept_id = #{vo.deptId}
+        and find_in_set('liaison_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and sysdate() BETWEEN start_time AND end_time
+                    and CAST(task_status AS INT) =0
+                </when>
+                <otherwise>
+                    and CAST(task_status AS INT) >= 0
+                </otherwise>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+        <!--1.总结审核-->
+        UNION ALL
+        SELECT DISTINCT
+        case when special='0' THEN null ELSE task_id END as task_id,
+        case when special='0' THEN null ELSE task_name END as name,
+        belong_year,
+        special,
+        cycle,
+        cycle_desc,
+        process,
+        -1 as other_status,
+        null as other_text
+        FROM
+        v_assessment_process vp
+        <where>
+            and del_flag = '1'  AND process = 1 AND task_status ='1'
+            <choose>
+                <when test="roleKeys.contains('leader_charge')">
+                    and EXISTS(
+                    select * from v_regular_fill_info a
+                    join v_ordinary_assess_task m on m.task_id = a.task_id and m.type in('civil_servant_special','institution_special')
+                    join v_sys_user u on u.user_id = a.user_id
+                    join v_task_assess_user_confirm cf on cf.user_id =u.user_id and cf.task_id = m.task_id and cf.confirm_status ='1'
+                    where 1=1
+                    and a.task_id  = vp.task_id
+                    <choose>
+                        <when test="vo.handleStatus == 0">
+                            and a.step =0 and audit_status ='0'
+                        </when>
+                        <otherwise>
+                            and a.step >=1 and audit_status ='1'
+                        </otherwise>
+                    </choose>
+                    and cf.dept_id in( select d.dept_id from sys_dept d where d.leader_charge = #{vo.userId})
+                    and (
+                    u.work_title_code in ('121', '212') or u.work_title_code is null
+                    or u.is_hosting_work ='1'
+                    or u.is_main_leader ='1'
+                    )
+                    )
+                </when>
+                <when test="roleKeys.contains('dept_master_leader')">
+                    and EXISTS(
+                    select * from v_regular_fill_info a
+                    join v_ordinary_assess_task m on m.task_id = a.task_id and m.type in('institution_other','civil_servant_other')
+                    join v_sys_user u on u.user_id = a.user_id
+                    join v_task_assess_user_confirm cf on cf.user_id =u.user_id and cf.task_id = m.task_id and cf.confirm_status ='1'
+                    where 1=1
+                    and a.task_id  = vp.task_id
+                    <choose>
+                        <when test="vo.handleStatus == 0">
+                            and a.step =0 and audit_status ='0'
+                        </when>
+                        <otherwise>
+                            and a.step  >= 1 and audit_status ='1'
+                        </otherwise>
+                    </choose>
+                    and cf.dept_id =#{vo.deptId}
+                    and (u.work_title_code is null OR u.work_title_code not in ('111', '112', '121', '212'))
+                    and u.is_hosting_work ='0'
+                    and u.is_main_leader ='0'
+                    )
+                </when>
+                <otherwise>
+                    and false
+                </otherwise>
+            </choose>
+            <if test="vo.handleStatus != null">
+                <choose>
+                    <when test="vo.handleStatus == 0">
+                        and sysdate() BETWEEN start_time AND end_time
+                    </when>
+                </choose>
+                and handle_status = #{vo.handleStatus}
+            </if>
+        </where>
+        <!--2.总结审定-->
+        UNION ALL
+        SELECT DISTINCT
+        case when special='0' THEN null ELSE task_id END as task_id,
+        case when special='0' THEN null ELSE task_name END as name,
+        belong_year,
+        special,
+        cycle,
+        cycle_desc,
+        process,
+        -1 as other_status,
+        null as other_text
+        FROM
+        v_assessment_process
+        WHERE
+        del_flag = '1'  AND process = 2 AND task_status ='1'
+        and find_in_set('assessment_admin_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and sysdate() BETWEEN start_time AND end_time
+                </when>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+        <!--3.待办考评-->
+        UNION ALL
+        SELECT DISTINCT
+        case when special='0' THEN null ELSE task_id END as task_id,
+        case when special='0' THEN null ELSE task_name END as name,
+        belong_year,
+        special,
+        cycle,
+        cycle_desc,
+        process,
+        -1 as other_status,
+        null as other_text
+        FROM
+        v_assessment_process vp
+        WHERE
+        del_flag = '1'  AND process = 3 AND task_status ='1' AND voter = #{vo.userId}
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and sysdate() BETWEEN start_time AND end_time
+                    and NOT EXISTS(select * from biz_assess_promulgate p where p.quarter = cycle_desc or p.task_id = task_id)
+                </when>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+
+        UNION ALL
+
+        <!--4.数据上报-->
+        SELECT DISTINCT
+        case when p.special='0' THEN null ELSE p.task_id END as task_id,
+        case when p.special='0' THEN null ELSE p.task_name END as name,
+        p.belong_year,
+        p.special,
+        p.cycle,
+        p.cycle_desc,
+        p.process,
+        ifnull (sm.audit_status,-1) as other_status,
+        sm.options as other_text
+        FROM v_assessment_process p
+        LEFT JOIN v_assess_report sm ON sm.task_id = p.task_id and sm.dept_id =#{vo.deptId}
+        WHERE
+        p.del_flag = '1'  AND p.process = 4 AND p.task_status ='1' and p.dept_id = #{vo.deptId}
+        and find_in_set('liaison_role',#{roleKeys})
+        AND NOT EXISTS(
+        select * from v_assess_task_handle h join v_task_assess_user_confirm cf on cf.task_id = h.task_id and cf.user_id = h.user_id and cf.confirm_status ='1'
+        where h.task_id = p.task_id and h.user_id = p.user_id  and h.handle_status = 0
+        )
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where  task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+        <!--5.数据审核-->
+        UNION ALL
+        SELECT DISTINCT
+        case when p.special='0' THEN null ELSE p.task_id END as task_id,
+        case when p.special='0' THEN null ELSE p.task_name END as name,
+        p.belong_year,
+        p.special,
+        p.cycle,
+        p.cycle_desc,
+        p.process,
+        -1 as other_status,
+        null as other_text
+        FROM v_assessment_process p
+        WHERE
+        p.del_flag = '1'  AND p.process = 5 AND p.task_status ='1'
+        and find_in_set('organ',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+        <!--6.纪委评分-->
+        UNION ALL
+        SELECT DISTINCT
+        case when p.special='0' THEN null ELSE p.task_id END as task_id,
+        case when p.special='0' THEN null ELSE p.task_name END as name,
+        p.belong_year,
+        p.special,
+        p.cycle,
+        p.cycle_desc,
+        p.process,
+        -1 as other_status,
+        null as other_text
+        FROM v_assessment_process p
+        WHERE
+        p.del_flag = '1'  AND p.process = 6 AND p.task_status ='1'
+        and find_in_set('jiwei_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+
+        <!--7.主要负责人评定等次-->
+        UNION ALL
+        SELECT DISTINCT
+        case when p.special='0' THEN null ELSE p.task_id END as task_id,
+        case when p.special='0' THEN null ELSE p.task_name END as name,
+        p.belong_year,
+        p.special,
+        p.cycle,
+        p.cycle_desc,
+        p.process,
+        -1 as other_status,
+        null as other_text
+        FROM v_assessment_process p
+        WHERE
+        p.del_flag = '1'  AND p.process = 7 AND p.task_status ='1'
+        and find_in_set('leader_charge',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and EXISTS(select id from v_evaluation_grade g where g.task_id =p.task_id
+                    and g.personnel_type in('civil_servant_special','institution_special')
+                    and g.step ='1'
+                    and dept_id in (
+                    select dept_id FROM sys_dept  where leader_charge = #{vo.userId}
+                    )
+                    )
+                    and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+                <otherwise>
+                    and EXISTS(select id from v_evaluation_grade g where g.task_id =p.task_id
+                    and g.personnel_type in('civil_servant_special','institution_special')
+                    and cast(g.step as int) >=1
+                    and dept_id in (
+                    select dept_id FROM sys_dept  where leader_charge = #{vo.userId}
+                    )
+                    )
+                </otherwise>
+            </choose>
+
+            and handle_status = #{vo.handleStatus}
+        </if>
+        <!--8.机关党委审定意见-->
+        UNION ALL
+        SELECT DISTINCT
+        case when p.special='0' THEN null ELSE p.task_id END as task_id,
+        case when p.special='0' THEN null ELSE p.task_name END as name,
+        p.belong_year,
+        p.special,
+        p.cycle,
+        p.cycle_desc,
+        p.process,
+        -1 as other_status,
+        null as other_text
+        FROM v_assessment_process p
+        WHERE
+        p.del_flag = '1'  AND p.process = 8 AND p.task_status ='1'
+        and find_in_set('dwsd_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+
+        <!--9.党组会建议等次-->
+        UNION ALL
+        SELECT DISTINCT
+        case when p.special='0' THEN null ELSE p.task_id END as task_id,
+        case when p.special='0' THEN null ELSE p.task_name END as name,
+        p.belong_year,
+        p.special,
+        p.cycle,
+        p.cycle_desc,
+        p.process,
+        ifnull(pr.finish_status,-1) as other_status,
+        null as other_text
+        FROM v_assessment_process p
+        left join biz_assess_promulgate pr on pr.task_id = p.task_id OR pr.quarter = p.cycle_desc
+        WHERE
+        p.del_flag = '1'  AND p.process = 9 AND p.task_status ='1'
+        and find_in_set('assessment_admin_role',#{roleKeys})
+        <if test="vo.handleStatus != null">
+            <choose>
+                <when test="vo.handleStatus == 0">
+                    and NOT EXISTS(select * from biz_assess_promulgate  where task_id = p.task_id OR quarter = p.cycle_desc)
+                </when>
+            </choose>
+            and handle_status = #{vo.handleStatus}
+        </if>
+
+        <!--10.公示-->
+        UNION ALL
+        SELECT DISTINCT
+        case when p.special='0' THEN null ELSE p.task_id END as task_id,
+        case when p.special='0' THEN null ELSE p.task_name END as name,
+        p.belong_year,
+        p.special,
+        p.cycle,
+        p.cycle_desc,
+        p.process,
+        -1 as other_status,
+        null as other_text
+        FROM v_assessment_process p
+        WHERE
+        p.del_flag = '1'  AND p.process = 10 AND p.task_status ='1'
+        and find_in_set('assessment_admin_role',#{roleKeys})
+        <if test="vo.handleStatus != null">and handle_status = #{vo.handleStatus}</if>
+    </sql>
+
+    <select id="selectProcessList" resultMap="VAssessmentProcessResult">
+        select distinct * from (<include refid="BaseQueryVo"></include>) as T
+        <where>
+            <if test="vo.belongYear != null and vo.belongYear != ''"> and T.belong_year = #{vo.belongYear}</if>
+            <if test="vo.special != null and vo.special != ''">and T.special = #{vo.special}</if>
+            <if test="vo.cycleDesc != null and vo.cycleDesc != ''">and T.cycle_desc = #{vo.cycleDesc}</if>
+        </where>
+        order by T.cycle_desc DESC, T.process ASC
+    </select>
+</mapper>

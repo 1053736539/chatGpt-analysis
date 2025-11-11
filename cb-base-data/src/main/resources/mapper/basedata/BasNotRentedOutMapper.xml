@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.basedata.mapper.BasNotRentedOutMapper">
+    
+    <resultMap type="BasNotRentedOut" id="BasNotRentedOutResult">
+        <result property="id"    column="ID"    />
+        <result property="propertiesSale"    column="PROPERTIES_SALE"    />
+        <result property="building"    column="BUILDING"    />
+        <result property="unit"    column="UNIT"    />
+        <result property="roomNumber"    column="ROOM_NUMBER"    />
+        <result property="monthlyRent"    column="MONTHLY_RENT"    />
+        <result property="areaId"    column="AREA_ID"    />
+        <result property="importTime"    column="IMPORT_TIME"    />
+        <result property="createTime"    column="CREATE_TIME"    />
+        <result property="updateTime"    column="UPDATE_TIME"    />
+        <result property="createBy"    column="CREATE_BY"    />
+        <result property="updateBy"    column="UPDATE_BY"    />
+        <result property="delFlag"    column="DEL_FLAG"    />
+        <result property="sourceId"    column="source_id"    />
+    </resultMap>
+
+    <sql id="selectBasNotRentedOutVo">
+        select ID, PROPERTIES_SALE, BUILDING, UNIT, ROOM_NUMBER, MONTHLY_RENT, AREA_ID, IMPORT_TIME, CREATE_TIME,
+               UPDATE_TIME, CREATE_BY, UPDATE_BY, DEL_FLAG,source_id from bas_not_rented_out
+    </sql>
+
+    <select id="selectBasNotRentedOutList" parameterType="BasNotRentedOut" resultMap="BasNotRentedOutResult">
+        <include refid="selectBasNotRentedOutVo"/>
+        <where>  
+            <if test="propertiesSale != null  and propertiesSale != ''"> and PROPERTIES_SALE = #{propertiesSale}</if>
+            <if test="building != null  and building != ''"> and BUILDING = #{building}</if>
+            <if test="unit != null  and unit != ''"> and UNIT = #{unit}</if>
+            <if test="roomNumber != null  and roomNumber != ''"> and ROOM_NUMBER = #{roomNumber}</if>
+            <if test="monthlyRent != null "> and MONTHLY_RENT = #{monthlyRent}</if>
+            <if test="areaId != null  and areaId != ''"> and AREA_ID = #{areaId}</if>
+            <if test="importTime != null "> and IMPORT_TIME = #{importTime}</if>
+            <if test="createTime != null "> and CREATE_TIME = #{createTime}</if>
+            <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
+            <if test="createBy != null  and createBy != ''"> and CREATE_BY = #{createBy}</if>
+            <if test="updateBy != null  and updateBy != ''"> and UPDATE_BY = #{updateBy}</if>
+            <if test="delFlag != null  and delFlag != ''"> and DEL_FLAG = #{delFlag}</if>
+        </where>
+        order by create_time desc
+    </select>
+    
+    <select id="selectBasNotRentedOutById" parameterType="String" resultMap="BasNotRentedOutResult">
+        <include refid="selectBasNotRentedOutVo"/>
+        where ID = #{id}
+    </select>
+    <select id="selectBasNotRentedOutBySourceId" parameterType="String" resultMap="BasNotRentedOutResult">
+        <include refid="selectBasNotRentedOutVo"/>
+        where source_id = #{id}
+    </select>
+        
+    <insert id="insertBasNotRentedOut" parameterType="BasNotRentedOut">
+        insert into bas_not_rented_out
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">ID,</if>
+            <if test="propertiesSale != null">PROPERTIES_SALE,</if>
+            <if test="building != null">BUILDING,</if>
+            <if test="unit != null">UNIT,</if>
+            <if test="roomNumber != null">ROOM_NUMBER,</if>
+            <if test="monthlyRent != null">MONTHLY_RENT,</if>
+            <if test="areaId != null">AREA_ID,</if>
+            <if test="importTime != null">IMPORT_TIME,</if>
+            <if test="createTime != null">CREATE_TIME,</if>
+            <if test="updateTime != null">UPDATE_TIME,</if>
+            <if test="createBy != null">CREATE_BY,</if>
+            <if test="updateBy != null">UPDATE_BY,</if>
+            <if test="delFlag != null">DEL_FLAG,</if>
+            <if test="sourceId != null">source_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="propertiesSale != null">#{propertiesSale},</if>
+            <if test="building != null">#{building},</if>
+            <if test="unit != null">#{unit},</if>
+            <if test="roomNumber != null">#{roomNumber},</if>
+            <if test="monthlyRent != null">#{monthlyRent},</if>
+            <if test="areaId != null">#{areaId},</if>
+            <if test="importTime != null">#{importTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="sourceId != null">#{sourceId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBasNotRentedOut" parameterType="BasNotRentedOut">
+        update bas_not_rented_out
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="propertiesSale != null">PROPERTIES_SALE = #{propertiesSale},</if>
+            <if test="building != null">BUILDING = #{building},</if>
+            <if test="unit != null">UNIT = #{unit},</if>
+            <if test="roomNumber != null">ROOM_NUMBER = #{roomNumber},</if>
+            <if test="monthlyRent != null">MONTHLY_RENT = #{monthlyRent},</if>
+            <if test="areaId != null">AREA_ID = #{areaId},</if>
+            <if test="importTime != null">IMPORT_TIME = #{importTime},</if>
+            <if test="createTime != null">CREATE_TIME = #{createTime},</if>
+            <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
+            <if test="createBy != null">CREATE_BY = #{createBy},</if>
+            <if test="updateBy != null">UPDATE_BY = #{updateBy},</if>
+            <if test="delFlag != null">DEL_FLAG = #{delFlag},</if>
+            <if test="sourceId != null">source_id = #{sourceId},</if>
+        </trim>
+        where ID = #{id}
+    </update>
+
+    <delete id="deleteBasNotRentedOutById" parameterType="String">
+        delete from bas_not_rented_out where ID = #{id}
+    </delete>
+
+    <delete id="deleteBasNotRentedOutByIds" parameterType="String">
+        delete from bas_not_rented_out where ID in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -49,11 +49,12 @@ public class BusDepReviewUnitNameServiceImpl implements IBusDepReviewUnitNameSer
                 BigDecimal avgScore = new BigDecimal(0);
                 for (BusDepReviewMemberUnit busDepReviewMemberUnit : busDepReviewMemberUnits) {
                     List<BusDepReviewData> busDepReviewDatas = busDepReviewDataList.stream().filter(busDepReviewData -> busDepReviewData.getEvaluatTarget().equals(busDepReviewMemberUnit.getMemberUnit())).collect(Collectors.toList());
-                    BigDecimal reviewScore = busDepReviewDatas.get(0).getReviewScore();
-                    busDepReviewMemberUnit.setScore(reviewScore);
-                    total = total.add(reviewScore);
+                    if (!CollectionUtils.isEmpty(busDepReviewDatas)){
+                        BigDecimal reviewScore = busDepReviewDatas.get(0).getReviewScore();
+                        busDepReviewMemberUnit.setScore(reviewScore);
+                        total = total.add(reviewScore);
+                    }
                 }
-                avgScore = total.divide(new BigDecimal(busDepReviewMemberUnits.size()), 2, BigDecimal.ROUND_HALF_UP);
                 busDepReviewUnitName.setTotal(total);
                 busDepReviewUnitName.setAvgScore(avgScore);
             }

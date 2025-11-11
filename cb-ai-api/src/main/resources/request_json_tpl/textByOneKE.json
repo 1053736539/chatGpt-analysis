@@ -1,0 +1,10 @@
+{
+  "inputs": {
+    "input": "组装好的OneKE指令JSON字符串"
+  },
+  "tweaks": {
+    "BishengLLM-7a185": {},
+    "PromptTemplate-595db": {},
+    "LLMChain-edfbb": {}
+  }
+}

@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.task.mapper.BizFeedbackMapper">
+    
+    <resultMap type="BizFeedback" id="BizFeedbackResult">
+        <result property="id"    column="id"    />
+        <result property="problem"    column="problem"    />
+        <result property="attach"    column="attach"    />
+        <result property="status"    column="status"    />
+        <result property="handleSituation"    column="handle_situation"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectBizFeedbackVo">
+        select id, problem, attach, status, handle_situation, create_by, create_time, update_by, update_time from biz_feedback
+    </sql>
+
+    <select id="selectBizFeedbackList" parameterType="BizFeedback" resultMap="BizFeedbackResult">
+        <include refid="selectBizFeedbackVo"/>
+        <where>  
+            <if test="problem != null  and problem != ''"> and problem like concat('%', #{problem}, '%')</if>
+            <if test="attach != null  and attach != ''"> and attach = #{attach}</if>
+            <if test="status != null "> and status = #{status}</if>
+            <if test="handleSituation != null  and handleSituation != ''"> and handle_situation = #{handleSituation}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizFeedbackById" parameterType="Integer" resultMap="BizFeedbackResult">
+        <include refid="selectBizFeedbackVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizFeedback" parameterType="BizFeedback">
+        insert into biz_feedback
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="problem != null">problem,</if>
+            <if test="attach != null">attach,</if>
+            <if test="status != null">status,</if>
+            <if test="handleSituation != null">handle_situation,</if>
+            <if test="createBy != null and createBy != ''">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="problem != null">#{problem},</if>
+            <if test="attach != null">#{attach},</if>
+            <if test="status != null">#{status},</if>
+            <if test="handleSituation != null">#{handleSituation},</if>
+            <if test="createBy != null and createBy != ''">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizFeedback" parameterType="BizFeedback">
+        update biz_feedback
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="problem != null">problem = #{problem},</if>
+            <if test="attach != null">attach = #{attach},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="handleSituation != null">handle_situation = #{handleSituation},</if>
+            <if test="createBy != null and createBy != ''">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizFeedbackById" parameterType="Integer">
+        delete from biz_feedback where id = #{id}
+    </delete>
+
+    <delete id="deleteBizFeedbackByIds" parameterType="String">
+        delete from biz_feedback where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

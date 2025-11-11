@@ -1,8 +1,10 @@
 package com.cb.worksituation.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cb.common.utils.DateUtils;
 import com.cb.common.utils.SecurityUtils;
 import com.cb.common.utils.StringUtils;
@@ -12,10 +14,10 @@ import com.cb.worksituation.mapper.BusDepReviewDataMapper;
 import com.cb.worksituation.service.IBusDepReviewDataService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 评分数据Service业务层处理
@@ -64,25 +66,25 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
         String dataJson = busDepReviewData.getDataJson();
         if (!StringUtils.isBlank(dataJson)) {
             JSONArray jsonArray = JSONArray.parseArray(dataJson);
-            for (int i = 0; i < jsonArray.size(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                String multDeptScore = jsonObject.getString("multDeptScore");
-                if (StringUtils.isNotBlank(multDeptScore) && multDeptScore.equals("1")) {
-                    String headCode = jsonObject.getString(jsonObject.getString("headCode") + "List");
-                    if (isJsonArray(headCode)) {
-                        JSONArray headCodeArray = JSONArray.parseArray(headCode);
+            populateAttachmentInfo(busDepReviewData, jsonArray);
+            if (jsonArray != null) {
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String multDeptScore = jsonObject.getString("multDeptScore");
+                    if (StringUtils.isNotBlank(multDeptScore) && multDeptScore.equals("1")) {
+                        String headCode = jsonObject.getString("headCode");
+                        if (StringUtils.isBlank(headCode)) {
+                            continue;
+                        }
+                        String listKey = headCode + "List";
+                        JSONArray headCodeArray = extractJSONArray(jsonObject.get(listKey));
                         headCodeArray.add(jsonObject);
-                        jsonObject.put(jsonObject.getString("headCode") + "List", headCodeArray);
-                        jsonArray.add(jsonObject);
-                    } else {
-                        JSONArray headCodeArray = new JSONArray();
-                        headCodeArray.add(jsonObject);
-                        jsonObject.put(jsonObject.getString("headCode") + "List", headCodeArray);
-                        jsonArray.add(jsonObject);
+                        jsonObject.put(listKey, headCodeArray);
                     }
                 }
             }
-
+        } else {
+            populateAttachmentInfo(busDepReviewData, null);
         }
         try {
             busDepReviewData.setCreateBy(SecurityUtils.getUsername());
@@ -93,12 +95,26 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
     }
 
     public static boolean isJsonArray(String input) {
+        if (StringUtils.isBlank(input)) {
+            return false;
+        }
         try {
             JSONArray.parseArray(input);
             return true;
         } catch (JSONException e) {
             return false;
         }
+    }
+
+    private JSONArray extractJSONArray(Object value) {
+        if (value instanceof JSONArray) {
+            return (JSONArray) value;
+        }
+        if (value instanceof String && isJsonArray((String) value)) {
+            JSONArray parsed = JSONArray.parseArray((String) value);
+            return parsed == null ? new JSONArray() : parsed;
+        }
+        return new JSONArray();
     }
 
 
@@ -124,6 +140,9 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
             item.setId(IdUtils.randomUUID());
             item.setCreateBy(finalUserName);
             item.setCreateTime(nowDate);
+            String dataJson = item.getDataJson();
+            JSONArray jsonArray = StringUtils.isBlank(dataJson) ? null : JSONArray.parseArray(dataJson);
+            populateAttachmentInfo(item, jsonArray);
         });
         // 定义每批次的大小
         int batchSize = 500;
@@ -145,14 +164,20 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
      * @return 结果
      */
     @Override
-    public int updateBusDepReviewData(BusDepReviewData busDepReviewData) {
-        try {
-            busDepReviewData.setUpdateBy(SecurityUtils.getUsername());
-        } catch (Exception e) {
-        }
+    public int saveBusDepReviewData(BusDepReviewData busDepReviewData) {
         String dataJson = busDepReviewData.getDataJson();
         if (!StringUtils.isBlank(dataJson)) {
-            JSONArray jsonArray = JSONArray.parseArray(dataJson);
+            BusDepReviewData depReviewData = busDepReviewDataMapper.selectBusDepReviewDataById(busDepReviewData.getId());
+            JSONArray jsonArray;
+            if (depReviewData != null) {
+                String reviewDataDataJson = depReviewData.getDataJson();
+                JSONArray backendArray = StringUtils.isNotBlank(reviewDataDataJson) ? JSONArray.parseArray(reviewDataDataJson) : new JSONArray();
+                JSONArray frontendArray = JSONArray.parseArray(dataJson);
+                jsonArray = mergeJsonArrays(backendArray, frontendArray);
+            } else {
+                jsonArray = JSONArray.parseArray(dataJson);
+            }
+
             for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String multDeptScore = jsonObject.getString("multDeptScore");
@@ -160,29 +185,124 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
                     String headCode = jsonObject.getString(jsonObject.getString("headCode") + "List");
                     if (isJsonArray(headCode)) {
                         JSONArray headCodeArray = JSONArray.parseArray(headCode);
-                        headCodeArray.add(jsonObject);
+                        for (int j = 0; j < headCodeArray.size(); j++) {
+                            JSONObject jsonArrayJSONObject = jsonArray.getJSONObject(j);
+                            if (Objects.equals(SecurityUtils.getOnlineDept().getDeptName(), jsonArrayJSONObject.getString("deptName"))) {
+                                headCodeArray.remove(j);
+                                break;
+                            }
+                        }
+                        JSONObject copyObject = deepCopyJsonObject(jsonObject);
+                        copyObject.put("deptName", SecurityUtils.getOnlineDept().getDeptName());
+                        copyObject.remove(jsonObject.getString("headCode") + "List");
+                        headCodeArray.add(copyObject);
                         jsonObject.put(jsonObject.getString("headCode") + "List", headCodeArray);
-                        jsonArray.add(jsonObject);
                     } else {
                         JSONArray headCodeArray = new JSONArray();
-                        headCodeArray.add(jsonObject);
+                        JSONObject copyObject = deepCopyJsonObject(jsonObject);
+                        copyObject.put("deptName", SecurityUtils.getOnlineDept().getDeptName());
+                        copyObject.remove(jsonObject.getString("headCode") + "List");
+                        headCodeArray.add(copyObject);
                         jsonObject.put(jsonObject.getString("headCode") + "List", headCodeArray);
-                        jsonArray.add(jsonObject);
                     }
                 }
             }
-
+            busDepReviewData.setDataJson(jsonArray.toString());
         }
-        busDepReviewData.setUpdateTime(DateUtils.getNowDate());
-        return busDepReviewDataMapper.updateBusDepReviewData(busDepReviewData);
+        if (null == busDepReviewData || busDepReviewData.getId() == null) {
+            busDepReviewData.setId(IdUtils.randomUUID());
+            busDepReviewData.setCreateTime(DateUtils.getNowDate());
+            busDepReviewData.setCreateBy(SecurityUtils.getUsername());
+            return busDepReviewDataMapper.insertBusDepReviewData(busDepReviewData);
+        } else {
+            busDepReviewData.setUpdateTime(DateUtils.getNowDate());
+            busDepReviewData.setUpdateBy(SecurityUtils.getUsername());
+            return busDepReviewDataMapper.updateBusDepReviewData(busDepReviewData);
+        }
+
+    }
+
+
+    private JSONArray mergeJsonArrays(JSONArray backendArray, JSONArray frontendArray) {
+        // 创建后端数据的headCode映射，便于快速查找
+        Map<String, JSONObject> backendMap = createHeadCodeMapping(backendArray);
+
+        // 处理前端数据
+        JSONArray resultArray = new JSONArray();
+
+        // 先添加所有后端数据（后续会被前端数据覆盖相同headCode的项）
+        resultArray.addAll(backendArray);
+
+        // 遍历前端数据，进行合并
+        for (int i = 0; i < frontendArray.size(); i++) {
+            JSONObject frontendObj = frontendArray.getJSONObject(i);
+            String headCode = frontendObj.getString("headCode");
+
+            if (StringUtils.isBlank(headCode)) {
+                continue; // 跳过没有headCode的数据
+            }
+
+            // 查找是否已存在相同headCode的数据
+            boolean found = false;
+            for (int j = 0; j < resultArray.size(); j++) {
+                JSONObject backendObj = resultArray.getJSONObject(j);
+                String backendHeadCode = backendObj.getString("headCode");
+
+                if (headCode.equals(backendHeadCode)) {
+                    // 替换现有数据（保持原有位置）
+                    JSONObject mergedObj = mergeJsonObjects(backendObj, frontendObj);
+                    resultArray.set(j, mergedObj);
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found) {
+                // 新增数据
+                resultArray.add(frontendObj);
+            }
+        }
+
+        return resultArray;
+    }
+
+    /**
+     * 创建headCode到JSON对象的映射
+     */
+    private Map<String, JSONObject> createHeadCodeMapping(JSONArray jsonArray) {
+        Map<String, JSONObject> mapping = new HashMap<>();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            JSONObject obj = jsonArray.getJSONObject(i);
+            String headCode = obj.getString("headCode");
+            if (StringUtils.isNotBlank(headCode)) {
+                mapping.put(headCode, obj);
+            }
+        }
+        return mapping;
+    }
+
+
+    /**
+     * 合并两个JSON对象（前端数据优先）
+     */
+    private JSONObject mergeJsonObjects(JSONObject backendObj, JSONObject frontendObj) {
+        JSONObject merged = new JSONObject();
+
+        // 先添加后端数据的所有字段
+        merged.putAll(backendObj);
+
+        // 用前端数据覆盖（前端数据优先）
+        for (String key : frontendObj.keySet()) {
+            merged.put(key, frontendObj.get(key));
+        }
+
+        return merged;
     }
 
     @Override
     public int submitGrading(BusDepReviewData busDepReviewData) {
-        try {
-            busDepReviewData.setUpdateBy(SecurityUtils.getUsername());
-        } catch (Exception e) {
-        }
+        saveBusDepReviewData(busDepReviewData);
+        busDepReviewData.setUpdateBy(SecurityUtils.getUsername());
         String dataJson = busDepReviewData.getDataJson();
         if (!StringUtils.isBlank(dataJson)) {
             // 对一对多进行求和
@@ -207,19 +327,21 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
                     String headCode = jsonObject.getString(jsonObject.getString("headCode") + "List");
                     // 求和
                     BigDecimal headScoreTotal = new BigDecimal(0);
-                    JSONArray headCodeArray = JSONArray.parseArray(headCode);
-                    for (int j = 0; j < headCodeArray.size(); j++) {
-                        JSONObject headCodeArrayJSONObject = headCodeArray.getJSONObject(i);
-                        BigDecimal headScore = headCodeArrayJSONObject.getBigDecimal("headScore");
-                        headScoreTotal = headScoreTotal.add(headScore);
+                    if (StringUtils.isNotBlank(headCode)) {
+                        JSONArray headCodeArray = JSONArray.parseArray(headCode);
+                        for (int j = 0; j < headCodeArray.size(); j++) {
+                            JSONObject headCodeArrayJSONObject = headCodeArray.getJSONObject(j);
+                            BigDecimal headScore = headCodeArrayJSONObject.getBigDecimal("headScore");
+                            headScoreTotal = headScoreTotal.add(headScore);
+                        }
+                        // 赋值给表格
+                        jsonObject.put("headScore", headScoreTotal);
                     }
-                    // 赋值给表格
-                    jsonObject.put("headScore", headScoreTotal);
                 }
                 String headType = jsonObject.getString("headType");
-                if (StringUtils.isNotBlank(headType) && headType.equals("1")) {
+                if (StringUtils.isNotBlank(headType) && headType.equals("2")) {
                     subtotalQuanScore = jsonObject.getBigDecimal("headScore").add(subtotalQuanScore);
-                } else if (StringUtils.isNotBlank(headType) && headType.equals("2")) {
+                } else if (StringUtils.isNotBlank(headType) && headType.equals("4")) {
                     bonusSubtotal = jsonObject.getBigDecimal("headScore").add(bonusSubtotal);
                 }
                 String headCode = jsonObject.getString("headCode");
@@ -244,8 +366,10 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
                 }
             }
             busDepReviewData.setDataJson(jsonArray.toString());
+            busDepReviewData.setSubtotalQuanScore(subtotalQuanScore.toString());
+            busDepReviewData.setBonusSubtotal(bonusSubtotal.toString());
             // reviewScore
-            busDepReviewData.setReviewScore(subtotalQuanScore.add(bonusSubtotal).add(qualitativeEvaluationScore).add(deductPoints));
+            busDepReviewData.setReviewScore(subtotalQuanScore.add(bonusSubtotal).add(qualitativeEvaluationScore).subtract(deductPoints));
         }
         busDepReviewData.setUpdateTime(DateUtils.getNowDate());
         return busDepReviewDataMapper.updateBusDepReviewData(busDepReviewData);
@@ -273,23 +397,69 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
         return busDepReviewDataMapper.deleteBusDepReviewDataById(id);
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public int replaceReviewDataForCurrentUser(String reviewId, List<BusDepReviewData> busDepReviewDatas) {
+        if (StringUtils.isBlank(reviewId) || busDepReviewDatas == null || busDepReviewDatas.isEmpty()) {
+            return 0;
+        }
+        String username = SecurityUtils.getUsername();
+        busDepReviewDataMapper.deleteByReviewIdAndCreator(reviewId);
+        int rows = 0;
+        for (BusDepReviewData busDepReviewData : busDepReviewDatas) {
+            if (busDepReviewData == null) {
+                continue;
+            }
+            busDepReviewData.setBusDepReviewId(reviewId);
+            rows += insertBusDepReviewData(busDepReviewData);
+        }
+        return rows;
+    }
 
-    public static void main(String[] args) {
-        String s = "[{\"aa\":1,\"bb\":[{\"cc\":5},{\"cc\":6}]},{\"aa\":3,\"bb\":[{\"cc\":7},{\"cc\":6}]}]";
-        JSONArray jsonArray = JSONArray.parseArray(s);
+    @Override
+    public int submitReviewData(String reviewId) {
+        if (StringUtils.isBlank(reviewId)) {
+            return 0;
+        }
+        String username = null;
+        try {
+            username = SecurityUtils.getUsername();
+        } catch (Exception e) {
+        }
+        if (StringUtils.isBlank(username)) {
+            return 0;
+        }
+        Date now = DateUtils.getNowDate();
+        return busDepReviewDataMapper.updateDataStatusByReviewIdAndCreator(reviewId, username, "2", username, now);
+    }
 
+    private void populateAttachmentInfo(BusDepReviewData busDepReviewData, JSONArray jsonArray) {
+        busDepReviewData.setFilePath(null);
+        busDepReviewData.setAttachId(null);
+        if (jsonArray == null || jsonArray.isEmpty()) {
+            return;
+        }
         for (int i = 0; i < jsonArray.size(); i++) {
             JSONObject jsonObject = jsonArray.getJSONObject(i);
-            JSONArray bb = jsonObject.getJSONArray("bb");
-            BigDecimal headScoreTotal = new BigDecimal(0);
-            for (int j = 0; j < bb.size(); j++) {
-                JSONObject object = bb.getJSONObject(j);
-                BigDecimal cc = object.getBigDecimal("cc");
-                headScoreTotal = headScoreTotal.add(cc);
+            if (jsonObject == null) {
+                continue;
             }
-            jsonObject.put("aa", headScoreTotal.toString());
+            String filePath = jsonObject.getString("filePath");
+            if (StringUtils.isNotBlank(filePath)) {
+                busDepReviewData.setFilePath(filePath);
+            }
+            String attachId = jsonObject.getString("attachId");
+            if (StringUtils.isNotBlank(attachId)) {
+                busDepReviewData.setAttachId(attachId);
+            }
         }
+    }
 
-        System.out.println(jsonArray);
+    private static JSONObject deepCopyJsonObject(JSONObject original) {
+        if (original == null) return null;
+
+        // 通过序列化和反序列化实现深拷贝
+        String jsonStr = JSON.toJSONString(original, SerializerFeature.DisableCircularReferenceDetect);
+        return JSON.parseObject(jsonStr);
     }
 }

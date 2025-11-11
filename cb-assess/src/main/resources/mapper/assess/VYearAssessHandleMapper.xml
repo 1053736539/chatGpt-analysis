@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.VYearAssessHandleMapper">
+
+    <resultMap id="VYearAssessHandleResult" type="com.cb.assess.vo.VYearAssessHandleVo$HandleInfo">
+        <result property="belongYear" column="belong_year"/>
+        <result property="taskName" column="task_name"/>
+        <result property="voterId" column="voter_id"/>
+        <result property="handleStatus" column="handle_status"/>
+        <result property="bizType" column="biz_type"/>
+    </resultMap>
+
+    <select id="selectList" resultMap="VYearAssessHandleResult">
+        select belong_year,task_name,voter_id,handle_status,biz_type
+        from v_annual_assessment_task
+        where voter_id = #{req.voterId}
+        <if test="req.belongYear != null and req.belongYear != ''">
+            and belong_year = #{req.belongYear}
+        </if>
+        <if test="req.bizType != null">
+            and biz_type = #{req.bizType}
+        </if>
+        <if test="req.bizType == ''">
+            and biz_type = #{req.bizType}
+        </if>
+        <if test="req.handleStatus != null and req.handleStatus != ''">
+            and handle_status = #{req.handleStatus}
+        </if>
+        order by belong_year desc
+    </select>
+
+
+</mapper>

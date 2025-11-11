@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessCadreDemocraticTaskMapper">
+    
+    <resultMap type="BizAssessCadreDemocraticTask" id="BizAssessCadreDemocraticTaskResult">
+        <result property="id"    column="id"    />
+        <result property="year"    column="year"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="createDept"    column="create_dept"    />
+        <result property="reportFlag"    column="report_flag"    />
+        <result property="reportDate"    column="report_date"    />
+
+        <result property="createByName"    column="createByName"    />
+        <result property="createDeptName"    column="createDeptName"    />
+    </resultMap>
+
+    <sql id="selectBizAssessCadreDemocraticTaskVo">
+        select t.id, t.year, t.create_by, t.create_time, t.update_by, t.update_time, t.remark, t.create_dept, t.report_flag, t.report_date
+            ,cu.name as createByName
+            ,cd.dept_name as createDeptName
+        from biz_assess_cadre_democratic_task t
+        left join sys_user cu on t.create_by = cu.user_name and cu.del_flag != '2'
+        left join sys_dept cd on t.create_dept = cd.dept_id
+
+    </sql>
+
+    <select id="selectBizAssessCadreDemocraticTaskList" parameterType="BizAssessCadreDemocraticTask" resultMap="BizAssessCadreDemocraticTaskResult">
+        <include refid="selectBizAssessCadreDemocraticTaskVo"/>
+        <where>  
+            <if test="year != null  and year != ''"> and t.year = #{year}</if>
+            <if test="createBy != null  and createBy != ''"> and t.create_by = #{createBy}</if>
+            <if test="createByName != null  and createByName != ''"> and cu.name like concat('%', #{createByName}, '%')</if>
+            <if test="createDept != null  and createDept != ''"> and t.create_dept = #{createDept}</if>
+            <if test="createDeptName != null  and createDeptName != ''"> and cd.dept_name like concat('%', #{createDeptName}, '%')</if>
+            <if test="reportFlag != null  and reportFlag != ''"> and t.report_flag = #{reportFlag}</if>
+        </where>
+        order by t.create_time desc
+    </select>
+    
+    <select id="selectBizAssessCadreDemocraticTaskById" parameterType="String" resultMap="BizAssessCadreDemocraticTaskResult">
+        <include refid="selectBizAssessCadreDemocraticTaskVo"/>
+        where t.id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessCadreDemocraticTask" parameterType="BizAssessCadreDemocraticTask">
+        insert into biz_assess_cadre_democratic_task
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="year != null and year != ''">"year",</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="createDept != null and createDept != ''">create_dept,</if>
+            <if test="reportFlag != null  and reportFlag != ''">report_flag,</if>
+            <if test="reportDate != null  and reportDate != ''">report_date,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="year != null and year != ''">#{year},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="createDept != null and createDept != ''">#{createDept},</if>
+            <if test="reportFlag != null  and reportFlag != ''">#{reportFlag},</if>
+            <if test="reportDate != null  and reportDate != ''">#{reportDate},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessCadreDemocraticTask" parameterType="BizAssessCadreDemocraticTask">
+        update biz_assess_cadre_democratic_task
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="year != null and year != ''">"year" = #{year},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="createDept != null and createDept != ''">create_dept = #{createDept},</if>
+            <if test="reportFlag != null  and reportFlag != ''">report_flag = #{reportFlag},</if>
+            <if test="reportDate != null  and reportDate != ''">report_date = #{reportDate},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssessCadreDemocraticTaskById" parameterType="String">
+        delete from biz_assess_cadre_democratic_task where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessCadreDemocraticTaskByIds" parameterType="String">
+        delete from biz_assess_cadre_democratic_task where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.activiti.mapper.BizLeaveMapper">
+    <resultMap type="BizLeave" id="BizLeaveResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="title"    column="title"    />
+        <result property="reason"    column="reason"    />
+        <result property="leaveStartTime"    column="leave_start_time"    />
+        <result property="leaveEndTime"    column="leave_end_time"    />
+        <result property="totalTime"    column="total_time"    />
+        <result property="realityStartTime"    column="reality_start_time"    />
+        <result property="realityEndTime"    column="reality_end_time"    />
+        <result property="applyUserId"    column="apply_user_id"    />
+        <result property="applyUserName"    column="apply_user_name"    />
+        <result property="applyTime"    column="apply_time"    />
+        <result property="instanceId"    column="instance_id"    />
+        <result property="processKey"    column="process_key"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="workPost"    column="work_post"    />
+        <result property="leaveNum"    column="leave_num"    />
+        <result property="destructionDate"    column="destruction_date"    />
+        <result property="mainLeaderOpinions"    column="main_leader_opinions"    />
+        <result property="deputySecretaryOpinions"    column="deputy_secretary_opinions"    />
+        <result property="standingCommitteeOpinions"    column="standing_committee_opinions"    />
+        <result property="organizationOpinions"    column="organization_opinions"    />
+        <result property="departmentOpinions"    column="department_opinions"    />
+        <result property="createUserLevel"    column="create_user_level"    />
+        <result property="holidayYear"    column="holiday_year"    />
+        <result property="status"    column="status"    />
+        <result property="isLeaveKunming"    column="is_leave_kunming"    />
+        <result property="destination"    column="destination"    />
+        <result property="attach"    column="attach"    />
+        <result property="compensatoryFlag" column="compensatory_flag" />
+        <result property="sickHospitalizationFlag" column="sick_hospitalization_flag" />
+        <result property="compensatoryPlanTime" column="compensatory_plan_time" />
+        <result property="compensatoryReason" column="compensatory_reason" />
+        <result property="compensatoryTime" column="compensatory_time" />
+        <result property="isHalfDay" column="is_half_day" />
+        <result property="nextUserName" column="next_user_name" />
+        <result property="inspectionTeamHeadOpinions" column="inspection_team_head_opinions" />
+
+
+    </resultMap>
+
+    <sql id="selectBizLeaveVo">
+        select id, type, title, reason, leave_start_time, leave_end_time, total_time, reality_start_time, reality_end_time,
+               apply_user_id, apply_user_name, apply_time, instance_id, process_key, del_flag, create_by, create_time,
+               update_by, update_time, remark, dept_id, dept_name, work_post, leave_num, destruction_date, main_leader_opinions,
+               deputy_secretary_opinions, standing_committee_opinions, organization_opinions, department_opinions, create_user_level,
+               is_leave_kunming,destination,attach,compensatory_flag,sick_hospitalization_flag,compensatory_plan_time,compensatory_reason,compensatory_time,
+            holiday_year, status,is_half_day,next_user_name,inspection_team_head_opinions from biz_leave
+    </sql>
+
+    <select id="selectBizLeaveList" parameterType="BizLeave" resultMap="BizLeaveResult">
+        <include refid="selectBizLeaveVo"/>
+        <where>
+            <if test="type != null"> and type = #{type}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="leaveStartTime != null "> and leave_start_time = #{leaveStartTime}</if>
+            <if test="leaveEndTime != null "> and leave_end_time = #{leaveEndTime}</if>
+            <if test="totalTime != null "> and total_time = #{totalTime}</if>
+            <if test="realityStartTime != null "> and reality_start_time = #{realityStartTime}</if>
+            <if test="realityEndTime != null "> and reality_end_time = #{realityEndTime}</if>
+            <if test="applyUserId != null  and applyUserId != ''"> and apply_user_id = #{applyUserId}</if>
+            <if test="applyUserName != null  and applyUserName != ''"> and apply_user_name like concat('%', #{applyUserName}, '%')</if>
+            <if test="applyTime != null "> and apply_time = #{applyTime}</if>
+            <if test="instanceId != null  and instanceId != ''"> and instance_id = #{instanceId}</if>
+            <if test="processKey != null  and processKey != ''"> and process_key = #{processKey}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="deptName != null  and deptName != ''"> and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="workPost != null  and workPost != ''"> and work_post = #{workPost}</if>
+            <if test="leaveNum != null "> and leave_num = #{leaveNum}</if>
+            <if test="destructionDate != null "> and destruction_date = #{destructionDate}</if>
+            <if test="mainLeaderOpinions != null  and mainLeaderOpinions != ''"> and main_leader_opinions = #{mainLeaderOpinions}</if>
+            <if test="deputySecretaryOpinions != null  and deputySecretaryOpinions != ''"> and deputy_secretary_opinions = #{deputySecretaryOpinions}</if>
+            <if test="standingCommitteeOpinions != null  and standingCommitteeOpinions != ''"> and standing_committee_opinions = #{standingCommitteeOpinions}</if>
+            <if test="organizationOpinions != null  and organizationOpinions != ''"> and organization_opinions = #{organizationOpinions}</if>
+            <if test="departmentOpinions != null  and departmentOpinions != ''"> and department_opinions = #{departmentOpinions}</if>
+            <if test="createUserLevel != null  and createUserLevel != ''"> and create_user_level = #{createUserLevel}</if>
+            <if test="holidayYear != null  and holidayYear != ''"> and holiday_year = #{holidayYear}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="compensatoryFlag != null  and compensatoryFlag != ''"> and compensatory_flag = #{compensatoryFlag}</if>
+            <if test="sickHospitalizationFlag != null  and sickHospitalizationFlag != ''"> and sick_hospitalization_flag = #{sickHospitalizationFlag}</if>
+            <if test="compensatoryPlanTime != null  and compensatoryPlanTime != ''"> and compensatory_plan_time = #{compensatoryPlanTime}</if>
+            <if test="compensatoryReason != null  and compensatoryReason != ''"> and compensatory_reason = #{compensatoryReason}</if>
+            <if test="compensatoryTime != null  and compensatoryTime != ''"> and compensatory_time = #{compensatoryTime}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="listByTypeOrHospital" parameterType="BizLeave" resultMap="BizLeaveResult">
+        <include refid="selectBizLeaveVo"/>
+        <where>
+             and (type = 2 or sick_hospitalization_flag =1)
+            <if test="type !=null  and type !=''"> and type= #{type}</if>
+            <if test="title != null  and title != ''"> and title = #{title}</if>
+            <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
+            <if test="leaveStartTime != null "> and leave_start_time = #{leaveStartTime}</if>
+            <if test="leaveEndTime != null "> and leave_end_time = #{leaveEndTime}</if>
+            <if test="totalTime != null "> and total_time = #{totalTime}</if>
+            <if test="realityStartTime != null "> and reality_start_time = #{realityStartTime}</if>
+            <if test="realityEndTime != null "> and reality_end_time = #{realityEndTime}</if>
+            <if test="applyUserId != null  and applyUserId != ''"> and apply_user_id = #{applyUserId}</if>
+            <if test="applyUserName != null  and applyUserName != ''"> and apply_user_name like concat('%', #{applyUserName}, '%')</if>
+            <if test="applyTime != null "> and apply_time = #{applyTime}</if>
+            <if test="instanceId != null  and instanceId != ''"> and instance_id = #{instanceId}</if>
+            <if test="processKey != null  and processKey != ''"> and process_key = #{processKey}</if>
+            <if test="deptId != null "> and dept_id = #{deptId}</if>
+            <if test="deptName != null  and deptName != ''"> and dept_name like concat('%', #{deptName}, '%')</if>
+            <if test="workPost != null  and workPost != ''"> and work_post = #{workPost}</if>
+            <if test="leaveNum != null "> and leave_num = #{leaveNum}</if>
+            <if test="destructionDate != null "> and destruction_date = #{destructionDate}</if>
+            <if test="mainLeaderOpinions != null  and mainLeaderOpinions != ''"> and main_leader_opinions = #{mainLeaderOpinions}</if>
+            <if test="deputySecretaryOpinions != null  and deputySecretaryOpinions != ''"> and deputy_secretary_opinions = #{deputySecretaryOpinions}</if>
+            <if test="standingCommitteeOpinions != null  and standingCommitteeOpinions != ''"> and standing_committee_opinions = #{standingCommitteeOpinions}</if>
+            <if test="organizationOpinions != null  and organizationOpinions != ''"> and organization_opinions = #{organizationOpinions}</if>
+            <if test="departmentOpinions != null  and departmentOpinions != ''"> and department_opinions = #{departmentOpinions}</if>
+            <if test="createUserLevel != null  and createUserLevel != ''"> and create_user_level = #{createUserLevel}</if>
+            <if test="holidayYear != null  and holidayYear != ''"> and holiday_year = #{holidayYear}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="createBy != null  and createBy != ''"> and create_by = #{createBy}</if>
+            <if test="compensatoryFlag != null  and compensatoryFlag != ''"> and compensatory_flag = #{compensatoryFlag}</if>
+            <if test="compensatoryPlanTime != null  and compensatoryPlanTime != ''"> and compensatory_plan_time = #{compensatoryPlanTime}</if>
+            <if test="compensatoryReason != null  and compensatoryReason != ''"> and compensatory_reason = #{compensatoryReason}</if>
+            <if test="compensatoryTime != null  and compensatoryTime != ''"> and compensatory_time = #{compensatoryTime}</if>
+        </where>
+        order by id desc
+    </select>
+
+    <select id="selectBizLeaveById" parameterType="Long" resultMap="BizLeaveResult">
+        <include refid="selectBizLeaveVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizLeave" parameterType="BizLeave"  useGeneratedKeys="true" keyProperty="id">
+        insert into biz_leave
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="type != null">type,</if>
+            <if test="title != null">title,</if>
+            <if test="reason != null">reason,</if>
+            <if test="leaveStartTime != null">leave_start_time,</if>
+            <if test="leaveEndTime != null">leave_end_time,</if>
+            <if test="totalTime != null">total_time,</if>
+            <if test="realityStartTime != null">reality_start_time,</if>
+            <if test="realityEndTime != null">reality_end_time,</if>
+            <if test="applyUserId != null">apply_user_id,</if>
+            <if test="applyUserName != null">apply_user_name,</if>
+            <if test="applyTime != null">apply_time,</if>
+            <if test="instanceId != null">instance_id,</if>
+            <if test="processKey != null">process_key,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="deptName != null">dept_name,</if>
+            <if test="workPost != null">work_post,</if>
+            <if test="leaveNum != null">leave_num,</if>
+            <if test="destructionDate != null">destruction_date,</if>
+            <if test="mainLeaderOpinions != null">main_leader_opinions,</if>
+            <if test="deputySecretaryOpinions != null">deputy_secretary_opinions,</if>
+            <if test="standingCommitteeOpinions != null">standing_committee_opinions,</if>
+            <if test="organizationOpinions != null">organization_opinions,</if>
+            <if test="departmentOpinions != null">department_opinions,</if>
+            <if test="createUserLevel != null">create_user_level,</if>
+            <if test="holidayYear != null">holiday_year,</if>
+            <if test="status != null">status,</if>
+            <if test="isLeaveKunming != null">is_leave_kunming,</if>
+            <if test="destination != null">destination,</if>
+            <if test="attach != null">attach,</if>
+            <if test="compensatoryFlag != null">compensatory_flag,</if>
+            <if test="sickHospitalizationFlag != null">sick_hospitalization_flag,</if>
+            <if test="compensatoryPlanTime != null">compensatory_plan_time,</if>
+            <if test="compensatoryReason != null">compensatory_reason,</if>
+            <if test="compensatoryTime != null">compensatory_time,</if>
+            <if test="isHalfDay != null">is_half_day,</if>
+            <if test="nextUserName !=null">next_user_name</if>
+            <if test="inspectionTeamHeadOpinions !=null">inspection_team_head_opinions</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="type != null">#{type},</if>
+            <if test="title != null">#{title},</if>
+            <if test="reason != null">#{reason},</if>
+            <if test="leaveStartTime != null">#{leaveStartTime},</if>
+            <if test="leaveEndTime != null">#{leaveEndTime},</if>
+            <if test="totalTime != null">#{totalTime},</if>
+            <if test="realityStartTime != null">#{realityStartTime},</if>
+            <if test="realityEndTime != null">#{realityEndTime},</if>
+            <if test="applyUserId != null">#{applyUserId},</if>
+            <if test="applyUserName != null">#{applyUserName},</if>
+            <if test="applyTime != null">#{applyTime},</if>
+            <if test="instanceId != null">#{instanceId},</if>
+            <if test="processKey != null">#{processKey},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="deptName != null">#{deptName},</if>
+            <if test="workPost != null">#{workPost},</if>
+            <if test="leaveNum != null">#{leaveNum},</if>
+            <if test="destructionDate != null">#{destructionDate},</if>
+            <if test="mainLeaderOpinions != null">#{mainLeaderOpinions},</if>
+            <if test="deputySecretaryOpinions != null">#{deputySecretaryOpinions},</if>
+            <if test="standingCommitteeOpinions != null">#{standingCommitteeOpinions},</if>
+            <if test="organizationOpinions != null">#{organizationOpinions},</if>
+            <if test="departmentOpinions != null">#{departmentOpinions},</if>
+            <if test="createUserLevel != null">#{createUserLevel},</if>
+            <if test="holidayYear != null">#{holidayYear},</if>
+            <if test="status != null">#{status},</if>
+            <if test="isLeaveKunming != null">#{isLeaveKunming},</if>
+            <if test="destination != null">#{destination},</if>
+            <if test="attach != null">#{attach},</if>
+            <if test="compensatoryFlag != null">#{compensatoryFlag},</if>
+            <if test="sickHospitalizationFlag != null">#{sickHospitalizationFlag},</if>
+            <if test="compensatoryPlanTime != null">#{compensatoryPlanTime},</if>
+            <if test="compensatoryReason != null">#{compensatoryReason},</if>
+            <if test="compensatoryTime != null">#{compensatoryTime},</if>
+            <if test="isHalfDay != null">#{isHalfDay},</if>
+            <if test="nextUserName != null">#{nextUserName}</if>
+            <if test="inspectionTeamHeadOpinions !=null">#{inspectionTeamHeadOpinions}</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizLeave" parameterType="BizLeave">
+        update biz_leave
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null">type = #{type},</if>
+            <if test="title != null">title = #{title},</if>
+            <if test="reason != null">reason = #{reason},</if>
+            <if test="leaveStartTime != null">leave_start_time = #{leaveStartTime},</if>
+            <if test="leaveEndTime != null">leave_end_time = #{leaveEndTime},</if>
+            <if test="totalTime != null">total_time = #{totalTime},</if>
+            <if test="realityStartTime != null">reality_start_time = #{realityStartTime},</if>
+            <if test="realityEndTime != null">reality_end_time = #{realityEndTime},</if>
+            <if test="applyUserId != null">apply_user_id = #{applyUserId},</if>
+            <if test="applyUserName != null">apply_user_name = #{applyUserName},</if>
+            <if test="applyTime != null">apply_time = #{applyTime},</if>
+            <if test="instanceId != null">instance_id = #{instanceId},</if>
+            <if test="processKey != null">process_key = #{processKey},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="deptName != null">dept_name = #{deptName},</if>
+            <if test="workPost != null">work_post = #{workPost},</if>
+            <if test="leaveNum != null">leave_num = #{leaveNum},</if>
+            <if test="destructionDate != null">destruction_date = #{destructionDate},</if>
+            <if test="mainLeaderOpinions != null">main_leader_opinions = #{mainLeaderOpinions},</if>
+            <if test="deputySecretaryOpinions != null">deputy_secretary_opinions = #{deputySecretaryOpinions},</if>
+            <if test="standingCommitteeOpinions != null">standing_committee_opinions = #{standingCommitteeOpinions},</if>
+            <if test="organizationOpinions != null">organization_opinions = #{organizationOpinions},</if>
+            <if test="departmentOpinions != null">department_opinions = #{departmentOpinions},</if>
+            <if test="createUserLevel != null">create_user_level = #{createUserLevel},</if>
+            <if test="holidayYear != null">holiday_year = #{holidayYear},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="isLeaveKunming != null">is_leave_kunming=#{isLeaveKunming},</if>
+            <if test="destination != null">destination=#{destination},</if>
+            <if test="attach != null">attach=#{attach},</if>
+            <if test="compensatoryFlag != null">compensatory_flag=#{compensatoryFlag},</if>
+            <if test="sickHospitalizationFlag != null">sick_hospitalization_flag=#{sickHospitalizationFlag},</if>
+            <if test="compensatoryPlanTime != null">compensatory_plan_time=#{compensatoryPlanTime},</if>
+            <if test="compensatoryReason != null">compensatory_reason=#{compensatoryReason},</if>
+            <if test="compensatoryTime != null">compensatory_time=#{compensatoryTime},</if>
+            <if test="isHalfDay != null">is_half_day=#{isHalfDay},</if>
+            <if test="nextUserName != null">next_user_name=#{nextUserName},</if>
+            <if test="inspectionTeamHeadOpinions != null">inspection_team_head_opinions=#{inspectionTeamHeadOpinions},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizLeaveById" parameterType="Long">
+        delete from biz_leave where id = #{id}
+    </delete>
+
+    <delete id="deleteBizLeaveByIds" parameterType="String">
+        delete from biz_leave where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectBizLeaveByIds" parameterType="String" resultMap="BizLeaveResult">
+        select * from biz_leave where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+
+    <update id="DynamicAssigneeRefreshActHis">
+        UPDATE act_hi_taskinst SET ASSIGNEE_ = #{assignee} WHERE ID_= #{taskId} and ASSIGNEE_ is null
+    </update>
+
+    <select id="selectPassedBizLeaveList" parameterType="BizLeave" resultMap="BizLeaveResult">
+        <include refid="selectBizLeaveVo"/>
+        <where>
+            status = '1'
+            <if test="applyUserId != null  and applyUserId != ''"> and apply_user_id = #{applyUserId}</if>
+<!--            (<if test="leaveStartTime != null ">leave_start_time &gt;= #{leaveStartTime}</if>-->
+<!--            <if test="leaveEndTime != null "> and leave_start_time &lt;= #{leaveEndTime}</if>  and status = '1'-->
+<!--            <if test="applyUserId != null  and applyUserId != ''"> and apply_user_id = #{applyUserId}</if>)-->
+<!--            OR  (<if test="leaveStartTime != null ">  leave_end_time &gt;= #{leaveStartTime}</if>-->
+<!--            <if test="leaveEndTime != null "> and leave_end_time &lt;= #{leaveEndTime}</if> and -->
+<!--            <if test="applyUserId != null  and applyUserId != ''"> and apply_user_id = #{applyUserId}</if>)-->
+        </where>
+        order by id desc
+    </select>
+
+    <select id="exportBizLeaveData" parameterType="map" resultMap="BizLeaveResult">
+        <include refid="selectBizLeaveVo"/>
+        <where>
+            <if test="id != null and id != ''" >
+                <choose>
+                    <when test="isUpdate">
+                        <if test="historyId != null and historyId != ''">
+                            and id <![CDATA[>]]> #{historyId}
+                        </if>
+                        and id <![CDATA[<=]]> #{id}
+                    </when>
+                    <otherwise>
+                        and id <![CDATA[>]]> #{id}
+                    </otherwise>
+                </choose>
+            </if>
+            <if test="lastExportTime != null and lastExportTime != ''">
+                and TO_TIMESTAMP(update_time, 'YYYY-MM-DD HH24:MI:SS') <![CDATA[>=]]> TO_TIMESTAMP(#{lastExportTime}, 'YYYY-MM-DD HH24:MI:SS')
+            </if>
+        </where>
+        order by id asc
+        <if test="orderBy != null and orderBy != ''">
+            , #{orderBy}
+        </if>
+        <if test="limit != null and limit != ''">
+            limit #{limit}
+        </if>
+    </select>
+</mapper>

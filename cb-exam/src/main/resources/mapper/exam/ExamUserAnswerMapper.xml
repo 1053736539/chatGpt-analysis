@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamUserAnswerMapper">
+    
+    <resultMap type="ExamUserAnswer" id="ExamUserAnswerResult">
+        <result property="id"    column="id"    />
+        <result property="examinationPaperId"    column="examination_paper_id"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="userId"    column="user_id"    />
+        <result property="totalPoints"    column="total_points"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyUser"    column="modify_user"    />
+        <result property="modifyTime"    column="modify_time"    />
+        <result property="taskId"    column="task_id"    />
+    </resultMap>
+
+    <resultMap type="VExamUserAnswer" id="VExamUserAnswerResult">
+        <result property="id"    column="id"    />
+        <result property="examinationPaperId"    column="examination_paper_id"    />
+        <result property="startTime"    column="start_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="userId"    column="user_id"    />
+        <result property="totalPoints"    column="total_points"    />
+        <result property="createUser"    column="create_user"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="modifyUser"    column="modify_user"    />
+        <result property="modifyTime"    column="modify_time"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="taskName"    column="task_name"    />
+        <result property="paperName"    column="paper_name"    />
+        <result property="userName"    column="user_name"    />
+    </resultMap>
+
+    <sql id="selectExamUserAnswerVo">
+        select id, examination_paper_id, start_time, end_time, user_id, total_points, create_user, create_time, modify_user, modify_time, task_id from exam_user_answer
+    </sql>
+
+    <select id="selectListByTaskIdOrPaperId"  resultMap="ExamUserAnswerResult">
+        <include refid="selectExamUserAnswerVo"/>
+        <where>
+          <trim  suffixOverrides="AND" >
+            <if test="taskIds != null and taskIds.length>0">
+                task_id in
+                <foreach collection="taskIds" item="item"  open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+                AND
+            </if>
+            <if test="paperIds != null and paperIds.length>0">
+                examination_paper_id in
+                <foreach collection="paperIds" item="item" open="(" close=")" separator=",">
+                    #{item}
+                </foreach>
+
+            </if>
+          </trim>
+        </where>
+    </select>
+
+    <select id="selectExamUserAnswerList" parameterType="ExamUserAnswer" resultMap="ExamUserAnswerResult">
+        <include refid="selectExamUserAnswerVo"/>
+        <where>
+            <if test="examinationPaperId != null "> and examination_paper_id = #{examinationPaperId}</if>
+            <if test="startTime != null "> and start_time = #{startTime}</if>
+            <if test="endTime != null "> and end_time = #{endTime}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="totalPoints != null "> and total_points = #{totalPoints}</if>
+            <if test="createUser != null  and createUser != ''"> and create_user = #{createUser}</if>
+            <if test="modifyUser != null  and modifyUser != ''"> and modify_user = #{modifyUser}</if>
+            <if test="modifyTime != null "> and modify_time = #{modifyTime}</if>
+            <if test="taskId != null "> and task_id = #{taskId}</if>
+        </where>
+    </select>
+
+    <!--
+    <select id="selectExamUserAnswerListVo" parameterType="ExamUserAnswer" resultType="com.cb.exam.vo.ExamUserAnswerVo">
+        SELECT a.id, a.examination_paper_id as examinationaperId,
+            a.start_time as startTime,
+            a.end_time as endTime, a.user_id as userId,
+            a.total_points as totalPoints, a.create_user as createUser,
+            a.create_time as createTime, a.modify_user as modifyUser,
+            a.modify_time as modifyTime, a.task_id as taskId,
+            b.name as task_name,c.name as paper_name
+        FROM exam_user_answer as  a
+        left JOIN exam_task as b on a.task_id = b.id
+        left JOIN exam_paper as c on a.examination_paper_id = c.id
+        <where>
+            <if test="examinationPaperId != null "> and a.examination_paper_id = #{examinationPaperId}</if>
+            <if test="startTime != null "> and a.start_time = #{startTime}</if>
+            <if test="endTime != null "> and a.end_time = #{endTime}</if>
+            <if test="userId != null "> and a.user_id = #{userId}</if>
+            <if test="totalPoints != null "> and a.total_points = #{totalPoints}</if>
+            <if test="createUser != null  and createUser != ''"> and a.create_user = #{createUser}</if>
+            <if test="modifyUser != null  and modifyUser != ''"> and a.modify_user = #{modifyUser}</if>
+            <if test="modifyTime != null "> and a.modify_time = #{modifyTime}</if>
+            <if test="taskId != null "> and a.task_id = #{taskId}</if>
+        </where>
+        order by a.id DESC
+    </select>
+    -->
+
+    <select id="selectExamUserAnswerListVo" parameterType="VExamUserAnswer" resultMap="VExamUserAnswerResult">
+        SELECT a.id, a.examination_paper_id, a.start_time, a.end_time, a.user_id, a.total_points, a.create_user, a.create_time, a.modify_user,
+        a.modify_time, a.task_id, a.user_name, a.task_name, a.paper_name
+        FROM v_exam_user_answer as  a
+        <where>
+            <if test="userName != null "> and a.user_name like concat('%', #{userName}, '%')</if>
+            <if test="taskName != null "> and a.task_name like concat('%', #{taskName}, '%')</if>
+            <if test="paperName != null "> and a.paper_name like concat('%', #{paperName}, '%')</if>
+            <if test="userId != null "> and a.user_id = #{userId}</if>
+        </where>
+        order by a.start_time DESC
+    </select>
+
+    <select id="selectExamUserAnswerById" parameterType="Long" resultMap="ExamUserAnswerResult">
+        <include refid="selectExamUserAnswerVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertExamUserAnswer" parameterType="ExamUserAnswer" useGeneratedKeys="true" keyProperty="id" >
+        insert into exam_user_answer
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="examinationPaperId != null">examination_paper_id,</if>
+            <if test="startTime != null">start_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="totalPoints != null">total_points,</if>
+            <if test="createUser != null">create_user,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="modifyUser != null">modify_user,</if>
+            <if test="modifyTime != null">modify_time,</if>
+            <if test="taskId != null">task_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="examinationPaperId != null">#{examinationPaperId},</if>
+            <if test="startTime != null">#{startTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="totalPoints != null">#{totalPoints},</if>
+            <if test="createUser != null">#{createUser},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="modifyUser != null">#{modifyUser},</if>
+            <if test="modifyTime != null">#{modifyTime},</if>
+            <if test="taskId != null">#{taskId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateExamUserAnswer" parameterType="ExamUserAnswer">
+        update exam_user_answer
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="examinationPaperId != null">examination_paper_id = #{examinationPaperId},</if>
+            <if test="startTime != null">start_time = #{startTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="totalPoints != null">total_points = #{totalPoints},</if>
+            <if test="createUser != null">create_user = #{createUser},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="modifyUser != null">modify_user = #{modifyUser},</if>
+            <if test="modifyTime != null">modify_time = #{modifyTime},</if>
+            <if test="taskId != null">task_id = #{taskId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamUserAnswerById" parameterType="Long">
+        delete from exam_user_answer where id = #{id}
+    </delete>
+
+    <delete id="deleteExamUserAnswerByIds" parameterType="String">
+        delete from exam_user_answer where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

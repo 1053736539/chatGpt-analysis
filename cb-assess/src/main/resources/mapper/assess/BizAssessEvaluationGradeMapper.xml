@@ -1,0 +1,209 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessEvaluationGradeMapper">
+
+    <resultMap type="BizAssessEvaluationGrade" id="BizAssessEvaluationGradeResult">
+        <result property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="userName" column="user_name"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="deptScore" column="dept_score"/>
+        <result property="leaderScore" column="leader_score"/>
+        <result property="unusualScore" column="unusual_score"/>
+        <result property="disciplineScore" column="discipline_score"/>
+        <result property="attendanceScore" column="attendance_score"/>
+        <result property="evaluationScore" column="evaluation_score"/>
+        <result property="rscOpinion" column="rsc_opinion"/>
+        <result property="dzhOpinion" column="dzh_opinion"/>
+        <result property="finalOption" column="final_option"/>
+        <result property="grade" column="grade"/>
+        <result property="scoringMirror" column="scoring_mirror"/>
+        <result property="modified" column="modified"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="escalationId" column="escalation_id"/>
+        <result property="step" column="step"/>
+        <result property="personnelType" column="personnel_type"/>
+    </resultMap>
+
+    <sql id="selectBizAssessEvaluationGradeVo">
+        select id,
+               task_id,
+               user_id,
+               dept_id,
+               dept_score,
+               leader_score,
+               unusual_score,
+               discipline_score,
+               attendance_score,
+               evaluation_score,
+               grade,
+               rsc_opinion,
+               dzh_opinion,
+               final_option,
+               scoring_mirror,
+               modified,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               escalation_id,
+               step
+        from biz_assess_evaluation_grade
+    </sql>
+
+    <select id="selectBizAssessEvaluationGradeList" parameterType="BizAssessEvaluationGrade"
+            resultMap="BizAssessEvaluationGradeResult">
+        <include refid="selectBizAssessEvaluationGradeVo"/>
+        <where>
+            <if test="taskId != null  and taskId != ''">and task_id = #{taskId}</if>
+            <if test="userId != null ">and user_id = #{userId}</if>
+            <if test="deptId != null ">and dept_id = #{deptId}</if>
+            <if test="deptScore != null ">and dept_score = #{deptScore}</if>
+            <if test="leaderScore != null ">and leader_score = #{leaderScore}</if>
+            <if test="unusualScore != null ">and unusual_score = #{unusualScore}</if>
+            <if test="disciplineScore != null ">and discipline_score = #{disciplineScore}</if>
+            <if test="evaluationScore != null ">and evaluation_score = #{evaluationScore}</if>
+            <if test="grade != null  and grade != ''">and grade = #{grade}</if>
+            <if test="scoringMirror != null  and scoringMirror != ''">and scoring_mirror = #{scoringMirror}</if>
+            <if test="modified != null  and modified != ''">and modified = #{modified}</if>
+            <if test="escalationId != null  and escalationId != ''">and escalation_id = #{escalationId}</if>
+        </where>
+    </select>
+
+    <select id="selectBizAssessEvaluationGradeById" parameterType="String" resultMap="BizAssessEvaluationGradeResult">
+        <include refid="selectBizAssessEvaluationGradeVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectBizAssessEvaluationGradeByParam" resultMap="BizAssessEvaluationGradeResult">
+        <include refid="selectBizAssessEvaluationGradeVo"></include>
+        where task_id = #{taskId}
+        and user_id = #{userId}
+        <if test="deptId !=null and deptId != ''">and dept_id = #{deptId}</if>
+    </select>
+    <select id="selectAssessEvaluationGradeList" resultMap="BizAssessEvaluationGradeResult">
+        SELECT g.id,
+               g.task_id,
+               g.user_id,
+               g.dept_id,
+               g.dept_score,
+               g.leader_score,
+               g.unusual_score,
+               g.discipline_score,
+               g.attendance_score,
+               g.evaluation_score,
+               g.grade,
+               g.scoring_mirror,
+               g.modified,
+               g.create_by,
+               g.create_time,
+               g.update_by,
+               g.update_time,
+               g.remark,
+               g.escalation_id,
+               u.name                        as user_name,
+               d.dept_name,
+               ifnull(p.personnel_type, '4') as personnel_type
+        FROM biz_assess_evaluation_grade as g
+                 join sys_user u on u.user_id = g.user_id
+                 join sys_dept d on d.dept_id = u.dept_id
+                 join biz_assess_task_manage m on m.task_id = g.task_id
+                 join biz_assess_indicator_pro p on p.pro_id = m.pro_id
+        where escalation_id = #{escalationId}
+    </select>
+    <select id="checkUnique" resultMap="BizAssessEvaluationGradeResult">
+        <include refid="selectBizAssessEvaluationGradeVo"></include>
+        where id=#{id}
+    </select>
+
+    <insert id="insertBizAssessEvaluationGrade" parameterType="BizAssessEvaluationGrade">
+        insert into biz_assess_evaluation_grade
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="taskId != null">task_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="deptScore != null">dept_score,</if>
+            <if test="leaderScore != null">leader_score,</if>
+            <if test="unusualScore != null">unusual_score,</if>
+            <if test="disciplineScore != null">discipline_score,</if>
+            <if test="attendanceScore != null">attendance_score,</if>
+            <if test="evaluationScore != null">evaluation_score,</if>
+            <if test="grade != null">grade,</if>
+            <if test="rscOpinion != null">rsc_opinion,</if>
+            <if test="dzhOpinion != null">dzh_opinion,</if>
+            <if test="finalOption != null">final_option,</if>
+            <if test="scoringMirror != null">scoring_mirror,</if>
+            <if test="modified != null">modified,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="escalationId != null">escalation_id,</if>
+            <if test="step != null and step != ''">step,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="taskId != null">#{taskId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="deptScore != null">#{deptScore},</if>
+            <if test="leaderScore != null">#{leaderScore},</if>
+            <if test="unusualScore != null">#{unusualScore},</if>
+            <if test="disciplineScore != null">#{disciplineScore},</if>
+            <if test="attendanceScore != null">#{attendanceScore},</if>
+            <if test="evaluationScore != null">#{evaluationScore},</if>
+            <if test="grade != null">#{grade},</if>
+            <if test="rscOpinion != null">#{rscOpinion},</if>
+            <if test="dzhOpinion != null">#{dzhOpinion},</if>
+            <if test="finalOption != null">#{finalOption},</if>
+            <if test="scoringMirror != null">#{scoringMirror},</if>
+            <if test="modified != null">#{modified},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="escalationId != null">#{escalationId},</if>
+            <if test="step != null and step != ''">#{step},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssessEvaluationGrade" parameterType="BizAssessEvaluationGrade">
+        update biz_assess_evaluation_grade
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null">task_id = #{taskId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="deptScore != null">dept_score = #{deptScore},</if>
+            <if test="leaderScore != null">leader_score = #{leaderScore},</if>
+            <if test="unusualScore != null">unusual_score = #{unusualScore},</if>
+            <if test="disciplineScore != null">discipline_score = #{disciplineScore},</if>
+            <if test="attendanceScore != null">attendance_score = #{attendanceScore},</if>
+            <if test="evaluationScore != null">evaluation_score = #{evaluationScore},</if>
+            <if test="grade != null">grade = #{grade},</if>
+            <if test="rscOpinion != null">rsc_opinion = #{rscOpinion},</if>
+            <if test="dzhOpinion != null">dzh_opinion = #{dzhOpinion},</if>
+            <if test="finalOption != null">final_option = #{finalOption},</if>
+            <if test="scoringMirror != null">scoring_mirror = #{scoringMirror},</if>
+            <if test="modified != null">modified = #{modified},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="escalationId != null">escalation_id = #{escalationId},</if>
+            <if test="step != null and step != ''">step = #{step},</if>
+        </trim>
+        where id = #{id}
+    </update>
+</mapper>

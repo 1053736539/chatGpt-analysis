@@ -13,8 +13,7 @@ import java.util.List;
  * @date 2025-10-11
  */
 @Mapper
-public interface BusDepReviewMapper
-{
+public interface BusDepReviewMapper {
     /**
      * 查询部门评分
      *
@@ -86,7 +85,7 @@ public interface BusDepReviewMapper
      * @param evaluatTargets 评价对象集合
      * @return 部门评分集合
      */
-    public List<BusDepReview> selectBusDepReviewListByEvaluatTargets(@Param("busDepReview") BusDepReview busDepReview, @Param("evaluatTargets") List<String> evaluatTargets);
+    public List<BusDepReview> selectBusDepReviewListByEvaluatTargets(@Param("busDepReview") BusDepReview busDepReview, @Param("evaluatTargets")String evaluatTargets);
 
 
     /**
@@ -96,5 +95,13 @@ public interface BusDepReviewMapper
      * @return 表头数量
      */
     int countHeadersByReviewId(@Param("reviewId") String reviewId);
+
+    /**
+     * 查询指定评分表下的评分数据状态
+     *
+     * @param reviewId 评分表ID
+     * @return 状态集合
+     */
+    List<String> selectDataStatusByReviewId(@Param("reviewId") String reviewId);
 
 }

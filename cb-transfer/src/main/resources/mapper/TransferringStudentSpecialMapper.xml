@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentSpecialMapper">
+    
+    <resultMap type="TransferringStudentSpecial" id="TransferringStudentSpecialResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="workContent"    column="work_content"    />
+        <result property="beginTime"    column="begin_time"    />
+        <result property="endTime"    column="end_time"    />
+        <result property="addr"    column="addr"    />
+        <result property="attach"    column="attach"    />
+    </resultMap>
+
+    <sql id="selectTransferringStudentSpecialVo">
+        select id, user_id, create_time, update_time, del_flag, create_by, update_by, work_content, begin_time, end_time, addr, attach from transferring_student_special
+    </sql>
+
+    <select id="selectTransferringStudentSpecialList" parameterType="TransferringStudentSpecial" resultMap="TransferringStudentSpecialResult">
+        <include refid="selectTransferringStudentSpecialVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="workContent != null  and workContent != ''"> and work_content = #{workContent}</if>
+            <if test="beginTime != null  and beginTime != ''"> and begin_time &gt;= #{beginTime}</if>
+            <if test="endTime != null  and endTime != ''"> and begin_time &lt;= #{endTime}</if>
+            <if test="addr != null  and addr != ''"> and addr = #{addr}</if>
+            <if test="attach != null  and attach != ''"> and attach = #{attach}</if>
+        </where>
+    </select>
+    
+    <select id="selectTransferringStudentSpecialById" parameterType="String" resultMap="TransferringStudentSpecialResult">
+        <include refid="selectTransferringStudentSpecialVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertTransferringStudentSpecial" parameterType="TransferringStudentSpecial">
+        insert into transferring_student_special
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="workContent != null">work_content,</if>
+            <if test="beginTime != null">begin_time,</if>
+            <if test="endTime != null">end_time,</if>
+            <if test="addr != null">addr,</if>
+            <if test="attach != null">attach,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="workContent != null">#{workContent},</if>
+            <if test="beginTime != null">#{beginTime},</if>
+            <if test="endTime != null">#{endTime},</if>
+            <if test="addr != null">#{addr},</if>
+            <if test="attach != null">#{attach},</if>
+         </trim>
+    </insert>
+
+    <update id="updateTransferringStudentSpecial" parameterType="TransferringStudentSpecial">
+        update transferring_student_special
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="workContent != null">work_content = #{workContent},</if>
+            <if test="beginTime != null">begin_time = #{beginTime},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+            <if test="addr != null">addr = #{addr},</if>
+            <if test="attach != null">attach = #{attach},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentSpecialById" parameterType="String">
+        delete from transferring_student_special where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentSpecialByIds" parameterType="String">
+        delete from transferring_student_special where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

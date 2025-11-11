@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.leave.mapper.LeaveCensusMapper">
+    <resultMap type="LeaveCensusVo" id="LeaveCensusVoResult">
+        <result property="userId" column="user_id"/>
+        <result property="deptId" column="dept_id"/>
+        <result property="parentDeptId" column="parent_dept_id"/>
+        <result property="ancestors" column="ancestors"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="userName" column="user_name"/>
+        <result property="nickName" column="nick_name"/>
+        <result property="phonenumber" column="phonenumber"/>
+        <result property="userType" column="user_type"/>
+        <result property="sex" column="sex"/>
+        <result property="status" column="status"/>
+        <result property="identityType" column="identity_type"/>
+        <result property="isMainLeader" column="is_main_leader"/>
+        <result property="isHostingWork" column="is_hosting_work"/>
+        <result property="workTitleCode" column="work_title_code"/>
+        <result property="personnelStatus" column="personnel_status"/>
+        <result property="deptIdentityType" column="dept_identity_type"/>
+        <result property="age" column="age"/>
+        <result property="postTime" column="post_time"/>
+        <result property="leaveTypeId" column="leave_type_id"/>
+        <result property="leaveYear" column="leave_year"/>
+        <result property="totalDays" column="total_days"/>
+        <result property="usedDays" column="used_days"/>
+        <result property="pendingDays" column="pending_days"/>
+        <result property="remainingDays" column="remaining_days"/>
+    </resultMap>
+    <sql id="selectLeaveCensusVo">
+        SELECT
+            u.user_id,
+            u.dept_id,
+            u.parent_id as parent_dept_id,
+            u.ancestors,
+            u.dept_name,
+            u.user_name,
+            u.nick_name,
+            u.email,
+            u.avatar,
+            u.phonenumber,
+            u.sex,
+            u.status,
+            u.del_flag,
+            u.user_type,
+            u.status,
+            u.identity_type,
+            u.is_main_leader,
+            u.is_hosting_work,
+            u.work_title_code,
+            u.personnel_status,
+            u.dept_identity_type,
+            u.age,
+            u.post_time,
+            lb.leave_type_id,
+            ifnull( lb.leave_year, 0 ) AS leave_year,
+            ifnull( lb.total_days, 0 ) AS total_days,
+            ifnull( lb.used_days, 0 ) AS used_days,
+            ifnull( lb.pending_days, 0 ) AS pending_days,
+            ifnull( lb.remaining_days, 0 ) AS remaining_days
+        FROM v_sys_user AS u
+        LEFT JOIN leave_balances lb ON lb.user_id = u.user_id
+        LEFT JOIN sys_dept d on d.dept_id = u.dept_id
+    </sql>
+    <select id="selectLeaveCensus" resultMap="LeaveCensusVoResult">
+        <include refid="selectLeaveCensusVo"/>
+        WHERE
+            u.status = '0' and u.del_flag='0' and u.user_type ='00' and  lb.leave_type_id = '1' and u.dept_id is not null
+            <if test="query.userId != null">
+                AND u.user_id = #{query.userId}
+            </if>
+            <if test="query.deptId != null">
+                AND u.dept_id = #{query.deptId}
+            </if>
+            <if test="query.leaveYear != null and query.leaveYear != ''">
+                AND lb.leave_year = #{query.leaveYear}
+            </if>
+            <if test="query.identityType != null and query.identityType != ''">
+                AND u.identity_type = #{query.identityType}
+            </if>
+            <if test="exclude">
+                and not (d.dept_id = 138 or d.ancestors like '0,100,138%')
+            </if>
+            <if test="query.nickName != null and query.nickName != ''">
+                AND u.nick_name like  concat('%',#{query.nickName},'%')
+            </if>
+        order by d.order_num,lb.leave_year desc
+    </select>
+
+    <select id="selectLeaveCensusListByDeptIds" resultMap="LeaveCensusVoResult">
+        <include refid="selectLeaveCensusVo"/>
+        WHERE
+        u.status = '0' and u.del_flag='0' and u.user_type ='00' and  lb.leave_type_id = '1' and u.dept_id is not null
+        <if test="query.userId != null">
+            AND u.user_id = #{query.userId}
+        </if>
+            AND u.dept_id in (147,148,149,150)
+        <if test="query.leaveYear != null and query.leaveYear != ''">
+            AND lb.leave_year = #{query.leaveYear}
+        </if>
+        <if test="query.identityType != null and query.identityType != ''">
+            AND u.identity_type = #{query.identityType}
+        </if>
+        <if test="exclude">
+            and not (d.dept_id = 138 or d.ancestors like '0,100,138%')
+        </if>
+        <if test="query.nickName != null and query.nickName != ''">
+            AND u.nick_name like  concat('%',#{query.nickName},'%')
+        </if>
+        order by d.order_num,lb.leave_year desc
+    </select>
+
+    <select id="selectLeaveCensusByDeptIds" resultMap="LeaveCensusVoResult">
+        <include refid="selectLeaveCensusVo"/>
+        WHERE
+        u.status = '0' and u.del_flag='0' and u.user_type ='00' and  lb.leave_type_id = '1' and u.dept_id is not null
+        <if test="query.userId != null">
+            AND u.user_id = #{query.userId}
+        </if>
+        <if test="query.leaveYear != null and query.leaveYear != ''">
+            AND lb.leave_year = #{query.leaveYear}
+        </if>
+        <if test="query.identityType != null and query.identityType != ''">
+            AND u.identity_type = #{query.identityType}
+        </if>
+        <if test="query.nickName != null and query.nickName != ''">
+            AND u.nick_name like  concat('%',#{query.nickName},'%')
+        </if>
+        <if test="deptIds != null and deptIds.size() > 0">
+            AND u.dept_id in
+            <foreach collection="deptIds" item="deptId" open="(" separator="," close=")">
+                #{deptId}
+            </foreach>
+        </if>
+        order by d.order_num,lb.leave_year desc
+    </select>
+
+</mapper>

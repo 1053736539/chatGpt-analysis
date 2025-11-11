@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessIndicatorProDutyMapper">
+    
+    <resultMap type="BizAssessIndicatorProDuty" id="BizAssessIndicatorProDutyResult">
+        <result property="proId"    column="pro_id"    />
+        <result property="type"    column="type"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="userId" column="user_id"/>
+    </resultMap>
+
+    <sql id="selectBizAssessIndicatorProDutyVo">
+        select pro_id, type,dept_id,user_id from biz_assess_indicator_pro_duty
+    </sql>
+
+
+    <insert id="batchInsertProDuty">
+        insert into biz_assess_indicator_pro_duty(pro_id, type,dept_id,user_id) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.proId}, #{item.type},#{item.deptId},#{item.userId})
+        </foreach>
+    </insert>
+
+    <delete id="deleteBizAssessIndicatorProDutyById" parameterType="String">
+        delete from biz_assess_indicator_pro_duty where pro_id = #{proId}
+    </delete>
+
+    <delete id="deleteBizAssessIndicatorProDutyByIds" parameterType="String">
+        delete from biz_assess_indicator_pro_duty where pro_id in
+        <foreach item="proId" collection="array" open="(" separator="," close=")">
+            #{proId}
+        </foreach>
+    </delete>
+</mapper>

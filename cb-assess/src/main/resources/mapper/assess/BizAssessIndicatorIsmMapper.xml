@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessIndicatorIsmMapper">
+
+    <resultMap type="BizAssessIndicatorIsm" id="BizAssessIndicatorIsmResult">
+        <result property="ismId" column="ism_id"/>
+        <result property="ismName" column="ism_name"/>
+        <result property="ismYear" column="ism_year"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="createBy" column="create_by"/>
+        <result property="status" column="status"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="remark" column="remark"/>
+        <result property="maxScore" column="max_score"/>
+        <collection property="configList" notNullColumn="ism_id" javaType="java.util.List" resultMap="IsmConfigResult"/>
+    </resultMap>
+
+    <!--指标配置-->
+    <resultMap type="BizAssessIndicatorIsmConfig" id="IsmConfigResult">
+        <result property="configId" column="config_id"/>
+        <result property="indicatorType" column="indicator_type"/>
+        <result property="scoreWeight" column="score_weight"/>
+        <result property="content" column="content"/>
+        <result property="indicatorSnapshot" column="indicator_snapshot"/>
+    </resultMap>
+
+
+    <sql id="selectBizAssessIndicatorIsmVo">
+        select ism_id, ism_name , ism_year, del_flag, create_by, status, update_time, update_by, create_time, remark from biz_assess_indicator_ism
+    </sql>
+
+    <select id="selectBizAssessIndicatorIsmList" parameterType="BizAssessIndicatorIsm" resultMap="BizAssessIndicatorIsmResult">
+        <include refid="selectBizAssessIndicatorIsmVo"/>
+        <where>
+            <if test="ismName != null  and ismName != ''"> and ism_name like concat('%', #{ismName}, '%')</if>
+            <if test="ismYear != null  and ismYear != ''"> and ism_year = #{ismYear}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            and del_flag ='1'
+        </where>
+    </select>
+
+    <select id="selectAllIndicatorIsmList" parameterType="BizAssessIndicatorIsm" resultMap="BizAssessIndicatorIsmResult">
+        select i.ism_id, i.ism_name , i.ism_year, i.del_flag, i.create_by, i.status, i.update_time, i.update_by, i.create_time, i.remark,
+        (select sum(c.score_weight) from biz_assess_indicator_ism_config c where c.ism_id = i.ism_id ) as max_score
+        from biz_assess_indicator_ism i
+        <where>
+            <if test="status != null  and status != ''"> and i.status = #{status}</if>
+            <if test="delFlag != null  and delFlag != ''"> and i.del_flag = #{delFlag}</if>
+        </where>
+    </select>
+
+    <select id="selectBizAssessIndicatorIsmById" parameterType="String" resultMap="BizAssessIndicatorIsmResult">
+        select a.ism_id, a.ism_name, a.ism_year, a.del_flag, a.create_by, a.status, a.update_time, a.update_by, a.create_time, a.remark,
+               c.config_id, c.indicator_type, c.score_weight, c.content,c.indicator_snapshot
+        from biz_assess_indicator_ism a
+                 left join biz_assess_indicator_ism_config c on c.ism_id = a.ism_id
+        where a.ism_id = #{ismId}
+    </select>
+
+    <insert id="insertBizAssessIndicatorIsm" parameterType="BizAssessIndicatorIsm">
+        insert into biz_assess_indicator_ism
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="ismId != null and ismId != ''">ism_id,</if>
+            <if test="ismName != null and ismName != ''">ism_name,</if>
+            <if test="ismYear != null">ism_year,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="status != null">status,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="remark != null">remark,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="ismId != null and ismId != ''">#{ismId},</if>
+            <if test="ismName != null and ismName != ''">#{ismName},</if>
+            <if test="ismYear != null">#{ismYear},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="status != null">#{status},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="remark != null">#{remark},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizAssessIndicatorIsm" parameterType="BizAssessIndicatorIsm">
+        update biz_assess_indicator_ism
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="ismName != null and ismName != ''">ism_name = #{ismName},</if>
+            <if test="ismYear != null">ism_year = #{ismYear},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where ism_id = #{ismId}
+    </update>
+
+    <delete id="deleteBizAssessIndicatorIsmById" parameterType="String">
+        delete from biz_assess_indicator_ism where ism_id = #{ismId}
+    </delete>
+
+    <delete id="deleteBizAssessIndicatorIsmByIds" parameterType="String">
+        delete from biz_assess_indicator_ism where ism_id in
+        <foreach item="ismId" collection="array" open="(" separator="," close=")">
+            #{ismId}
+        </foreach>
+    </delete>
+
+    <update id="logicDeleteBizAssessIndicatorIsmById" parameterType="String">
+        update biz_assess_indicator_ism set del_flag = '2'  where ism_id = #{ismId}
+    </update>
+
+    <update id="logicDeleteBizAssessIndicatorIsmByIds" parameterType="String">
+        update biz_assess_indicator_ism set del_flag = '2'   where ism_id in
+        <foreach item="ismId" collection="array" open="(" separator="," close=")">
+            #{ismId}
+        </foreach>
+    </update>
+
+    <select id="selectProUseCount" resultType="java.lang.Integer">
+        SELECT
+            count(0)
+        FROM
+            biz_assess_indicator_pro where pro_ism_id = #{ismId} and status = '1'
+    </select>
+    <select id="selectProUseByIds" resultType="com.cb.assess.domain.BizAssessIndicatorPro">
+
+        SELECT
+        pro_id as proId,
+        pro_name as proName,
+        pro_ism_id as proIsmId
+        FROM
+            biz_assess_indicator_pro
+        where status = '1'
+              and pro_ism_id in
+        <foreach item="item" collection="ids" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </select>
+</mapper>

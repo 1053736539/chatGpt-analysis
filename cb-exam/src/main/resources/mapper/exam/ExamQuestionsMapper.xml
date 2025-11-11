@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.exam.mapper.ExamQuestionsMapper">
+
+    <resultMap type="ExamQuestions" id="ExamQuestionsResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="images" column="images"/>
+        <result property="type" column="type"/>
+        <result property="answer" column="answer"/>
+        <result property="judgeAnswer" column="judge_answer"/>
+        <result property="selectAnswer" column="select_answer"/>
+        <result property="analysis" column="analysis"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isEnable" column="is_enable"/>
+        <result property="knowledgePoint" column="knowledge_point"/>
+        <result property="source" column="source"/>
+        <result property="examPoint" column="exam_point"/>
+        <result property="keywords" column="keywords"/>
+        <result property="difficulty" column="difficulty"/>
+    </resultMap>
+
+    <resultMap type="QuestionCount" id="ExamQuestionsCountResult">
+        <result property="type" column="type"/>
+        <result property="count" column="count"/>
+    </resultMap>
+
+    <resultMap type="ExamQuestionEditVo" id="ExamQuestionEditVoResult">
+        <result property="id" column="id"/>
+        <result property="name" column="name"/>
+        <result property="images" column="images"/>
+        <result property="type" column="type"/>
+        <result property="answer" column="answer"/>
+        <result property="judgeAnswer" column="judge_answer"/>
+        <result property="selectAnswer" column="select_answer"/>
+        <result property="analysis" column="analysis"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="isEnable" column="is_enable"/>
+        <result property="knowledgePoint" column="knowledge_point"/>
+        <result property="source" column="source"/>
+        <result property="examPoint" column="exam_point"/>
+        <result property="keywords" column="keywords"/>
+        <result property="difficulty" column="difficulty"/>
+        <result property="questionBankName" column="question_bank_name"/>
+    </resultMap>
+
+    <sql id="selectExamQuestionsVo">
+        select id, name,images, type, answer, judge_answer, select_answer, analysis, create_by, create_time, update_by, update_time, is_enable,
+                knowledge_point, source, exam_point, keywords, difficulty
+        from exam_questions
+    </sql>
+
+    <select id="selectExamQuestionShowVo" resultType="com.cb.exam.vo.ExamQuestionShowVo" parameterType="com.cb.exam.domain.ExamQuestions">
+        select
+                q.id           ,
+                q.name         ,
+                q.images       ,
+                q.type         ,
+                q.answer       ,
+                q.judge_answer as judgeAnswer,
+                q.select_answer as selectAnswer,
+                q.analysis     ,
+                q.create_by  ,
+                q.create_time  ,
+                q.update_by  ,
+                q.update_time  ,
+                q.is_enable as  isEnable  ,
+                q.knowledge_point as knowledgePoint,
+                q.source    ,
+                q.exam_point as examPoint ,
+                q.keywords    ,
+                q.difficulty    ,
+            (
+                select group_concat(a.name)
+                FROM exam_label        as a
+                JOIN exam_label_questions as b
+                on a.id = b.label_id
+                where b.examination_questions_id = q.id
+            ) as labels,
+            (
+                select group_concat(a.name)
+                FROM exam_question_bank        as a
+                JOIN exam_question_bank_questions as b
+                on
+                a.id = b.question_bank_id
+                JOIN exam_question_bank_role AS r
+                ON r.question_bank_id = b.question_bank_id
+                where b.examination_question_id = q.id
+                <if test="roleIds != null">
+                    and r.role_id in
+                    <foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+                        #{roleId}
+                    </foreach>
+                </if>
+            ) as banks
+        from exam_questions as q
+        where q.id in
+            (
+                SELECT DISTINCT
+                  que.examination_question_id
+                FROM
+                  exam_question_bank_questions AS que
+                JOIN exam_question_bank_role         AS r
+                ON
+                  r.question_bank_id = que.question_bank_id
+                <where>
+                    <if test="roleIds != null">
+                        and r.role_id in
+                        <foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+                            #{roleId}
+                        </foreach>
+                    </if>
+                </where>
+
+                UNION
+
+                select DISTINCT
+                lab.examination_questions_id
+                FROM exam_label_questions as lab
+            )
+            <if test="name != null  and name != ''">and q.name like concat('%', #{name}, '%')</if>
+            <if test="images != null  and images != ''">and q.images = #{images}</if>
+            <if test="type != null  and type != ''">and q.type = #{type}</if>
+            <if test="answer != null  and answer != ''">and q.answer = #{answer}</if>
+            <if test="judgeAnswer != null ">and q.judge_answer = #{judgeAnswer}</if>
+            <if test="selectAnswer != null  and selectAnswer != ''">and q.select_answer = #{selectAnswer}</if>
+            <if test="analysis != null  and analysis != ''">and q.analysis = #{analysis}</if>
+            <if test="createBy != null  and createBy != ''">and q.create_by = #{createBy}</if>
+            <if test="updateBy != null  and updateBy != ''">and q.update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and q.update_time = #{updateTime}</if>
+            <if test="isEnable != null ">and q.is_enable = #{isEnable}</if>
+            <if test="knowledgePoint != null ">and q.knowledge_point like concat('%', #{knowledgePoint}, '%')</if>
+            <if test="source != null ">and q.source like concat('%', #{source}, '%')</if>
+            <if test="examPoint != null ">and q.exam_point = #{examPoint}</if>
+            <if test="keywords != null ">and q.keywords like concat('%', #{keywords}, '%')</if>
+            <if test="difficulty != null ">and q.difficulty = #{difficulty}</if>
+    </select>
+    <select id="selectExamQuestionShowVo" resultType="com.cb.exam.vo.ExamQuestionShowVo" parameterType="com.cb.exam.domain.ExamQuestions" databaseId="dm">
+        select
+        q.id           ,
+        q.name         ,
+        q.images       ,
+        q.type         ,
+        q.answer       ,
+        q.judge_answer as judgeAnswer,
+        q.select_answer as selectAnswer,
+        q.analysis     ,
+        q.create_by  ,
+        q.create_time  ,
+        q.update_by  ,
+        q.update_time  ,
+        q.is_enable as  isEnable  ,
+        q.knowledge_point as knowledgePoint,
+        q.source    ,
+        q.exam_point as examPoint ,
+        q.keywords    ,
+        q.difficulty    ,
+        (
+        select WM_Concat(a.name)
+        FROM exam_label        as a
+        JOIN exam_label_questions as b
+        on a.id = b.label_id
+        where b.examination_questions_id = q.id
+        ) as labels,
+        (
+        select WM_Concat(a.name)
+        FROM exam_question_bank        as a
+        JOIN exam_question_bank_questions as b
+        on
+        a.id = b.question_bank_id
+        JOIN exam_question_bank_role AS r
+        ON r.question_bank_id = b.question_bank_id
+        where b.examination_question_id = q.id
+        <if test="roleIds != null">
+            and r.role_id in
+            <foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+                #{roleId}
+            </foreach>
+        </if>
+        ) as banks
+        from exam_questions as q
+        where q.id in
+        (
+        SELECT DISTINCT
+        que.examination_question_id
+        FROM
+        exam_question_bank_questions AS que
+        JOIN exam_question_bank_role         AS r
+        ON
+        r.question_bank_id = que.question_bank_id
+        <where>
+            <if test="roleIds != null">
+                and r.role_id in
+                <foreach collection="roleIds" item="roleId" open="(" close=")" separator=",">
+                    #{roleId}
+                </foreach>
+            </if>
+        </where>
+        UNION
+
+        select DISTINCT
+        lab.examination_questions_id
+        FROM exam_label_questions as lab
+        )
+        <if test="name != null  and name != ''">and q.name like concat('%', #{name}, '%')</if>
+        <if test="images != null  and images != ''">and q.images = #{images}</if>
+        <if test="type != null  and type != ''">and q.type = #{type}</if>
+        <if test="answer != null  and answer != ''">and q.answer = #{answer}</if>
+        <if test="judgeAnswer != null ">and q.judge_answer = #{judgeAnswer}</if>
+        <if test="selectAnswer != null  and selectAnswer != ''">and q.select_answer = #{selectAnswer}</if>
+        <if test="analysis != null  and analysis != ''">and q.analysis = #{analysis}</if>
+        <if test="createBy != null  and createBy != ''">and q.create_by = #{createBy}</if>
+        <if test="updateBy != null  and updateBy != ''">and q.update_by = #{updateBy}</if>
+        <if test="updateTime != null ">and q.update_time = #{updateTime}</if>
+        <if test="isEnable != null ">and q.is_enable = #{isEnable}</if>
+        <if test="knowledgePoint != null ">and q.knowledge_point like concat('%', #{knowledgePoint}, '%')</if>
+        <if test="source != null ">and q.source like concat('%', #{source}, '%')</if>
+        <if test="examPoint != null ">and q.exam_point = #{examPoint}</if>
+        <if test="keywords != null ">and q.keywords like concat('%', #{keywords}, '%')</if>
+        <if test="difficulty != null ">and q.difficulty = #{difficulty}</if>
+    </select>
+
+    <select id="selectExamQuestionsList" parameterType="ExamQuestions" resultMap="ExamQuestionsResult">
+        <include refid="selectExamQuestionsVo"/>
+        <where>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="images != null  and images != ''">and images = #{images}</if>
+            <if test="type != null  and type != ''">and type = #{type}</if>
+            <if test="answer != null  and answer != ''">and answer = #{answer}</if>
+            <if test="judgeAnswer != null ">and judge_answer = #{judgeAnswer}</if>
+            <if test="selectAnswer != null  and selectAnswer != ''">and select_answer = #{selectAnswer}</if>
+            <if test="analysis != null  and analysis != ''">and analysis = #{analysis}</if>
+            <if test="createBy != null  and createBy != ''">and create_by = #{createBy}</if>
+            <if test="updateBy != null  and updateBy != ''">and update_by = #{updateBy}</if>
+            <if test="updateTime != null ">and update_time = #{updateTime}</if>
+            <if test="isEnable != null ">and is_enable = #{isEnable}</if>
+            <if test="knowledgePoint != null ">and knowledge_point = #{knowledgePoint}</if>
+            <if test="source != null ">and source = #{source}</if>
+            <if test="examPoint != null ">and exam_point = #{examPoint}</if>
+            <if test="keywords != null ">and keywords = #{keywords}</if>
+            <if test="difficulty != null ">and difficulty = #{difficulty}</if>
+        </where>
+    </select>
+
+
+    <!--<select id="selectExamQuestionsById" parameterType="Long" resultMap="ExamQuestionsResult">
+        <include refid="selectExamQuestionsVo"/>
+        where id = #{id}
+    </select>-->
+
+    <select id="selectExamQuestionsById" parameterType="Long" resultMap="ExamQuestionEditVoResult">
+        <!--<include refid="selectExamQuestionsVo"/>-->
+        <!--select eq.id, eq.name,eq.images, eq.type as "type", eq.answer, eq.judge_answer, eq.select_answer, eq.analysis, eq.create_by,
+        eq.create_time, eq.update_by, eq.update_time, eq.is_enable,
+        eq.knowledge_point, eq.source, eq.exam_point, eq.keywords, eq.difficulty
+        ,eqb.id as banks,eqb.name as question_bank_name
+        from exam_questions eq
+        left join exam_question_bank_questions eqbk on eq.id = eqbk.examination_question_id
+       left join exam_question_bank eqb on eqb.id = eqbk.question_bank_id
+       where eq.id = #{id}-->
+        SELECT
+        eq.id,
+        eq.name,
+        eq.images,
+        eq.type AS "type",
+        eq.answer,
+        eq.judge_answer,
+        eq.select_answer,
+        eq.analysis,
+        eq.create_by,
+        eq.create_time,
+        eq.update_by,
+        eq.update_time,
+        eq.is_enable,
+        eq.knowledge_point,
+        eq.source,
+        eq.exam_point,
+        eq.keywords,
+        eq.difficulty,
+        (select wm_concat(eqb.id) from exam_question_bank eqb left join exam_question_bank_questions eqbk on eqb.id = eqbk.question_bank_id
+        where eqbk.examination_question_id = eq.id) as banks
+        FROM
+        exam_questions eq
+        where eq.id = #{id}
+</select>
+
+<!-- TODO 目前存在的bug 不能只通过题库或者标签去生成题目 -->
+    <select id="selectExamQuestionByLabelsBanks" parameterType="ExamPaperDetail" resultMap="ExamQuestionsResult">
+        <include refid="selectExamQuestionsVo"></include>
+        where id in
+        (
+        SELECT a.id from (
+        SELECT bank.examination_question_id as id FROM
+        exam_label_questions as lab FULL JOIN
+        exam_question_bank_questions as bank
+        on lab.examination_questions_id = bank.examination_question_id
+        LEFT JOIN exam_questions as q
+        on q.id = bank.examination_question_id
+        WHERE q.type = 'select'
+        <if test="labelList != null and labelList.length>0 ">
+            and lab.label_id in
+            <foreach collection="labelList" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.length>0 ">
+            and bank.question_bank_id in
+            <foreach collection="bankList" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="questionId != null and questionId.length>0 ">
+            and q.id not in
+            <foreach collection="questionId" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY RAND() limit 0,#{selectCount}
+        ) as a
+        UNION
+        SELECT a.id from (
+        SELECT bank.examination_question_id as id FROM
+        exam_label_questions as lab FULL JOIN
+        exam_question_bank_questions as bank
+        on lab.examination_questions_id = bank.examination_question_id
+        LEFT JOIN exam_questions as q
+        on q.id = bank.examination_question_id
+        WHERE q.type = 'selects'
+        <if test="labelList != null and labelList.length>0 ">
+            and lab.label_id in
+            <foreach collection="labelList" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.length>0 ">
+            and bank.question_bank_id in
+            <foreach collection="bankList" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="questionId != null and questionId.length>0 ">
+            and q.id not in
+            <foreach collection="questionId" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY RAND() limit 0,#{selectsCount}
+        ) as a
+        UNION
+        SELECT a.id from (
+        SELECT bank.examination_question_id as id FROM
+        exam_label_questions as lab FULL JOIN
+        exam_question_bank_questions as bank
+        on lab.examination_questions_id = bank.examination_question_id
+        LEFT JOIN exam_questions as q
+        on q.id = bank.examination_question_id
+        WHERE q.type = 'verdict'
+        <if test="labelList != null and labelList.length>0 ">
+            and lab.label_id in
+            <foreach collection="labelList" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.length>0 ">
+            and bank.question_bank_id in
+            <foreach collection="bankList" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="questionId != null and questionId.length>0 ">
+            and q.id not in
+            <foreach collection="questionId" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY RAND() limit 0,#{judgeCount}
+        ) as a
+        UNION
+        SELECT a.id from (
+        SELECT bank.examination_question_id as id FROM
+        exam_label_questions as lab FULL JOIN
+        exam_question_bank_questions as bank
+        on lab.examination_questions_id = bank.examination_question_id
+        LEFT JOIN exam_questions as q
+        on q.id = bank.examination_question_id
+        WHERE q.type = 'answer'
+        <if test="labelList != null and labelList.length>0 ">
+            and lab.label_id in
+            <foreach collection="labelList" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="bankList != null and bankList.length>0 ">
+            and bank.question_bank_id in
+            <foreach collection="bankList" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        <if test="questionId != null and questionId.length>0 ">
+            and q.id not in
+            <foreach collection="questionId" index="index" item="item" separator="," open="(" close=")">
+                #{item}
+            </foreach>
+        </if>
+        ORDER BY RAND() limit 0,#{answerCount}
+        ) as a
+        )
+    </select>
+
+    <select id="selectExamQuestionCountByType" parameterType="ExamPaperDetail" resultMap="ExamQuestionsCountResult">
+        SELECT s.type as type,count(s.id)  as count from (
+        SELECT
+        DISTINCT
+        question.id as id,
+        question.type as type
+        FROM
+        exam_questions as question
+        left join exam_label_questions as label
+        on question.id = label.examination_questions_id
+        left join exam_question_bank_questions as bank
+        on question.id = bank.examination_question_id
+        <where>
+            <trim prefixOverrides="and" suffixOverrides="and">
+                <if test="labelList != null and labelList.length>0 ">
+                    and label.label_id in
+                    <foreach collection="labelList" index="index" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+                <if test="bankList != null and bankList.length>0 ">
+                    and bank.question_bank_id in
+                    <foreach collection="bankList" index="index" item="item" separator="," open="(" close=")">
+                        #{item}
+                    </foreach>
+                </if>
+            </trim>
+        </where>
+        ) as s
+        GROUP BY s.type
+    </select>
+
+    <insert id="insertExamQuestions" parameterType="ExamQuestions" useGeneratedKeys="true" keyProperty="id">
+        insert into exam_questions
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null">name,</if>
+            <if test="images != null">images,</if>
+            <if test="type != null">type,</if>
+            <if test="answer != null">answer,</if>
+            <if test="judgeAnswer != null">judge_answer,</if>
+            <if test="selectAnswer != null">select_answer,</if>
+            <if test="analysis != null">analysis,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="isEnable != null">is_enable,</if>
+            <if test="knowledgePoint != null">knowledge_point,</if>
+            <if test="source != null">source,</if>
+            <if test="examPoint != null">exam_point,</if>
+            <if test="keywords != null">keywords,</if>
+            <if test="difficulty != null">difficulty,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null">#{name},</if>
+            <if test="images != null">#{images},</if>
+            <if test="type != null">#{type},</if>
+            <if test="answer != null">#{answer},</if>
+            <if test="judgeAnswer != null">#{judgeAnswer},</if>
+            <if test="selectAnswer != null">#{selectAnswer},</if>
+            <if test="analysis != null">#{analysis},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="isEnable != null">#{isEnable},</if>
+
+            <if test="knowledgePoint != null">#{knowledgePoint},</if>
+            <if test="source != null">#{source},</if>
+            <if test="examPoint != null">#{examPoint},</if>
+            <if test="keywords != null">#{keywords},</if>
+            <if test="difficulty != null">#{difficulty},</if>
+        </trim>
+    </insert>
+
+    <update id="updateExamQuestions" parameterType="ExamQuestions">
+        update exam_questions
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null">name = #{name},</if>
+            <if test="images != null">images = #{images},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="answer != null">answer = #{answer},</if>
+            <if test="judgeAnswer != null">judge_answer = #{judgeAnswer},</if>
+            <if test="selectAnswer != null">select_answer = #{selectAnswer},</if>
+            <if test="analysis != null">analysis = #{analysis},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="isEnable != null">is_enable = #{isEnable},</if>
+            <if test="knowledgePoint != null">knowledge_point = #{knowledgePoint},</if>
+            <if test="source != null">source = #{source},</if>
+            <if test="examPoint != null">exam_point = #{examPoint},</if>
+            <if test="keywords != null">keywords = #{keywords},</if>
+            <if test="difficulty != null">difficulty = #{difficulty},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteExamQuestionsById" parameterType="Long">
+        delete from exam_questions where id = #{id}
+    </delete>
+
+    <delete id="deleteExamQuestionsByIds" parameterType="String">
+        delete from exam_questions where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

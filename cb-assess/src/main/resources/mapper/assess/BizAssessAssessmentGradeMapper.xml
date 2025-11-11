@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessAssessmentGradeMapper">
+    
+    <resultMap type="BizAssessAssessmentGrade" id="BizAssessAssessmentGradeResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="discussantUserId"    column="discussant_user_id"    />
+        <result property="recommendGrade"    column="recommend_grade"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="status"    column="status"    />
+        <result property="type"    column="type"    />
+        <result property="deptId"    column="deptId"    />
+    </resultMap>
+
+    <resultMap id="bizAssessAssessmentGradeVo" type="BizAssessAssessmentGradeVo" extends="BizAssessAssessmentGradeResult">
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+        <result property="workPost"    column="work_post"    />
+    </resultMap>
+    <sql id="selectBizAssessAssessmentGradeVo">
+        select ag.id, ag.user_id, ag.discussant_user_id, ag.recommend_grade, ag.create_by, ag.update_by, ag.create_time,
+               ag.update_time, ag.del_flag, ag.assessment_year, ag.status, ag.type, ag.dept_id , u.name,d.dept_name,u.work_post
+        from biz_assess_assessment_grade ag
+        inner join sys_user u on ag.user_id=u.user_id
+        left join sys_dept d on u.dept_id=d.dept_id
+    </sql>
+
+    <select id="selectBizAssessAssessmentGradeList" parameterType="BizAssessAssessmentGradeVo" resultMap="bizAssessAssessmentGradeVo">
+        <include refid="selectBizAssessAssessmentGradeVo"/>
+        <where>  
+            <if test="userId != null "> and ag.user_id = #{userId}</if>
+            <if test="discussantUserId != null "> and ag.discussant_user_id = #{discussantUserId}</if>
+            <if test="recommendGrade != null  and recommendGrade != ''"> and ag.recommend_grade = #{recommendGrade}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and ag.assessment_year = #{assessmentYear}</if>
+            <if test="status != null  and status != ''"> and ag.status = #{status}</if>
+            <if test="type != null  and type != ''"> and ag.type = #{type}</if>
+            <if test="deptId != null  and deptId != ''"> and ag.dept_id = #{deptId}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%',#{name},'%') </if>
+        </where>
+    </select>
+    
+    <select id="selectBizAssessAssessmentGradeById" parameterType="String" resultMap="BizAssessAssessmentGradeResult">
+        <include refid="selectBizAssessAssessmentGradeVo"/>
+        where ag.id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessAssessmentGrade" parameterType="BizAssessAssessmentGrade">
+        insert into biz_assess_assessment_grade
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="discussantUserId != null">discussant_user_id,</if>
+            <if test="recommendGrade != null">recommend_grade,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="assessmentYear != null">assessment_year,</if>
+            <if test="status != null">status,</if>
+            <if test="type != null">type,</if>
+            <if test="deptId != null">dept_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="discussantUserId != null">#{discussantUserId},</if>
+            <if test="recommendGrade != null">#{recommendGrade},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="assessmentYear != null">#{assessmentYear},</if>
+            <if test="status != null">#{status},</if>
+            <if test="type != null">#{type},</if>
+            <if test="deptId != null">#{deptId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessAssessmentGrade" parameterType="BizAssessAssessmentGrade">
+        update biz_assess_assessment_grade
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="discussantUserId != null">discussant_user_id = #{discussantUserId},</if>
+            <if test="recommendGrade != null">recommend_grade = #{recommendGrade},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="assessmentYear != null">assessment_year = #{assessmentYear},</if>
+            <if test="status != null">status = #{status},</if>
+            <if test="type != null">type = #{type},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssessAssessmentGradeById" parameterType="String">
+        delete from biz_assess_assessment_grade where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessAssessmentGradeByIds" parameterType="String">
+        delete from biz_assess_assessment_grade where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

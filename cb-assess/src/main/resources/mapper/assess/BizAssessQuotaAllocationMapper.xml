@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessQuotaAllocationMapper">
+    
+    <resultMap type="BizAssessQuotaAllocation" id="BizAssessQuotaAllocationResult">
+        <result property="id"    column="id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="peopleNumber"    column="people_number"    />
+        <result property="excellentQuota"    column="excellent_quota"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+    </resultMap>
+
+    <resultMap id="BizAssessQuotaAllocationVo" type="BizAssessQuotaAllocationVo" extends="BizAssessQuotaAllocationResult">
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+    <sql id="selectBizAssessQuotaAllocationVo">
+        select aqa.id, aqa.dept_id, aqa.people_number, aqa.excellent_quota, aqa.assessment_year, aqa.create_time,
+               aqa.update_time, aqa.create_by, aqa.update_by, aqa.del_flag,d.dept_name from biz_assess_quota_allocation aqa
+               inner join sys_dept d on aqa.dept_id=d.dept_id
+    </sql>
+
+    <select id="selectBizAssessQuotaAllocationList" parameterType="BizAssessQuotaAllocation" resultMap="BizAssessQuotaAllocationVo">
+        <include refid="selectBizAssessQuotaAllocationVo"/>
+        <where>  
+            <if test="deptId != null  and deptId != ''"> and aqa.dept_id = #{deptId}</if>
+            <if test="peopleNumber != null "> and aqa.people_number = #{peopleNumber}</if>
+            <if test="excellentQuota != null "> and aqa.excellent_quota = #{excellentQuota}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and aqa.assessment_year = #{assessmentYear}</if>
+        </where>
+    </select>
+    
+    <select id="selectBizAssessQuotaAllocationById" parameterType="String" resultMap="BizAssessQuotaAllocationResult">
+        <include refid="selectBizAssessQuotaAllocationVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessQuotaAllocation" parameterType="BizAssessQuotaAllocation">
+        insert into biz_assess_quota_allocation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="deptId != null and deptId != ''">dept_id,</if>
+            <if test="peopleNumber != null">people_number,</if>
+            <if test="excellentQuota != null">excellent_quota,</if>
+            <if test="assessmentYear != null">assessment_year,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="deptId != null and deptId != ''">#{deptId},</if>
+            <if test="peopleNumber != null">#{peopleNumber},</if>
+            <if test="excellentQuota != null">#{excellentQuota},</if>
+            <if test="assessmentYear != null">#{assessmentYear},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessQuotaAllocation" parameterType="BizAssessQuotaAllocation">
+        update biz_assess_quota_allocation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="deptId != null and deptId != ''">dept_id = #{deptId},</if>
+            <if test="peopleNumber != null">people_number = #{peopleNumber},</if>
+            <if test="excellentQuota != null">excellent_quota = #{excellentQuota},</if>
+            <if test="assessmentYear != null">assessment_year = #{assessmentYear},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizAssessQuotaAllocationById" parameterType="String">
+        delete from biz_assess_quota_allocation where id = #{id}
+    </delete>
+
+    <delete id="deleteBizAssessQuotaAllocationByIds" parameterType="String">
+        delete from biz_assess_quota_allocation where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

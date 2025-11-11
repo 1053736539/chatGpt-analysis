@@ -1,0 +1,561 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.user.mapper.CensusUserInfoMapper">
+    <resultMap type="com.cb.user.domain.CensusUserInfo" id="CensusUserInfoResult">
+        <result property="userId" column="user_id"/>
+        <result property="unitInfo" column="unit_info"/>
+        <result property="userName" column="user_name"/>
+        <result property="gender" column="gender"/>
+        <result property="nation" column="nation"/>
+        <result property="nativePlace" column="native_place"/>
+        <result property="politicalOutlook" column="political_outlook"/>
+        <result property="duties" column="duties"/>
+        <result property="rank" column="rank"/>
+        <result property="birthday" column="birthday"/>
+        <result property="enterWorkTime" column="enter_work_time"/>
+        <result property="education" column="education"/>
+        <result property="graduationInstitution" column="graduation_institution"/>
+        <result property="speciality" column="speciality"/>
+        <result property="titleQualification" column="title_qualification"/>
+        <result property="preparationCategory" column="preparation_category"/>
+        <result property="phone" column="phone"/>
+        <result property="idNumber" column="id_number"/>
+        <result property="regionalDivision" column="regional_division"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="delFlag" column="del_flag"/>
+        <result property="censusDeptId" column="census_dept_id"/>
+        <result property="avatar" column="avatar"/>
+        <result property="censusNumber" column="census_number"/>
+        <result property="deptCode" column="dept_code"/>
+        <result property="roleName" column="role_name"/>
+        <result property="accountStatus" column="account_status"/>
+        <result property="birthYear" column="birth_year"/>
+        <result property="identityType" column="identity_type"/>
+        <result property="workUnit" column="work_unit"/>
+        <result property="workYear" column="work_year"/>
+        <result property="statisticsYear" column="statistics_year"/>
+        <result property="isTask" column="is_task"/>
+        <result property="taskRole" column="task_role"/>
+        <result property="surveyType" column="survey_type"/>
+        <result property="surveyDesc" column="survey_desc"/>
+        <result property="chooseDesc" column="choose_desc"/>
+        <result property="workPosition" column="work_position"/>
+        <result property="censusAreas" column="census_areas"/>
+    </resultMap>
+
+    <sql id="selectCensusUserInfoVo">
+        select user_id,
+               unit_info,
+               user_name,
+               gender,
+               nation,
+               native_place,
+               political_outlook,
+               duties,
+               rank,
+               birthday,
+               enter_work_time,
+               education,
+               graduation_institution,
+               speciality,
+               title_qualification,
+               preparation_category,
+               phone,
+               id_number,
+               regional_division,
+               create_time,
+               update_time,
+               del_flag,
+               census_dept_id,
+               avatar,
+               census_number,
+               dept_code,
+               role_name,
+               account_status,
+               birth_year,
+               identity_type,
+               work_unit,
+               work_year,
+               statistics_year,
+               is_task,
+               task_role,
+               survey_type,
+               survey_desc,
+               choose_desc,
+               work_position,
+               census_areas
+        from census_user_info
+    </sql>
+
+    <select id="selectCensusUserInfoList" resultMap="CensusUserInfoResult">
+        <include refid="selectCensusUserInfoVo"/>
+        <where>
+            <if test="userName != null  and userName != ''">
+                and user_name like concat('%', #{userName}, '%')
+            </if>
+            <if test="unitInfo != null  and unitInfo != ''">
+                and unit_info like concat('%', #{unitInfo}, '%')
+            </if>
+            <if test="gender != null  and gender != ''">
+                and gender = #{gender}
+            </if>
+            <if test="nation != null  and nation != ''">
+                and nation = #{nation}
+            </if>
+            <if test="nativePlace != null  and nativePlace != ''">
+                and native_place = #{nativePlace}
+            </if>
+            <if test="politicalOutlook != null  and politicalOutlook != ''">
+                and political_outlook = #{politicalOutlook}
+            </if>
+            <if test="duties != null  and duties != ''">
+                and duties like concat('%', #{duties}, '%')
+            </if>
+            <if test="rank != null  and rank != ''">
+                and rank like concat('%', #{rank}, '%')
+            </if>
+            <if test="birthday != null  and birthday != ''">
+                and birthday = #{birthday}
+            </if>
+            <if test="enterWorkTime != null  and enterWorkTime != ''">
+                and enter_work_time = #{enterWorkTime}
+            </if>
+            <if test="education != null  and education != ''">
+                and education = #{education}
+            </if>
+            <if test="graduationInstitution != null  and graduationInstitution != ''">
+                and graduation_institution = #{graduationInstitution}
+            </if>
+            <if test="speciality != null  and speciality != ''">
+                and speciality = #{speciality}
+            </if>
+            <if test="titleQualification != null  and titleQualification != ''">
+                and title_qualification = #{titleQualification}
+            </if>
+            <if test="preparationCategory != null  and preparationCategory != ''">
+                and preparation_category = #{preparationCategory}
+            </if>
+            <if test="phone != null  and phone != ''">
+                and phone like concat('%', #{phone}, '%')
+            </if>
+            <if test="idNumber != null  and idNumber != ''">
+                and id_number = #{idNumber}
+            </if>
+            <if test="regionalDivision != null  and regionalDivision != ''">
+                and regional_division like concat('%', #{regionalDivision}, '%')
+            </if>
+            <if test="censusDeptId != null">
+                and census_dept_id = #{censusDeptId}
+            </if>
+            <if test="delFlag != null and delFlag != ''">
+                and del_flag= #{delFlag}
+            </if>
+            <if test="censusNumber !=null ">
+                and census_number= #{censusNumber}
+            </if>
+        </where>
+        order by create_time desc
+    </select>
+
+    <select id="selectCensusUserInfoById" parameterType="String" resultMap="CensusUserInfoResult">
+        <include refid="selectCensusUserInfoVo"/>
+        where user_id = #{userId}
+    </select>
+
+    <select id="selectUserByUserName" parameterType="String" resultMap="CensusUserInfoResult">
+        <include refid="selectCensusUserInfoVo"/>
+        where user_name = #{userName}
+    </select>
+
+    <insert id="insertCensusUserInfo">
+        insert into census_user_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">
+                user_id,
+            </if>
+            <if test="userName != null">
+                user_name,
+            </if>
+            <if test="gender != null">
+                gender,
+            </if>
+            <if test="nation != null">
+                nation,
+            </if>
+            <if test="nativePlace != null">
+                native_place,
+            </if>
+            <if test="politicalOutlook != null">
+                political_outlook,
+            </if>
+            <if test="duties != null">
+                duties,
+            </if>
+            <if test="rank != null">
+                rank,
+            </if>
+            <if test="birthday != null">
+                birthday,
+            </if>
+            <if test="enterWorkTime != null">
+                enter_work_time,
+            </if>
+            <if test="education != null">
+                education,
+            </if>
+            <if test="graduationInstitution != null">
+                graduation_institution,
+            </if>
+            <if test="speciality != null">
+                speciality,
+            </if>
+            <if test="titleQualification != null">
+                title_qualification,
+            </if>
+            <if test="preparationCategory != null">
+                preparation_category,
+            </if>
+            <if test="phone != null">
+                phone,
+            </if>
+            <if test="idNumber != null">
+                id_number,
+            </if>
+            <if test="regionalDivision != null">
+                regional_division,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
+            </if>
+            <if test="delFlag != null">
+                del_flag,
+            </if>
+            <if test="unitInfo != null">
+                unit_info,
+            </if>
+            <if test="censusDeptId != null">
+                census_dept_id,
+            </if>
+            <if test="avatar != null">
+                avatar,
+            </if>
+            <if test="censusNumber != null">
+                census_number,
+            </if>
+            <if test="deptCode != null">
+                dept_code,
+            </if>
+            <if test="roleName != null">
+                role_name,
+            </if>
+            <if test="accountStatus != null">
+                account_status,
+            </if>
+            <if test="birthYear != null">
+                birth_year,
+            </if>
+            <if test="identityType != null">
+                identity_type,
+            </if>
+            <if test="workUnit != null">
+                work_unit,
+            </if>
+            <if test="workYear != null">
+                work_year,
+            </if>
+            <if test="statisticsYear != null">
+                statistics_year,
+            </if>
+            <if test="isTask != null">
+                is_task,
+            </if>
+            <if test="taskRole != null">
+                task_role,
+            </if>
+            <if test="surveyType != null">
+                survey_type,
+            </if>
+            <if test="surveyDesc != null">
+                survey_desc,
+            </if>
+            <if test="chooseDesc != null">
+                choose_desc,
+            </if>
+            <if test="workPosition != null">
+                work_position,
+            </if>
+            <if test="censusAreas != null">
+                census_areas,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null and userId != ''">
+                #{userId},
+            </if>
+            <if test="userName != null">
+                #{userName},
+            </if>
+            <if test="gender != null">
+                #{gender},
+            </if>
+            <if test="nation != null">
+                #{nation},
+            </if>
+            <if test="nativePlace != null">
+                #{nativePlace},
+            </if>
+            <if test="politicalOutlook != null">
+                #{politicalOutlook},
+            </if>
+            <if test="duties != null">
+                #{duties},
+            </if>
+            <if test="rank != null">
+                #{rank},
+            </if>
+            <if test="birthday != null">
+                #{birthday},
+            </if>
+            <if test="enterWorkTime != null">
+                #{enterWorkTime},
+            </if>
+            <if test="education != null">
+                #{education},
+            </if>
+            <if test="graduationInstitution != null">
+                #{graduationInstitution},
+            </if>
+            <if test="speciality != null">
+                #{speciality},
+            </if>
+            <if test="titleQualification != null">
+                #{titleQualification},
+            </if>
+            <if test="preparationCategory != null">
+                #{preparationCategory},
+            </if>
+            <if test="phone != null">
+                #{phone},
+            </if>
+            <if test="idNumber != null">
+                #{idNumber},
+            </if>
+            <if test="regionalDivision != null">
+                #{regionalDivision},
+            </if>
+            <if test="createTime != null">
+                #{createTime},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime},
+            </if>
+            <if test="delFlag != null">
+                #{delFlag},
+            </if>
+            <if test="unitInfo != null">
+                #{unitInfo},
+            </if>
+            <if test="censusDeptId != null">
+                #{censusDeptId},
+            </if>
+            <if test="avatar != null">
+                #{avatar},
+            </if>
+            <if test="censusNumber != null">
+                #{censusNumber},
+            </if>
+            <if test="deptCode != null">
+                #{deptCode},
+            </if>
+            <if test="roleName != null">
+                #{roleName},
+            </if>
+            <if test="accountStatus != null">
+                #{accountStatus},
+            </if>
+            <if test="birthYear != null">
+                #{birthYear},
+            </if>
+            <if test="identityType != null">
+                #{identityType},
+            </if>
+            <if test="workUnit != null">
+                #{workUnit},
+            </if>
+            <if test="workYear != null">
+                #{workYear},
+            </if>
+            <if test="statisticsYear != null">
+                #{statisticsYear},
+            </if>
+            <if test="isTask != null">
+                #{isTask},
+            </if>
+            <if test="taskRole != null">
+                #{taskRole},
+            </if>
+            <if test="surveyType != null">
+                #{surveyType},
+            </if>
+            <if test="surveyDesc != null">
+                #{surveyDesc},
+            </if>
+            <if test="chooseDesc != null">
+                #{chooseDesc},
+            </if>
+            <if test="workPosition != null">
+                #{workPosition},
+            </if>
+            <if test="censusAreas != null">
+                #{censusAreas},
+            </if>
+        </trim>
+    </insert>
+
+    <update id="updateCensusUserInfo">
+        update census_user_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userName != null">
+                user_name = #{userName},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="nation != null">
+                nation = #{nation},
+            </if>
+            <if test="nativePlace != null">
+                native_place = #{nativePlace},
+            </if>
+            <if test="politicalOutlook != null">
+                political_outlook = #{politicalOutlook},
+            </if>
+            <if test="duties != null">
+                duties = #{duties},
+            </if>
+            <if test="rank != null">
+                rank = #{rank},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="enterWorkTime != null">
+                enter_work_time = #{enterWorkTime},
+            </if>
+            <if test="education != null">
+                education = #{education},
+            </if>
+            <if test="graduationInstitution != null">
+                graduation_institution = #{graduationInstitution},
+            </if>
+            <if test="speciality != null">
+                speciality = #{speciality},
+            </if>
+            <if test="titleQualification != null">
+                title_qualification = #{titleQualification},
+            </if>
+            <if test="preparationCategory != null">
+                preparation_category = #{preparationCategory},
+            </if>
+            <if test="phone != null">
+                phone = #{phone},
+            </if>
+            <if test="idNumber != null">
+                id_number = #{idNumber},
+            </if>
+            <if test="regionalDivision != null">
+                regional_division = #{regionalDivision},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime},
+            </if>
+            <if test="delFlag != null">
+                del_flag = #{delFlag},
+            </if>
+            <if test="unitInfo != null">
+                unit_info = #{unitInfo},
+            </if>
+            <if test="censusDeptId != null">
+                census_dept_id = #{censusDeptId},
+            </if>
+            <if test="avatar != null">
+                avatar = #{avatar},
+            </if>
+            <if test="censusNumber != null">
+                census_number = #{censusNumber},
+            </if>
+            <if test="deptCode != null">
+                dept_code = #{deptCode},
+            </if>
+            <if test="roleName != null">
+                role_name = #{roleName},
+            </if>
+            <if test="accountStatus != null">
+                account_status = #{accountStatus},
+            </if>
+            <if test="birthYear != null">
+                birth_year = #{birthYear},
+            </if>
+            <if test="identityType != null">
+                identity_type = #{identityType},
+            </if>
+            <if test="workUnit != null">
+                work_unit = #{workUnit},
+            </if>
+            <if test="workYear != null">
+                work_year = #{workYear},
+            </if>
+            <if test="statisticsYear != null">
+                statistics_year = #{statisticsYear},
+            </if>
+            <if test="isTask != null">
+                is_task = #{isTask},
+            </if>
+            <if test="taskRole != null">
+                task_role = #{taskRole},
+            </if>
+            <if test="surveyType != null">
+                survey_type = #{surveyType},
+            </if>
+            <if test="surveyDesc != null">
+                survey_desc = #{surveyDesc},
+            </if>
+            <if test="chooseDesc != null">
+                choose_desc = #{chooseDesc},
+            </if>
+            <if test="workPosition != null">
+                work_position = #{workPosition},
+            </if>
+            <if test="censusAreas != null">
+                census_areas = #{censusAreas},
+            </if>
+        </trim>
+        where user_id = #{userId}
+    </update>
+
+    <delete id="deleteCensusUserInfoById" parameterType="String">
+        delete
+        from census_user_info
+        where user_id = #{userId}
+    </delete>
+
+    <delete id="deleteCensusUserInfoByIds" parameterType="String">
+        delete
+        from census_user_info where user_id in
+        <foreach item="userId" collection="array" open="(" separator="," close=")">
+            #{userId}
+        </foreach>
+    </delete>
+
+    <delete id="deleteUsersByCensusNumber">
+        DELETE
+        FROM census_user_info
+        WHERE census_number = #{censusNumber}
+    </delete>
+</mapper>

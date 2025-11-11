@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.task.mapper.BizTaskCommentMapper">
+    
+    <resultMap type="BizTaskComment" id="BizTaskCommentResult">
+        <result property="id"    column="id"    />
+        <result property="taskId"    column="task_id"    />
+        <result property="comment"    column="comment"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+
+        <result property="createByName"    column="createByName"    />
+        <result property="taskName"    column="taskName"    />
+    </resultMap>
+
+    <sql id="selectBizTaskCommentVo" >
+        select t.id, t.task_id, t.comment, t.create_by, t.create_time
+            ,u.name as createByName
+            ,bti.title as taskName
+        from biz_task_comment t
+        left join sys_user u on t.create_by = u.user_name and u.del_flag != '2'
+        left join biz_task_info bti on t.task_id = bti.id
+    </sql>
+    <sql id="selectBizTaskCommentVo" databaseId="dm">
+        select t.id, t.task_id, t."comment", t.create_by, t.create_time
+             ,u.name as createByName
+             ,bti.title as taskName
+        from biz_task_comment t
+                 left join sys_user u on t.create_by = u.user_name and u.del_flag != '2'
+        left join biz_task_info bti on t.task_id = bti.id
+    </sql>
+
+    <select id="selectBizTaskCommentList" parameterType="BizTaskComment" resultMap="BizTaskCommentResult">
+        <include refid="selectBizTaskCommentVo"/>
+        <where>  
+            <if test="taskId != null  and taskId != ''"> and t.task_id = #{taskId}</if>
+            <if test="comment != null  and comment != ''"> and t.comment like concat('%', #{comment}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and t.create_by = #{createBy}</if>
+            <if test="createByName != null  and createByName != ''"> and u.name like concat('%', #{createByName}, '%')</if>
+            <if test="taskName != null  and taskName != ''"> and bti.title like concat('%', #{taskName}, '%')</if>
+        </where>
+        order by t.create_time asc
+    </select>
+    <select id="selectBizTaskCommentList" parameterType="BizTaskComment" resultMap="BizTaskCommentResult" databaseId="dm">
+        <include refid="selectBizTaskCommentVo"/>
+        <where>
+            <if test="taskId != null  and taskId != ''"> and t.task_id = #{taskId}</if>
+            <if test="comment != null  and comment != ''"> and t."comment" like concat('%', #{comment}, '%')</if>
+            <if test="createBy != null  and createBy != ''"> and t.create_by = #{createBy}</if>
+            <if test="createByName != null  and createByName != ''"> and u.name like concat('%', #{createByName}, '%')</if>
+            <if test="taskName != null  and taskName != ''"> and bti.title like concat('%', #{taskName}, '%')</if>
+        </where>
+        order by t.create_time asc
+    </select>
+    
+    <select id="selectBizTaskCommentById" parameterType="String" resultMap="BizTaskCommentResult">
+        <include refid="selectBizTaskCommentVo"/>
+        where t.id = #{id}
+    </select>
+
+
+    <insert id="insertBizTaskComment" parameterType="BizTaskComment">
+        insert into biz_task_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="taskId != null and taskId != ''">task_id,</if>
+            <if test="comment != null and comment != ''">`comment`,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="taskId != null and taskId != ''">#{taskId},</if>
+            <if test="comment != null and comment != ''">#{comment},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <insert id="insertBizTaskComment" parameterType="BizTaskComment" databaseId="dm">
+        insert into biz_task_comment
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="taskId != null and taskId != ''">task_id,</if>
+            <if test="comment != null and comment != ''">"comment",</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="taskId != null and taskId != ''">#{taskId},</if>
+            <if test="comment != null and comment != ''">#{comment},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateBizTaskComment" parameterType="BizTaskComment">
+        update biz_task_comment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">task_id = #{taskId},</if>
+            <if test="comment != null and comment != ''">`comment` = #{comment},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <update id="updateBizTaskComment" parameterType="BizTaskComment" databaseId="dm">
+        update biz_task_comment
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="taskId != null and taskId != ''">task_id = #{taskId},</if>
+            <if test="comment != null and comment != ''">"comment" = #{comment},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizTaskCommentById" parameterType="String">
+        delete from biz_task_comment where id = #{id}
+    </delete>
+
+    <delete id="deleteBizTaskCommentByTaskId" parameterType="String">
+        delete from biz_task_comment where task_id = #{taskId}
+    </delete>
+
+    <delete id="deleteBizTaskCommentByIds" parameterType="String">
+        delete from biz_task_comment where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="list4Evaluation" resultMap="BizTaskCommentResult">
+        <include refid="selectBizTaskCommentVo"/>
+        where t.task_id = #{taskId}
+        and t.create_by = #{userName}
+        and t.create_time &gt;= #{beginTime} and t.create_time &lt;= #{endTime}
+    </select>
+
+</mapper>

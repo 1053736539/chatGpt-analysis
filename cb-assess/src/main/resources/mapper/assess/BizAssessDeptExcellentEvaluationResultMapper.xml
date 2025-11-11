@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessDeptExcellentEvaluationResultMapper">
+    
+    <resultMap type="BizAssessDeptExcellentEvaluationResult" id="BizAssessDeptExcellentEvaluationResultResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="deptId"    column="dept_id"    />
+        <result property="assessmentYear"    column="assessment_year"    />
+        <result property="recommendGrade"    column="recommend_grade"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="recommendGradeExcellent"    column="recommend_grade_excellent"    />
+        <result property="number"    column="number"    />
+        <result property="escalation"    column="escalation"    />
+        <result property="reviewed"    column="reviewed"    />
+        <result property="identityType"    column="identity_type"    />
+        <result property="isPublicity"    column="is_publicity"    />
+        <result property="remark"    column="remark"    />
+        <result property="isEntry"    column="is_entry"    />
+        <result property="regularAssessment"    column="regular_assessment"    />
+    </resultMap>
+
+    <resultMap id="bizAssessDeptExcellentEvaluationResultVo" type="BizAssessDeptExcellentEvaluationResultVo" extends="BizAssessDeptExcellentEvaluationResultResult">
+        <result property="name"    column="name"    />
+        <result property="deptName"    column="dept_name"    />
+    </resultMap>
+    <sql id="selectBizAssessDeptExcellentEvaluationResultVo">
+        select deer.id, deer.user_id, deer.dept_id, deer.assessment_year, deer.recommend_grade,
+               deer.create_time, deer.update_time, deer.create_by, deer.update_by, deer.del_flag,
+               deer.recommend_grade_excellent,deer.identity_type,deer.is_publicity,deer.remark,
+               deer.number, deer.escalation,deer.reviewed,u.name,d.dept_name,deer.regular_assessment,
+                   deer.is_entry
+        from biz_assess_dept_excellent_evaluation_result deer
+        inner join sys_user u on deer.user_id=u.user_id
+        inner join sys_dept d on deer.dept_id=d.dept_id
+    </sql>
+
+    <select id="selectBizAssessDeptExcellentEvaluationResultList" parameterType="BizAssessDeptExcellentEvaluationResultVo" resultMap="bizAssessDeptExcellentEvaluationResultVo">
+        <include refid="selectBizAssessDeptExcellentEvaluationResultVo"/>
+        <where>  
+            <if test="userId != null "> and deer.user_id = #{userId}</if>
+            <if test="deptId != null "> and deer.dept_id = #{deptId}</if>
+            <if test="assessmentYear != null  and assessmentYear != ''"> and deer.assessment_year = #{assessmentYear}</if>
+            <if test="recommendGrade != null  and recommendGrade != ''">
+                and deer.recommend_grade = #{recommendGrade}
+            </if>
+            <if test="isExcellent == 2">
+                and deer.recommend_grade != '1'
+            </if>
+            <if test="isExcellent == 1">
+                and deer.recommend_grade = '1'
+            </if>
+            <if test="recommendGradeExcellent != null "> and deer.recommend_grade_excellent = #{recommendGradeExcellent}</if>
+            <if test="number != null "> and deer.number = #{number}</if>
+            <if test="escalation != null  and escalation != ''"> and deer.escalation = #{escalation}</if>
+            <if test="isPublicity != null  and isPublicity != ''"> and deer.is_publicity = #{isPublicity}</if>
+            <if test="name != null  and name != ''"> and u.name like concat('%',#{name},'%') </if>
+            <if test="deptName != null  and deptName != ''"> and d.dept_name like concat('%',#{deptName},'%') </if>
+        </where>
+        order by deer.dept_id,deer.create_time desc
+    </select>
+    
+    <select id="selectBizAssessDeptExcellentEvaluationResultById" parameterType="String" resultMap="BizAssessDeptExcellentEvaluationResultResult">
+        <include refid="selectBizAssessDeptExcellentEvaluationResultVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertBizAssessDeptExcellentEvaluationResult" parameterType="BizAssessDeptExcellentEvaluationResult">
+        insert into biz_assess_dept_excellent_evaluation_result
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="deptId != null">dept_id,</if>
+            <if test="assessmentYear != null">assessment_year,</if>
+            <if test="recommendGrade != null">recommend_grade,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+            <if test="recommendGradeExcellent != null">recommend_grade_excellent,</if>
+            <if test="number != null">number,</if>
+            <if test="escalation != null">escalation,</if>
+            <if test="reviewed != null">reviewed,</if>
+            <if test="identityType != null">identity_type,</if>
+            <if test="isPublicity != null">is_publicity,</if>
+            <if test="remark != null">remark,</if>
+            <if test="regularAssessment != null">regular_assessment,</if>
+            <if test="isEntry != null">is_entry,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="deptId != null">#{deptId},</if>
+            <if test="assessmentYear != null">#{assessmentYear},</if>
+            <if test="recommendGrade != null">#{recommendGrade},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+            <if test="recommendGradeExcellent != null">#{recommendGradeExcellent},</if>
+            <if test="number != null">#{number},</if>
+            <if test="escalation != null">#{escalation},</if>
+            <if test="reviewed != null">#{reviewed},</if>
+            <if test="identityType != null">#{identityType},</if>
+            <if test="isPublicity != null">#{isPublicity},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="regularAssessment != null">#{regularAssessment},</if>
+            <if test="isEntry != null">#{isEntry},</if>
+         </trim>
+    </insert>
+
+    <update id="updateBizAssessDeptExcellentEvaluationResult" parameterType="BizAssessDeptExcellentEvaluationResult">
+        update biz_assess_dept_excellent_evaluation_result
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="deptId != null">dept_id = #{deptId},</if>
+            <if test="assessmentYear != null">assessment_year = #{assessmentYear},</if>
+            <if test="recommendGrade != null">recommend_grade = #{recommendGrade},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+            <if test="recommendGradeExcellent != null">recommend_grade_excellent = #{recommendGradeExcellent},</if>
+            <if test="number != null">number = #{number},</if>
+            <if test="escalation != null">escalation = #{escalation},</if>
+            <if test="reviewed != null">reviewed = #{reviewed},</if>
+            <if test="identityType != null">identity_type = #{identityType},</if>
+            <if test="isPublicity != null">is_publicity = #{isPublicity},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="regularAssessment != null">regular_assessment=#{regularAssessment},</if>
+            <if test="isEntry != null">is_entry=#{isEntry},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateToPublicity">
+        update biz_assess_dept_excellent_evaluation_result
+          set  is_publicity = #{isPublicity}
+        where assessment_year = #{year}
+        <if test="isExcellent == 2">
+            and recommend_grade !='1'
+        </if>
+        <if test="isExcellent ==1">
+            and recommend_grade ='1'
+        </if>
+
+    </update>
+    <delete id="deleteBizAssessDeptExcellentEvaluationResultById" parameterType="String">
+        delete from biz_assess_dept_excellent_evaluation_result where id = #{id}
+    </delete>
+    <select id="selectYears" resultMap="bizAssessDeptExcellentEvaluationResultVo">
+        select assessment_year from biz_assess_dept_excellent_evaluation_result group by assessment_year order by assessment_year desc
+    </select>
+    <delete id="deleteBizAssessDeptExcellentEvaluationResultByIds" parameterType="String">
+        delete from biz_assess_dept_excellent_evaluation_result where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

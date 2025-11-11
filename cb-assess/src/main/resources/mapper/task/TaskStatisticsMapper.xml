@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.task.mapper.TaskStatisticsMapper">
+
+    <resultMap id="countItemVo" type="com.cb.task.vo.TaskStatisticsVo$HandleCountItem">
+        <result property="label" column="label"></result>
+        <result property="num" column="num"></result>
+        <result property="deptId" column="deptId"></result>
+        <result property="userName" column="userName"></result>
+    </resultMap>
+
+    <select id="countDept" resultMap="countItemVo">
+        select t.deptId as deptId,'dept' as type,
+               t.deptName as label,
+               count(1) as num
+        from (
+            select bth.id as handleId, bth.task_id as taskId, su.dept_id as deptId, su.name as name,sd.dept_abbreviation as deptName,
+                   bth.handle_user as handleUser, bth.handle_status as handleStatus
+            from ASSESSMENT.biz_task_handle bth
+            left join ASSESSMENT.biz_task_info bti on bth.task_id = bti.id
+            left join v_sys_user su on bth.handle_user = su.user_name
+            left join ASSESSMENT.sys_dept sd on su.dept_id = sd.dept_id
+            where bth.claim_status = '1' and bth.claim_type = '1'
+                and su.work_title_code not in ('111','112')
+                and sd.dept_name != '局领导'
+                and bth.handle_status = #{status}
+                <if test="beginTime != null and beginTime != ''">
+                  and bth.receive_time &gt;= #{beginTime}
+                </if>
+                <if test="endTime != null and endTime != ''">
+                    and bth.receive_time &lt;= #{endTime}
+                </if>
+                and su.dept_id in
+                <foreach item="deptId" collection="deptIds" open="(" close=")" separator=",">
+                    #{deptId}
+                </foreach>
+        ) t
+        group by t.deptId,t.deptName
+    </select>
+
+    <select id="countUser" resultMap="countItemVo">
+        select t.handleUser as userName,handleUserId as userId,'user' as type,
+               t.name as label,
+               count(1) as num
+        from (
+            select bth.id as handleId, bth.task_id as taskId, su.dept_id as deptId, su.name as name,
+                su.user_id as handleUserId,bth.handle_user as handleUser, bth.handle_status as handleStatus
+            from ASSESSMENT.biz_task_handle bth
+            left join ASSESSMENT.biz_task_info bti on bth.task_id = bti.id
+            left join v_sys_user su on bth.handle_user = su.user_name
+            where bth.claim_status = '1' and bth.claim_type = '1'
+                and su.work_title_code not in ('111','112')
+                and bth.handle_status = #{status}
+                <if test="beginTime != null and beginTime != ''">
+                    and bth.receive_time &gt;= #{beginTime}
+                </if>
+                <if test="endTime != null and endTime != ''">
+                    and bth.receive_time &lt;= #{endTime}
+                </if>
+                and bth.handle_user in
+                <foreach item="userName" collection="userNames" open="(" close=")" separator=",">
+                    #{userName}
+                </foreach>
+        ) t
+        group by t.handleUser,t.name,t.handleUserId
+    </select>
+
+    <resultMap id="groupByVo" type="com.cb.task.vo.TaskStatisticsVo$TaskCountItem">
+        <result property="label" column="label"></result>
+        <result property="num" column="num"></result>
+        <result property="groupId" column="groupId"></result>
+    </resultMap>
+
+    <select id="groupTaskBy" resultType="com.cb.task.vo.TaskStatisticsVo$TaskCountItem">
+        select
+            <if test="groupBy == 'causation'">
+                causation as groupId,
+            </if>
+            <if test="groupBy == 'difficult'">
+                difficult as groupId,
+            </if>
+            <if test="groupBy == 'docType'">
+                doc_type as groupId,
+            </if>
+            count(1) as num
+        from biz_task_info
+        where (status = '1' or status = '2')
+        <if test="deptId != null and deptId != ''">
+            and create_dept = #{deptId}
+        </if>
+        <if test="beginTime != null and beginTime != ''">
+            and begin_time &gt;= #{beginTime}
+        </if>
+        <if test="endTime != null and endTime != ''">
+            and end_time &lt;= #{endTime}
+        </if>
+        <if test="groupBy == 'causation'">
+            group by causation
+        </if>
+        <if test="groupBy == 'difficult'">
+            group by difficult
+        </if>
+        <if test="groupBy == 'docType'">
+            group by doc_type
+        </if>
+
+
+    </select>
+
+    <select id="mxfxHandleNumCountByDept" resultType="com.cb.task.vo.TaskStatisticsVo$MxfxHandleNumDeptItem">
+        select t.deptId, t.deptName, t.yearMonth, count(1) as num
+        from (
+                 select h.id, h.task_id as taskId,
+                     h.handle_user as handleUser,
+                     h.score_percent as scorePercent,
+                     h.complete_time as completeTime
+                      ,date_format(h.complete_time,'%Y-%m') as yearMonth
+                      ,i.title as title
+                      ,i.create_time createTime
+                      ,i.create_dept createDept
+                      ,hu.dept_id deptId
+                      ,hud.dept_abbreviation deptName
+                 from biz_task_handle h
+                          left join biz_task_info i on h.task_id = i.id
+                          left join sys_user hu on hu.user_name = h.handle_user and hu.del_flag != '2'
+            left join sys_dept hud on hud.dept_id = hu.dept_id
+                 where h.assign_status = '1' and h.handle_status = '2'
+                   and h.complete_time &gt;= #{beginTime} and h.complete_time &lt;= #{endTime}
+             ) t
+        group by t.deptId,t.deptName,t.yearMonth
+    </select>
+    <select id="mxfxHandleNumCountByDept" resultType="com.cb.task.vo.TaskStatisticsVo$MxfxHandleNumDeptItem" databaseId="dm">
+        select t.deptId, t.deptName, t.yearMonth, count(1) as num
+        from (
+            select h.id, h.task_id as taskId,
+                   h.handle_user as handleUser,
+                   h.score_percent as scorePercent,
+                   h.complete_time as completeTime
+            ,TO_CHAR(h.complete_time,'yyyy-MM') as yearMonth
+            ,i.title as title
+            ,i.create_time createTime
+            ,i.create_dept createDept
+            ,hu.dept_id deptId
+            ,hud.dept_abbreviation deptName
+            from biz_task_handle h
+            left join biz_task_info i on h.task_id = i.id
+            left join sys_user hu on hu.user_name = h.handle_user and hu.del_flag != '2'
+            left join sys_dept hud on hud.dept_id = hu.dept_id
+            where h.assign_status = '1' and h.handle_status = '2'
+            and h.complete_time &gt;= #{beginTime} and h.complete_time &lt;= #{endTime}
+        ) t
+        group by t.deptId,t.deptName,t.yearMonth
+    </select>
+
+    <select id="mxfxHandleNumCountByUser" resultType="com.cb.task.vo.TaskStatisticsVo$MxfxHandleNumUserItem">
+        select t.handleUser as userName, t.handleUserName as name, t.yearMonth, count(1) as num
+        from (
+            select h.id,
+                   h.task_id as taskId,
+                   h.handle_user as handleUser,
+                   h.score_percent as scorePercent,
+                   h.complete_time as completeTime
+                ,date_format(h.complete_time,'%Y-%m') as yearMonth
+                ,i.title as title
+                ,i.create_time createTime
+                ,i.create_dept createDept
+                ,hu.name as handleUserName
+                ,hu.dept_id deptId
+                ,hud.dept_abbreviation deptName
+            from biz_task_handle h
+            left join biz_task_info i on h.task_id = i.id
+            left join sys_user hu on hu.user_name = h.handle_user and hu.del_flag != '2'
+            left join sys_dept hud on hud.dept_id = hu.dept_id
+            where h.assign_status = '1' and h.handle_status = '2'
+            and hu.dept_id = #{deptId}
+            and h.complete_time &gt;= #{beginTime} and h.complete_time &lt;= #{endTime}
+        ) t
+        group by t.handleUser,t.handleUserName,t.yearMonth
+    </select>
+
+    <select id="mxfxHandleNumCountByUser" resultType="com.cb.task.vo.TaskStatisticsVo$MxfxHandleNumUserItem" databaseId="dm">
+        select t.handleUser as userName, t.handleUserName as name, t.yearMonth, count(1) as num
+        from (
+                 select h.id,
+                     h.task_id as taskId,
+                     h.handle_user as handleUser,
+                     h.score_percent as scorePercent,
+                     h.complete_time as completeTime
+                      ,TO_CHAR(h.complete_time,'yyyy-MM') as yearMonth
+                      ,i.title as title
+                      ,i.create_time createTime
+                      ,i.create_dept createDept
+                      ,hu.name as handleUserName
+                      ,hu.dept_id deptId
+                      ,hud.dept_abbreviation deptName
+                 from biz_task_handle h
+                          left join biz_task_info i on h.task_id = i.id
+                          left join sys_user hu on hu.user_name = h.handle_user and hu.del_flag != '2'
+            left join sys_dept hud on hud.dept_id = hu.dept_id
+                 where h.assign_status = '1' and h.handle_status = '2'
+                   and hu.dept_id = #{deptId}
+                   and h.complete_time &gt;= #{beginTime} and h.complete_time &lt;= #{endTime}
+             ) t
+        group by t.handleUser,t.handleUserName,t.yearMonth
+    </select>
+
+
+</mapper>

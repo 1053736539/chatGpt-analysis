@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.BizAssessIndicatorProProcedureMapper">
+
+    <resultMap type="BizAssessIndicatorProProcedure" id="BizAssessIndicatorProProcedureResult">
+        <result property="procedureId" column="procedure_id"/>
+        <result property="proId" column="pro_id"/>
+        <result property="name" column="name"/>
+        <result property="step" column="step"/>
+        <result property="enforce" column="enforce"/>
+        <result property="describe" column="describe"/>
+    </resultMap>
+
+    <sql id="selectBizAssessIndicatorProProcedureVo">
+        select p.procedure_id, p.pro_id, p.name, p.step, p.enforce, p.describe
+        from biz_assess_indicator_pro_procedure p
+    </sql>
+
+
+    <insert id="batchInsertProProcedure" >
+        insert into biz_assess_indicator_pro_procedure(procedure_id, pro_id, name, step, enforce, `describe`) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.procedureId} ,#{item.proId}, #{item.name}, #{item.step}, #{item.enforce}, #{item.describe})
+        </foreach>
+    </insert>
+
+    <insert id="batchInsertProProcedure" databaseId="dm" >
+        insert into biz_assess_indicator_pro_procedure(procedure_id, pro_id, name, step, enforce, describe) values
+        <foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.procedureId} ,#{item.proId}, #{item.name}, #{item.step}, #{item.enforce}, #{item.describe})
+        </foreach>
+    </insert>
+
+
+    <delete id="deleteBizAssessIndicatorProProcedureById" parameterType="String">
+        delete
+        from biz_assess_indicator_pro_procedure
+        where pro_id = #{proId}
+    </delete>
+
+    <delete id="deleteBizAssessIndicatorProProcedureByIds" parameterType="String">
+        delete from biz_assess_indicator_pro_procedure where pro_id in
+        <foreach item="proId" collection="array" open="(" separator="," close=")">
+            #{proId}
+        </foreach>
+    </delete>
+    <select id="selectProProcedureByProId" resultMap="BizAssessIndicatorProProcedureResult">
+        <include refid="selectBizAssessIndicatorProProcedureVo"/>
+        where p.pro_id = #{proId}
+    </select>
+</mapper>

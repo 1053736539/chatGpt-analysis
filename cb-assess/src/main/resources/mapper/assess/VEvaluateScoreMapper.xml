@@ -1,0 +1,243 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.assess.mapper.VEvaluateScoreMapper">
+    <resultMap type="BizAssessTaskVo" id="BizAssessTaskVoResult">
+        <result property="taskId" column="task_id"/>
+        <result property="taskName" column="task_name"/>
+        <result property="cycle" column="cycle"/>
+        <result property="cycleDesc" column="cycle_desc"/>
+        <result property="belongYear" column="belong_year"/>
+        <result property="special" column="special"/>
+        <result property="startTime" column="start_time"/>
+        <result property="endTime" column="end_time"/>
+        <result property="type" column="type"/>
+        <association property="pro" javaType="BizAssessIndicatorPro">
+            <result property="special" column="special"/>
+            <result property="score" column="score"/>
+        </association>
+    </resultMap>
+
+    <select id="selectTaskList" resultMap="BizAssessTaskVoResult">
+        select T.* from (
+        SELECT
+        a.task_id,
+        a.task_name,
+        a.assess_cycle as "cycle",
+        a.belong_year,
+        p.special,
+        p.personnel_type "type",
+        CASE a.assess_cycle
+        WHEN '1' THEN a.task_moth
+        WHEN '2' THEN a.task_quarter
+        WHEN '3' THEN a.task_year
+        ELSE '专项考核' END as cycle_desc,
+        (select group_concat(dept_id) from biz_assess_indicator_pro_duty where pro_id = a.pro_id) as duty,
+        a.start_time,
+        a.end_time,
+        p.score
+        from biz_assess_task_manage a left join biz_assess_indicator_pro p on p.pro_id = a.pro_id
+        WHERE
+        a.status = '1' and a.del_flag = '1'
+        ) as T
+        <where>
+            <if test="et.taskName != null and et.taskName != ''">and T.task_name = #{et.taskName}</if>
+            <if test="et.cycle != null and et.cycle != ''">and T.cycle = #{et.cycle}</if>
+            <if test="et.belongYear != null and et.belongYear != ''">and T.belong_year = #{et.belongYear}</if>
+            <if test="et.special != null and et.special != ''">and T.special = #{et.special}</if>
+            <if test="et.type != null and et.type != ''">
+                and T.type like concat('%',#{et.type},'%')
+            </if>
+            <if test="deptId!= null">and find_in_set(#{deptId}, T.duty)</if>
+        </where>
+    </select>
+
+    <select id="selectTaskList" resultMap="BizAssessTaskVoResult" databaseId="dm">
+        select T.* from (
+        SELECT
+        a.task_id,
+        a.task_name,
+        a.assess_cycle as "cycle",
+        a.belong_year,
+        p.special,
+        p.personnel_type "type",
+        CASE a.assess_cycle
+        WHEN '1' THEN a.task_moth
+        WHEN '2' THEN a.task_quarter
+        WHEN '3' THEN a.task_year
+        ELSE '专项考核' END as cycle_desc,
+        (select wm_concat(dept_id) from biz_assess_indicator_pro_duty where pro_id = a.pro_id) as duty,
+        a.start_time,
+        a.end_time,
+        p.score
+        from biz_assess_task_manage a left join biz_assess_indicator_pro p on p.pro_id = a.pro_id
+        WHERE
+        a.status = '1' and a.del_flag = '1'
+        ) as T
+        <where>
+            <if test="et.taskName != null and et.taskName != ''">and T.task_name = #{et.taskName}</if>
+            <if test="et.cycle != null and et.cycle != ''">and T.cycle = #{et.cycle}</if>
+            <if test="et.belongYear != null and et.belongYear != ''">and T.belong_year = #{et.belongYear}</if>
+            <if test="et.special != null and et.special != ''">and T.special = #{et.special}</if>
+            <if test="et.type != null and et.type != ''">
+                and T.type like concat('%',#{et.type},'%')
+            </if>
+            <if test="deptId!= null">and find_in_set(#{deptId}, T.duty)</if>
+        </where>
+    </select>
+
+    <resultMap id="VEvaluateScoreResult" type="com.cb.assess.domain.VEvaluateScore$VoterDetail">
+        <result property="taskId" column="task_id"/>
+        <result property="evaluateTagId" column="evaluate_tag_id"/>
+        <result property="voter" column="voter"/>
+        <result property="userId" column="user_id"/>
+        <result property="voteType" column="vote_type"/>
+        <result property="weight" column="weight"/>
+        <result property="status" column="status"/>
+        <result property="score" column="score"/>
+    </resultMap>
+    <select id="selectEvaluateVoterList" resultMap="VEvaluateScoreResult">
+        SELECT
+            es.task_id,
+            es.tag_id AS evaluate_tag_id,
+            es.voter,
+            es.user_id,
+            es.vote_type,
+            es.weight,
+            es.status,
+            es.score
+        FROM
+            v_evaluate_score es
+                JOIN v_sys_user u on u.user_id = es.user_id
+        <where>
+            and es.task_id = #{taskId}
+        <if test=" deptId != null and deptId != ''">and u.dept_id = #{deptId}</if>
+        </where>
+    </select>
+    <resultMap id="EvaluateLevelTempResult" type="com.cb.assess.domain.vo.BizAssessTaskVo$EvaluateLevelTempResp">
+        <result property="id" column="id"/>
+        <result property="taskId" column="task_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="deptScore" column="dept_score"/>
+        <result property="leaderScore" column="leader_score"/>
+        <result property="unusualScore" column="unusual_score"/>
+        <result property="disciplineScore" column="discipline_score"/>
+        <result property="attendanceNum" column="attendance_num"/>
+        <result property="attendanceScore" column="attendance_score"/>
+        <result property="reportedGrade" column="reported_grade"/>
+        <result property="rscOpinion" column="rsc_opinion"/>
+        <result property="dzhOpinion" column="dzh_opinion"/>
+        <result property="rank" column="rank"/>
+        <result property="userName" column="user_name"/>
+        <result property="deptName" column="dept_name"/>
+        <result property="personnelType" column="personnel_type"/>
+        <result property="scoringMirror" column="scoring_mirror"/>
+        <result property="step" column="step"/>
+    </resultMap>
+    <sql id="baseEvaluateLevelTemp">
+        SELECT
+            g.id,
+            g.task_id,
+            g.user_id as user_id,
+            g.name as user_name,
+            g.dept_score,
+            g.leader_score,
+            g.unusual_score,
+            g.discipline_score,
+            ifnull(fi.absenteeism_num,0) as attendance_num,
+            g.attendance_score,
+            g.rsc_opinion,
+            g.dzh_opinion,
+            g.final_option,
+            g.scoring_mirror,
+            g.grade as reported_grade,
+            g.belong_year,
+            g.cycle,
+            g.cycle_desc,
+            g.special,
+            cf.dept_id,
+            cf.dept_name,
+            g.personnel_type,
+            g.step
+        FROM
+            v_evaluation_grade g
+            join v_task_assess_user_confirm cf on cf.task_id = g.task_id and cf.user_id = g.user_id
+            left join v_regular_fill_info fi on fi.task_id = g.task_id and fi.user_id = g.user_id
+    </sql>
+    <select id="selectEvaluateLevelTempList" resultMap="EvaluateLevelTempResult">
+        select T.id,
+            T.task_id,
+            T.user_id,
+            T.dept_score,
+            T.leader_score,
+            T.unusual_score,
+            T.discipline_score,
+            T.attendance_num,
+            T.attendance_score,
+            t.reported_grade,
+            T.rsc_opinion,
+            T.dzh_opinion,
+            T.final_option,
+            T.user_name,
+            T.dept_name,
+            T.personnel_type,
+            T.step
+        from(
+        <include refid="baseEvaluateLevelTemp"/>
+        ) as T
+         <where>
+             <if test="belongYear != null and belongYear != ''">and T.belong_year =#{belongYear}</if>
+             <if test="cycleDesc != null and cycleDesc != ''">and T.cycle_desc =#{cycleDesc}</if>
+             <if test="special != null and special != ''">and T.special =#{special}</if>
+             <if test="deptId != null and deptId != ''">and T.dept_id =#{deptId}</if>
+             <if test="personnelType != null and personnelType != ''">and find_in_set(T.personnel_type,#{personnelType})</if>
+         </where>
+    </select>
+
+    <select id="selectTempEvaluateScoreList" resultMap="EvaluateLevelTempResult">
+        select T.id,
+        T.task_id,
+        T.user_id,
+        T.scoring_mirror,
+        T.user_name,
+        T.dept_name,
+        T.personnel_type
+        from(
+        <include refid="baseEvaluateLevelTemp"/>
+        ) as T
+        <where>
+            <if test="taskId != null and taskId != ''">and T.task_id =#{taskId}</if>
+            <if test="belongYear != null and belongYear != ''">and T.belong_year =#{belongYear}</if>
+            <if test="cycleDesc != null and cycleDesc != ''">and T.cycle_desc =#{cycleDesc}</if>
+            <if test="special != null and special != ''">and T.special =#{special}</if>
+            <if test="deptId != null and deptId != ''">and T.dept_id =#{deptId}</if>
+            <if test="personnelType != null and personnelType != ''">and find_in_set(T.personnel_type,#{personnelType})</if>
+        </where>
+    </select>
+    <select id="selectExportCompositeList"  resultType="com.cb.assess.domain.vo.BizAssessTaskVo$ExportEvaluateComposite">
+        select T.dept_name deptName,
+        T.user_name as userName,
+        T.scoring_mirror as scoringJson,
+        T.dept_score as deptScore,
+        T.leader_score as leaderScore,
+        T.unusual_score as unusualScore,
+        T.attendance_num  as attendanceNum,
+        T.attendance_score as attendanceScore,
+        T.discipline_score as disciplineScore,
+        T.reported_grade as grade
+        from(
+        <include refid="baseEvaluateLevelTemp"/>
+        ) as T
+        <where>
+            <if test="taskId != null and taskId != ''">and T.task_id =#{taskId}</if>
+            <if test="belongYear != null and belongYear != ''">and T.belong_year =#{belongYear}</if>
+            <if test="cycleDesc != null and cycleDesc != ''">and T.cycle_desc =#{cycleDesc}</if>
+            <if test="special != null and special != ''">and T.special =#{special}</if>
+            <if test="deptId != null and deptId != ''">and T.dept_id =#{deptId}</if>
+            <if test="personnelType != null and personnelType != ''">and find_in_set(T.personnel_type,#{personnelType})</if>
+        </where>
+    </select>
+
+
+</mapper>

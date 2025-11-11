@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.probity.mapper.BizProbityFamilyMemberMapper">
+
+    <resultMap type="BizProbityFamilyMember" id="BizProbityFamilyMemberResult">
+        <result property="id" column="id"/>
+        <result property="probityId" column="probity_id"/>
+        <result property="createBy" column="create_by"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateBy" column="update_by"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
+        <result property="relation" column="relation"/>
+        <result property="name" column="name"/>
+        <result property="birth" column="birth"/>
+        <result property="politicalStatus" column="political_status"/>
+        <result property="workDeptPosition" column="work_dept_position"/>
+        <result property="idNo" column="id_no"/>
+    </resultMap>
+
+    <sql id="selectBizProbityFamilyMemberVo">
+        select id,
+               probity_id,
+               create_by,
+               create_time,
+               update_by,
+               update_time,
+               remark,
+               relation,
+               name,
+               birth,
+               political_status,
+               work_dept_position,
+               id_no
+        from biz_probity_family_member
+    </sql>
+
+    <select id="selectBizProbityFamilyMemberList" parameterType="BizProbityFamilyMember"
+            resultMap="BizProbityFamilyMemberResult">
+        <include refid="selectBizProbityFamilyMemberVo"/>
+        <where>
+            <if test="probityId != null  and probityId != ''">and probity_id = #{probityId}</if>
+            <if test="relation != null  and relation != ''">and relation = #{relation}</if>
+            <if test="name != null  and name != ''">and name like concat('%', #{name}, '%')</if>
+            <if test="birth != null  and birth != ''">and birth = #{birth}</if>
+            <if test="politicalStatus != null  and politicalStatus != ''">and political_status = #{politicalStatus}</if>
+            <if test="workDeptPosition != null  and workDeptPosition != ''">and work_dept_position =
+                #{workDeptPosition}
+            </if>
+            <if test="idNo != null  and idNo != ''">and id_no = #{idNo}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectBizProbityFamilyMemberById" parameterType="String" resultMap="BizProbityFamilyMemberResult">
+        <include refid="selectBizProbityFamilyMemberVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertBizProbityFamilyMember" parameterType="BizProbityFamilyMember">
+        insert into biz_probity_family_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="probityId != null">probity_id,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+            <if test="relation != null">relation,</if>
+            <if test="name != null">name,</if>
+            <if test="birth != null">birth,</if>
+            <if test="politicalStatus != null">political_status,</if>
+            <if test="workDeptPosition != null">work_dept_position,</if>
+            <if test="idNo != null">id_no,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="probityId != null">#{probityId},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark},</if>
+            <if test="relation != null">#{relation},</if>
+            <if test="name != null">#{name},</if>
+            <if test="birth != null">#{birth},</if>
+            <if test="politicalStatus != null">#{politicalStatus},</if>
+            <if test="workDeptPosition != null">#{workDeptPosition},</if>
+            <if test="idNo != null">#{idNo},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into biz_probity_family_member
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            probity_id,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+            remark,
+            relation,
+            name,
+            birth,
+            political_status,
+            work_dept_position,
+            id_no,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.probityId},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+                #{entity.remark},
+                #{entity.relation},
+                #{entity.name},
+                #{entity.birth},
+                #{entity.politicalStatus},
+                #{entity.workDeptPosition},
+                #{entity.idNo},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateBizProbityFamilyMember" parameterType="BizProbityFamilyMember">
+        update biz_probity_family_member
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="probityId != null">probity_id = #{probityId},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+            <if test="relation != null">relation = #{relation},</if>
+            <if test="name != null">name = #{name},</if>
+            <if test="birth != null">birth = #{birth},</if>
+            <if test="politicalStatus != null">political_status = #{politicalStatus},</if>
+            <if test="workDeptPosition != null">work_dept_position = #{workDeptPosition},</if>
+            <if test="idNo != null">id_no = #{idNo},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteBizProbityFamilyMemberById" parameterType="String">
+        delete
+        from biz_probity_family_member
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteBizProbityFamilyMemberByIds" parameterType="String">
+        delete from biz_probity_family_member where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

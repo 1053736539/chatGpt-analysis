@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.mapper.TransferringStudentSuperviseMapper">
+
+    <resultMap type="com.cb.vo.StudentSuperviseVo" id="TransferringStudentSuperviseResult">
+        <result property="id"    column="id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="supervisionContent"    column="supervision_content"    />
+        <result property="supervisionWay"    column="supervision_way"    />
+        <result property="supervisionAttach"    column="supervision_attach"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="delFlag"    column="del_flag"    />
+        <result property="nickName"    column="nick_name"    />
+    </resultMap>
+
+    <sql id="selectTransferringStudentSuperviseVo">
+        select id, user_id, supervision_content, supervision_way, supervision_attach, create_by, update_time, create_time, update_by, del_flag from transferring_student_supervise
+    </sql>
+
+    <select id="selectTransferringStudentSuperviseList" resultMap="TransferringStudentSuperviseResult">
+        select ss.id, ss.user_id, ss.supervision_content, ss.supervision_way, ss.supervision_attach, ss.create_by, ss.update_time, ss.create_time,
+        ss.update_by, ss.del_flag ,u.nick_name
+        from transferring_student_supervise ss
+        inner join sys_user u on ss.user_id=u.user_id
+        <where>
+            <if test="delFlag != null  and delFlag != ''"> and ss.del_flag = #{delFlag}</if>
+            <if test="userId != null  and userId != ''"> and ss.user_id = #{userId}</if>
+            <if test="supervisionContent != null  and supervisionContent != ''"> and ss.supervision_content = #{supervisionContent}</if>
+            <if test="supervisionWay != null  and supervisionWay != ''"> and ss.supervision_way = #{supervisionWay}</if>
+            <if test="supervisionAttach != null  and supervisionAttach != ''"> and ss.supervision_attach = #{supervisionAttach}</if>
+            <if test="nickName != null and nickName != ''">and u.nick_name like concat('%',#{nickName},'%') </if>
+        </where>
+    </select>
+
+    <select id="selectTransferringStudentSuperviseById" parameterType="String" resultMap="TransferringStudentSuperviseResult">
+        <include refid="selectTransferringStudentSuperviseVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertTransferringStudentSupervise">
+        insert into transferring_student_supervise
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">id,</if>
+            <if test="userId != null and userId != ''">user_id,</if>
+            <if test="supervisionContent != null">supervision_content,</if>
+            <if test="supervisionWay != null">supervision_way,</if>
+            <if test="supervisionAttach != null">supervision_attach,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="delFlag != null">del_flag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null and id != ''">#{id},</if>
+            <if test="userId != null and userId != ''">#{userId},</if>
+            <if test="supervisionContent != null">#{supervisionContent},</if>
+            <if test="supervisionWay != null">#{supervisionWay},</if>
+            <if test="supervisionAttach != null">#{supervisionAttach},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="delFlag != null">#{delFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateTransferringStudentSupervise" >
+        update transferring_student_supervise
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null and userId != ''">user_id = #{userId},</if>
+            <if test="supervisionContent != null">supervision_content = #{supervisionContent},</if>
+            <if test="supervisionWay != null">supervision_way = #{supervisionWay},</if>
+            <if test="supervisionAttach != null">supervision_attach = #{supervisionAttach},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="delFlag != null">del_flag = #{delFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteTransferringStudentSuperviseById" parameterType="String">
+        delete from transferring_student_supervise where id = #{id}
+    </delete>
+
+    <delete id="deleteTransferringStudentSuperviseByIds" parameterType="String">
+        update transferring_student_supervise set del_flag='1' where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

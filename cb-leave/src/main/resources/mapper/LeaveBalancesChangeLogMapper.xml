@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.leave.mapper.LeaveBalancesChangeLogMapper">
+
+    <resultMap type="LeaveBalancesChangeLog" id="LeaveBalancesChangeLogResult">
+        <result property="id"    column="id"    />
+        <result property="initData"    column="init_data"    />
+        <result property="lastData"    column="last_data"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectLeaveBalancesChangeLogVo">
+        select id, init_data, last_data, create_by, create_time, update_by, update_time from leave_balances_change_log
+    </sql>
+
+    <select id="selectLeaveBalancesChangeLogList" parameterType="LeaveBalancesChangeLog" resultMap="LeaveBalancesChangeLogResult">
+        <include refid="selectLeaveBalancesChangeLogVo"/>
+        <where>
+            <if test="initData != null  and initData != ''"> and init_data = #{initData}</if>
+            <if test="lastData != null  and lastData != ''"> and last_data = #{lastData}</if>
+            <!-- 数据范围过滤 -->
+            ${params.dataScope}
+        </where>
+    </select>
+
+    <select id="selectLeaveBalancesChangeLogById" parameterType="Integer" resultMap="LeaveBalancesChangeLogResult">
+        <include refid="selectLeaveBalancesChangeLogVo"/>
+        where id = #{id}
+    </select>
+
+    <select id="selectListByIds"  parameterType="Integer" resultMap="LeaveBalancesChangeLogResult">
+        <include refid="selectLeaveBalancesChangeLogVo"/>
+        where id in
+            <foreach item="id" collection="array" open="(" separator="," close=")">
+                #{id}
+            </foreach>
+    </select>
+
+    <insert id="insertLeaveBalancesChangeLog" parameterType="LeaveBalancesChangeLog">
+        insert into leave_balances_change_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="initData != null">init_data,</if>
+            <if test="lastData != null">last_data,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="initData != null">#{initData},</if>
+            <if test="lastData != null">#{lastData},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+        </trim>
+    </insert>
+
+    <insert id="insertBatch" keyProperty="id">
+        insert into leave_balances_change_log
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            id,
+            init_data,
+            last_data,
+            create_by,
+            create_time,
+            update_by,
+            update_time,
+        </trim>
+        values
+        <foreach collection="entities" item="entity" separator=",">
+            <trim prefix="(" suffix=")" suffixOverrides=",">
+                #{entity.id},
+                #{entity.initData},
+                #{entity.lastData},
+                #{entity.createBy},
+                #{entity.createTime},
+                #{entity.updateBy},
+                #{entity.updateTime},
+            </trim>
+        </foreach>
+    </insert>
+
+    <update id="updateLeaveBalancesChangeLog" parameterType="LeaveBalancesChangeLog">
+        update leave_balances_change_log
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="initData != null">init_data = #{initData},</if>
+            <if test="lastData != null">last_data = #{lastData},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLeaveBalancesChangeLogById" parameterType="Integer">
+        delete from leave_balances_change_log where id = #{id}
+    </delete>
+
+    <delete id="deleteLeaveBalancesChangeLogByIds" parameterType="String">
+        delete from leave_balances_change_log where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="checkExistIds" resultType="int">
+        select distinct id from leave_balances_change_log
+        where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="listMaybeNeedFixChangeFlagList" resultMap="LeaveBalancesChangeLogResult">
+        select l.*
+        from leave_balances_change_log l
+        left join leave_balances lb on l.id = lb.id
+        where lb.status is not null and lb.change_flag = 0
+              and init_data is not null and last_data is not null
+    </select>
+
+</mapper>

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cb.leave.mapper.LeaveTypesMapper">
+    
+    <resultMap type="LeaveTypes" id="LeaveTypesResult">
+        <result property="id"    column="id"    />
+        <result property="leaveName"    column="leave_name"    />
+        <result property="description"    column="description"    />
+        <result property="createBy"    column="create_by"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateBy"    column="update_by"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectLeaveTypesVo">
+        select id, leave_name, description, create_by, create_time, update_by, update_time from leave_types
+    </sql>
+
+    <select id="selectLeaveTypesList" parameterType="LeaveTypes" resultMap="LeaveTypesResult">
+        <include refid="selectLeaveTypesVo"/>
+        <where>  
+            <if test="leaveName != null  and leaveName != ''"> and leave_name like concat('%', #{leaveName}, '%')</if>
+            <if test="description != null  and description != ''"> and description like concat('%', #{description}, '%')</if>
+        </where>
+        order by create_time ASC
+    </select>
+    
+    <select id="selectLeaveTypesById" parameterType="long" resultMap="LeaveTypesResult">
+        <include refid="selectLeaveTypesVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectUserLeaveVoList" resultType="com.cb.leave.domain.vo.UserLeaveVo">
+        SELECT
+            t.id,
+            t.leave_name as leaveName,
+            t.description
+        <!--,lb.user_id as userId,
+            lb.leave_year as leaveYear,
+            ifnull(total_days,0) as totalDays,
+            ifnull(used_days,0) as usedDays,
+            ifnull(pending_days,0) as pendingDays,
+            ifnull(remaining_days,0) remainingDays-->
+        FROM
+            leave_types t
+        <!--left join leave_balances lb on lb.leave_type_id = t.id-->
+<!--where lb.user_id= #{userId} and lb.leave_year =#{leaveYear}-->
+    </select>
+
+    <insert id="insertLeaveTypes" parameterType="LeaveTypes">
+        insert into leave_types
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="leaveName != null">leave_name,</if>
+            <if test="description != null">description,</if>
+            <if test="createBy != null">create_by,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateBy != null">update_by,</if>
+            <if test="updateTime != null">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="leaveName != null">#{leaveName},</if>
+            <if test="description != null">#{description},</if>
+            <if test="createBy != null">#{createBy},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateBy != null">#{updateBy},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateLeaveTypes" parameterType="LeaveTypes">
+        update leave_types
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="leaveName != null">leave_name = #{leaveName},</if>
+            <if test="description != null">description = #{description},</if>
+            <if test="createBy != null">create_by = #{createBy},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateBy != null">update_by = #{updateBy},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteLeaveTypesById" parameterType="Integer">
+        delete from leave_types where id = #{id}
+    </delete>
+
+    <delete id="deleteLeaveTypesByIds" parameterType="String">
+        delete from leave_types where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectLeaveIdByLeavName" parameterType="String" resultMap="LeaveTypesResult">
+        <include refid="selectLeaveTypesVo"/>
+        where leave_name = #{leaveName}
+    </select>
+</mapper>
