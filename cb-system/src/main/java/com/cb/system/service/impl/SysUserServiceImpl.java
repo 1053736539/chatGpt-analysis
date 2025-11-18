@@ -146,9 +146,10 @@ public class SysUserServiceImpl implements ISysUserService {
         if (StringUtils.isNotBlank(phonenumber)) {
             user.setPhonenumber(encipherService.sm4EncryptEcb( phonenumber));
         }
-        if(StringUtils.isNotBlank(user.getName())){
-            user.setDeptId(null);
-        }
+//        if(StringUtils.isNotBlank(user.getName())){
+//            user.setDeptId(null);
+//        }
+        prepareNameSearch(user);
         return userMapper.selectUserListByAdmin(user);
     }
 
@@ -161,11 +162,48 @@ public class SysUserServiceImpl implements ISysUserService {
         if (StringUtils.isNotBlank(phonenumber)) {
             user.setPhonenumber(encipherService.sm4EncryptEcb( phonenumber));
         }
-        if(StringUtils.isNotBlank(user.getName())){
-            user.setDeptId(null);
-        }
+//        if(StringUtils.isNotBlank(user.getName())){
+//            user.setDeptId(null);
+//        }
+        prepareNameSearch(user);
         return userMapper.selectDeleteUserListByAdmin(user);
     }
+
+
+    /**
+     * 准备姓名检索条件，支持汉字和拼音首字母模糊查询。
+     *
+     * @param user 用户查询参数
+     */
+    private void prepareNameSearch(SysUser user) {
+        if (StringUtils.isBlank(user.getName())) {
+            return;
+        }
+        user.setDeptId(null);
+        Map<String, Object> params = user.getParams();
+        String compactName = user.getName().replaceAll("\\s+", "");
+        if (StringUtils.isBlank(compactName)) {
+            return;
+        }
+        String pinyin = containsChinese(compactName) ? StringUtils.getPingYin(compactName) : compactName;
+        pinyin = pinyin.toLowerCase(Locale.ROOT);
+        params.put("namePinyin", pinyin);
+        params.put("namePinyinFuzzy", buildSequentialLike(pinyin));
+    }
+
+    private String buildSequentialLike(String value) {
+        StringBuilder pattern = new StringBuilder("%");
+        for (char c : value.toCharArray()) {
+            pattern.append(c).append('%');
+        }
+        return pattern.toString();
+    }
+
+    private boolean containsChinese(String value) {
+        return value.codePoints().anyMatch(codePoint -> codePoint >= 0x4E00 && codePoint <= 0x9FA5);
+    }
+
+
 
     @Override
     public int recoverUserByIds(Long[] userIds) {

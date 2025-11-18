@@ -121,4 +121,10 @@ public interface SysUserInfoChangeApplyMapper
      */
     public long countPending();
 
+    /**
+     * 查询待审批记录数
+     * @return
+     */
+    public long countReject(@Param("userId") Long userId);
+
 }

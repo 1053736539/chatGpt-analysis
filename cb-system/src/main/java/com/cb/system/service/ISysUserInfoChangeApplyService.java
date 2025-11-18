@@ -106,4 +106,10 @@ public interface ISysUserInfoChangeApplyService
      */
     public long countPending();
 
+    /**
+     * 当用户目前有被组织部驳回的修改记录
+     * @return
+     */
+    public long countReject(Long userId);
+
 }

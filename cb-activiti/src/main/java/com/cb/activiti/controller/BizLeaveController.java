@@ -47,7 +47,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-//import sun.util.resources.cldr.gv.LocaleNames_gv;
+import sun.util.resources.cldr.gv.LocaleNames_gv;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -142,7 +142,12 @@ public class BizLeaveController extends BaseController
     {
         // 填写表单时检查请假是否可请
         LeaveUtil.checkLeaveLimit(bizLeave);
-        return toAjax(bizLeaveService.insertBizLeave(bizLeave));
+        int rows = bizLeaveService.insertBizLeave(bizLeave);
+        if (rows > 0)
+        {
+            return AjaxResult.success("创建操作成功", bizLeave.getId());
+        }
+        return AjaxResult.error();
     }
 
     /**
@@ -153,7 +158,13 @@ public class BizLeaveController extends BaseController
     @PutMapping
     public AjaxResult edit(@RequestBody BizLeave bizLeave)
     {
-        return toAjax(bizLeaveService.updateBizLeave(bizLeave));
+
+        int rows = bizLeaveService.updateBizLeave(bizLeave);
+        if (rows > 0)
+        {
+            return AjaxResult.success("修改操作成功",bizLeave.getId());
+        }
+        return AjaxResult.error();
     }
 
     /**

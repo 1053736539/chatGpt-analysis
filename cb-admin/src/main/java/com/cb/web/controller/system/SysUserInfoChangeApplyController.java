@@ -1,10 +1,13 @@
 package com.cb.system.controller;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cb.common.core.domain.entity.SysUser;
 import com.cb.common.utils.SecurityUtils;
+import com.cb.common.utils.StringUtils;
 import com.cb.leave.service.ILeaveBalancesService;
 import com.cb.system.service.ISysUserService;
 import com.cb.system.vo.SysUserInfoChangeApplyVo;
@@ -184,6 +187,72 @@ public class SysUserInfoChangeApplyController extends BaseController
     public AjaxResult countPending(){
         long count = sysUserInfoChangeApplyService.countPending();
         return AjaxResult.success(count);
+    }
+
+    /**
+     * 当用户目前有被组织部驳回的修改记录
+     * @return
+     */
+    @GetMapping("/countReject")
+    public AjaxResult countReject(){
+        Long userId = SecurityUtils.getLoginUser().getUser().getUserId();
+        long count = sysUserInfoChangeApplyService.countReject(userId);
+        return AjaxResult.success(count);
+    }
+
+    /**
+     * 查询现任职务发生变动的用户信息修改申请列表
+     */
+    @GetMapping("/listCurrentPositionChanged")
+    public TableDataInfo listCurrentPositionChanged(SysUserInfoChangeApply sysUserInfoChangeApply)
+    {
+        startPage();
+        List<SysUserInfoChangeApply> list = sysUserInfoChangeApplyService.selectSysUserInfoChangeApplyList(sysUserInfoChangeApply);
+        List<SysUserInfoChangeApply> filteredList = list.stream()
+                .filter(this::currentPositionChanged)
+                .collect(Collectors.toList());
+        return getDataTable(filteredList);
+    }
+
+    /**
+     * 统计职务不匹配待审批数量
+     */
+    @GetMapping("/countPendingCurrentPositionChanged")
+    public AjaxResult countPendingCurrentPositionChanged(SysUserInfoChangeApply sysUserInfoChangeApply)
+    {
+        sysUserInfoChangeApply.setStatus("1");
+        List<SysUserInfoChangeApply> list = sysUserInfoChangeApplyService.selectSysUserInfoChangeApplyList(sysUserInfoChangeApply);
+        long count = list.stream()
+                .filter(item -> StringUtils.equals("1", item.getStatus()))
+                .filter(this::currentPositionChanged)
+                .count();
+        return AjaxResult.success(count);
+    }
+
+
+    private boolean currentPositionChanged(SysUserInfoChangeApply item)
+    {
+        String beforePosition = extractCurrentPosition(item.getBeforeData());
+        String afterPosition = extractCurrentPosition(item.getAfterData());
+        return !Objects.equals(beforePosition, afterPosition);
+    }
+
+    private String extractCurrentPosition(String data)
+    {
+        if (StringUtils.isBlank(data))
+        {
+            return null;
+        }
+        try
+        {
+            SysUser sysUser = JSONObject.parseObject(data, SysUser.class);
+            return sysUser == null ? null : sysUser.getCurrentPosition();
+        }
+        catch (Exception e)
+        {
+            log.error("解析用户信息时出现异常: {}", e.getMessage());
+            return null;
+        }
     }
 
 }

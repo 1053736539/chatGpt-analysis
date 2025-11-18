@@ -199,4 +199,9 @@
         where status = '1'
     </select>
 
+    <select id="countReject" resultType="long">
+        select count(1) from sys_user_info_change_apply
+        where status = '3'  AND  user_id = #{userId}
+    </select>
+
 </mapper>

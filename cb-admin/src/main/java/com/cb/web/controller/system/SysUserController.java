@@ -94,7 +94,7 @@ public class SysUserController extends BaseController {
     private SysUserRoleMapper userRoleMapper;
 
     @Autowired
-    private ILeaveBalancesService  leaveBalancesService;
+    private ILeaveBalancesService leaveBalancesService;
 
     @Autowired
     private ISysUserInfoChangeLogService sysUserInfoChangeLogService;
@@ -117,18 +117,18 @@ public class SysUserController extends BaseController {
      * 设置教育学历信息
      * @param list
      */
-    private void setEduInfo(List<SysUser> list){
+    private void setEduInfo(List<SysUser> list) {
         //设置学历信息
         List<Long> userIds = list.stream().map(o -> o.getUserId()).collect(Collectors.toList());
         Map<Long, List<SysUserEducationAndDegreeInfo>> userIdEduMap = userService.selectEducationAndDegreeInfoByUserIds(userIds)
                 .stream().collect(Collectors.groupingBy(SysUserEducationAndDegreeInfo::getUserId));
-        list.forEach(o->{
+        list.forEach(o -> {
             List<SysUserEducationAndDegreeInfo> eduList = userIdEduMap.get(o.getUserId());
-            if(null == eduList){
+            if (null == eduList) {
                 o.setEducationAndDegreeInfos(Collections.emptyList());
             } else {
-                eduList.forEach(i->{
-                    if(null == i.getCompletionDate()){
+                eduList.forEach(i -> {
+                    if (null == i.getCompletionDate()) {
                         i.setCompletionDate("");
                     }
                 });
@@ -180,11 +180,11 @@ public class SysUserController extends BaseController {
      * @return
      */
     @GetMapping("/removeLiaisonRole")
-    public AjaxResult removeLiaisonRole(String userIds){
-        if(StringUtils.isBlank(userIds)){
+    public AjaxResult removeLiaisonRole(String userIds) {
+        if (StringUtils.isBlank(userIds)) {
             return AjaxResult.error("参数不能为空");
         }
-        try{
+        try {
             String roleKey = "liaison_role";
             SysRole role = roleService.selectRoleByKey(roleKey);
             String[] split = userIds.split(",");
@@ -192,8 +192,8 @@ public class SysUserController extends BaseController {
             for (int i = 0; i < split.length; i++) {
                 userIdArr[i] = Long.valueOf(split[i]);
             }
-            userRoleMapper.deleteUserRoleInfos(role.getRoleId(),userIdArr);
-        } catch (Exception e){
+            userRoleMapper.deleteUserRoleInfos(role.getRoleId(), userIdArr);
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -206,11 +206,11 @@ public class SysUserController extends BaseController {
      * @return
      */
     @GetMapping("/addLiaisonRole")
-    public AjaxResult addLiaisonRole(String userIds){
-        if(StringUtils.isBlank(userIds)){
+    public AjaxResult addLiaisonRole(String userIds) {
+        if (StringUtils.isBlank(userIds)) {
             return AjaxResult.error("参数不能为空");
         }
-        try{
+        try {
             String roleKey = "liaison_role";
             SysRole role = roleService.selectRoleByKey(roleKey);
             List<SysUserRole> userRoles = Arrays.stream(userIds.split(",")).map(userId -> {
@@ -221,7 +221,7 @@ public class SysUserController extends BaseController {
             }).collect(Collectors.toList());
 
             userRoleMapper.batchUserRole(userRoles);
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -235,7 +235,7 @@ public class SysUserController extends BaseController {
      */
     @PreAuthorize("@ss.hasPermi('system:user:list')")
     @GetMapping("/listCadre")
-    public TableDataInfo listCadre(SysUser user){
+    public TableDataInfo listCadre(SysUser user) {
         startPage();
         List<SysUser> list = userService.listCadre(user);
         return getDataTable(list);
@@ -277,7 +277,7 @@ public class SysUserController extends BaseController {
     public void exportLrmx(String ids, HttpServletResponse response) throws IOException {
         String[] idList = ids.split(",");
         List<Long> userIds = new ArrayList<>();
-        for(String id : idList) {
+        for (String id : idList) {
             userIds.add(Long.parseLong(id));
         }
         List<SysUser> list = userService.selectUserListByUserIds(userIds);
@@ -286,7 +286,7 @@ public class SysUserController extends BaseController {
         response.reset();
         response.addHeader("Access-Control-Allow-Origin", "*");
         response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
-        response.setHeader("Content-Disposition", "attachment; filename=\""+ URLEncoder.encode("人事任免表","utf-8") +".zip\"");
+        response.setHeader("Content-Disposition", "attachment; filename=\"" + URLEncoder.encode("人事任免表", "utf-8") + ".zip\"");
         response.addHeader("Content-Length", "" + data.length);
         response.setContentType("application/octet-stream; charset=UTF-8");
         IOUtils.write(data, response.getOutputStream());
@@ -371,13 +371,13 @@ public class SysUserController extends BaseController {
         AjaxResult ajax = AjaxResult.success();
         long startTime = System.currentTimeMillis();
         List<SysRole> roles = roleService.selectRoleAll();
-        if(commonConfigService.selectThreeMemberSwitch()){
-            if(SysUser.isAdmin(userId) || SysUser.isSecAdmin(userId) || SysUser.isAudAdmin(userId)){
-                ajax.put("roles", roles.stream().filter(r -> r.isAdmin() || r.isSecAdmin() || r.isAudAdmin() ).collect(Collectors.toList()));
-            }else{
+        if (commonConfigService.selectThreeMemberSwitch()) {
+            if (SysUser.isAdmin(userId) || SysUser.isSecAdmin(userId) || SysUser.isAudAdmin(userId)) {
+                ajax.put("roles", roles.stream().filter(r -> r.isAdmin() || r.isSecAdmin() || r.isAudAdmin()).collect(Collectors.toList()));
+            } else {
                 ajax.put("roles", roles.stream().filter(r -> !r.isAdmin() && !r.isSecAdmin() && !r.isAudAdmin()).collect(Collectors.toList()));
             }
-        }else {
+        } else {
             ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         }
         ajax.put("posts", postService.selectPostAll());
@@ -400,7 +400,7 @@ public class SysUserController extends BaseController {
             ajax.put("currentPostInfos", userService.selectCurrentPostInfoByUserId(userId));
             ajax.put("grassrootsWorkInfos", userService.selectGrassrootsWorkInfoByUserId(userId));
             ajax.put("secondmentWorkInfos", userService.selectSecondmentWorkInfoByUserId(userId));
-            ajax.put("sysUserInfoChangeLog",sysUserInfoChangeLogService.selectSysUserInfoChangeLogById(userId));
+            ajax.put("sysUserInfoChangeLog", sysUserInfoChangeLogService.selectSysUserInfoChangeLogById(userId));
         }
         long endTime = System.currentTimeMillis();
         long elapsedTime = endTime - startTime;
@@ -408,14 +408,14 @@ public class SysUserController extends BaseController {
         return ajax;
     }
 
-//   根据用户id获取用户信息
+    //   根据用户id获取用户信息
     @GetMapping("/getUserInfoByUserId/{userId}")
     public AjaxResult getUserInfoByUserId(@PathVariable("userId") Long userId) {
         SysUser user = userService.selectUserByUserId(userId);
         return AjaxResult.success(user);
     }
 
-//    根据用户id修改用户信息，接收的参数是：userId,positionShort
+    //    根据用户id修改用户信息，接收的参数是：userId,positionShort
     @PutMapping("/updateUserInfoByUserId")
     public AjaxResult updateUserInfoByUserId(Long userId, String positionShort) {
         if (StringUtils.isNotEmpty(positionShort)) {
@@ -424,7 +424,7 @@ public class SysUserController extends BaseController {
             if (sysUser == null) {
                 return AjaxResult.error("用户不存在");
             }
-            userService.updateUserByUserId(userId,positionShort);
+            userService.updateUserByUserId(userId, positionShort);
             return AjaxResult.success();
         } else {
             return AjaxResult.error();
@@ -449,29 +449,29 @@ public class SysUserController extends BaseController {
         }
         user.setCreateBy(SecurityUtils.getUsername());
         user.setPassword(SecurityUtils.encryptPassword(user.getPassword()));
-        if(StringUtils.isNotEmpty(user.getBirthday())){
-            user.setBirthday(DateUtils.dateStdFormat(user.getBirthday(),true,"yyyy-MM-dd"));
+        if (StringUtils.isNotEmpty(user.getBirthday())) {
+            user.setBirthday(DateUtils.dateStdFormat(user.getBirthday(), true, "yyyy-MM-dd"));
         }
-        if(StringUtils.isNotEmpty(user.getWorkTitleTime())){
-            user.setBirthday(DateUtils.dateStdFormat(user.getWorkTitleTime(),true,"yyyy-MM-dd"));
+        if (StringUtils.isNotEmpty(user.getWorkTitleTime())) {
+            user.setBirthday(DateUtils.dateStdFormat(user.getWorkTitleTime(), true, "yyyy-MM-dd"));
         }
 
-        if(StringUtils.isNotEmpty(user.getPartyJoinTime())){
-            user.setPartyJoinTime(DateUtils.dateStdFormat(user.getPartyJoinTime(),true,"yyyy-MM-dd"));
+        if (StringUtils.isNotEmpty(user.getPartyJoinTime())) {
+            user.setPartyJoinTime(DateUtils.dateStdFormat(user.getPartyJoinTime(), true, "yyyy-MM-dd"));
         }
-        if(StringUtils.isNotEmpty(user.getStartWorkTime())){
-            user.setStartWorkTime(DateUtils.dateStdFormat(user.getStartWorkTime(),true,"yyyy-MM-dd"));
+        if (StringUtils.isNotEmpty(user.getStartWorkTime())) {
+            user.setStartWorkTime(DateUtils.dateStdFormat(user.getStartWorkTime(), true, "yyyy-MM-dd"));
         }
         //设置多部门及职务
         List<UserDeptPost> userDeptPostList = user.getUserDeptPostList();
-        if(userDeptPostList == null || userDeptPostList.size() < 1) {
+        if (userDeptPostList == null || userDeptPostList.size() < 1) {
             UserDeptPost userDeptPost = new UserDeptPost();
             userDeptPost.setDeptId(user.getDeptId());
             user.setUserDeptPostList(Collections.singletonList(userDeptPost));
         }
 
         int rst = userService.insertUser(user);
-        if(rst > 0) {
+        if (rst > 0) {
             // 成功添加用户后，根据工作年限添加年休假
             try {
                 leaveBalancesService.addAnnualLeaveForUser(user);
@@ -479,10 +479,10 @@ public class SysUserController extends BaseController {
                 return AjaxResult.error("新增用户成功，但年休假添加失败：" + e.getMessage());
             }
             Map<String, Object> params = user.getParams();
-            if(params != null && params.get("oaUserId") != null) {
-                String oaUserId = (String)params.get("oaUserId");
+            if (params != null && params.get("oaUserId") != null) {
+                String oaUserId = (String) params.get("oaUserId");
                 SysUserOut oaUser = sysUserOutService.selectSysUserOutById(oaUserId);
-                if(oaUser != null) {
+                if (oaUser != null) {
                     oaUser.setUserId(user.getUserId());
                     sysUserOutService.updateSysUserOut(oaUser);
                 }
@@ -508,14 +508,14 @@ public class SysUserController extends BaseController {
         }
         user.setUpdateBy(SecurityUtils.getUsername());
         // 更新用户信息
-        if(StringUtils.isNotEmpty(user.getBirthday())){
-            user.setBirthday(DateUtils.dateStdFormat(user.getBirthday(),true,"yyyy-MM-dd"));
+        if (StringUtils.isNotEmpty(user.getBirthday())) {
+            user.setBirthday(DateUtils.dateStdFormat(user.getBirthday(), true, "yyyy-MM-dd"));
         }
-        if(StringUtils.isNotEmpty(user.getPartyJoinTime())){
-            user.setPartyJoinTime(DateUtils.dateStdFormat(user.getPartyJoinTime(),true,"yyyy-MM-dd"));
+        if (StringUtils.isNotEmpty(user.getPartyJoinTime())) {
+            user.setPartyJoinTime(DateUtils.dateStdFormat(user.getPartyJoinTime(), true, "yyyy-MM-dd"));
         }
-        if(StringUtils.isNotEmpty(user.getStartWorkTime())){
-            user.setStartWorkTime(DateUtils.dateStdFormat(user.getStartWorkTime(),true,"yyyy-MM-dd"));
+        if (StringUtils.isNotEmpty(user.getStartWorkTime())) {
+            user.setStartWorkTime(DateUtils.dateStdFormat(user.getStartWorkTime(), true, "yyyy-MM-dd"));
         }
         int result = userService.updateUser(user);
         if (result > 0) {
@@ -581,20 +581,171 @@ public class SysUserController extends BaseController {
 //        return toAjax(result);
 
         List<SysUserInfoChangeApply> existNoPassList = sysUserInfoChangeApplyService.selectUserNoPassList(user.getUserId());
-        if(ObjectUtil.isNotEmpty(existNoPassList)){
+        if (ObjectUtil.isNotEmpty(existNoPassList)) {
             return AjaxResult.error("您尚有待审批或被审批驳回的信息修改记录，不允许发起新的申请!");
         }
-        // 改为先保存到修改申请里，审核通过后修改
         Long userId = user.getUserId();
-        List<UserDeptPost> userDeptPostList = userDeptPostService.selectByUserId(userId);
         SysUser beforeData = userService.selectUserById(userId);
-        beforeData.setUserDeptPostList(userDeptPostList);
-        SysUserInfoChangeApply infoChangeApply = new SysUserInfoChangeApply();
-        infoChangeApply.setUserId(userId);
-        infoChangeApply.setBeforeData(JSON.toJSONString(beforeData));
-        infoChangeApply.setAfterData(JSON.toJSONString(user));
-        sysUserInfoChangeApplyService.insertSysUserInfoChangeApply(infoChangeApply);
-        return AjaxResult.success();
+        // 修改记录标识
+        boolean updateFlag = getUpdateFlag(user, beforeData);
+      // 对比原来的内容只修改了家属成员信息，则不需要走审核直接修改成功
+        if (updateFlag) {
+            // 改为先保存到修改申请里，审核通过后修改
+            List<UserDeptPost> userDeptPostList = userDeptPostService.selectByUserId(userId);
+            beforeData.setUserDeptPostList(userDeptPostList);
+            SysUserInfoChangeApply infoChangeApply = new SysUserInfoChangeApply();
+            infoChangeApply.setUserId(userId);
+            infoChangeApply.setBeforeData(JSON.toJSONString(beforeData));
+            infoChangeApply.setAfterData(JSON.toJSONString(user));
+            sysUserInfoChangeApplyService.insertSysUserInfoChangeApply(infoChangeApply);
+            return AjaxResult.success();
+        } else {
+            userService.updateUser(user);
+            return AjaxResult.success();
+        }
+    }
+
+    private boolean getUpdateFlag(SysUser user, SysUser beforeData) {
+        boolean updateFlag = false;
+        if (user != null && beforeData != null) {
+            if (!Objects.equals(user.getIdentityType(), beforeData.getIdentityType())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getIsMainLeader(), beforeData.getIsMainLeader())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getIsHostingWork(), beforeData.getIsHostingWork())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getName(), beforeData.getName())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getSex(), beforeData.getSex())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getBirthday(), beforeData.getBirthday())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getAvatar(), beforeData.getAvatar())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getNation(), beforeData.getNation())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getNativePlace(), beforeData.getNativePlace())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getBirthPlace(), beforeData.getBirthPlace())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getPartyJoinTime(), beforeData.getPartyJoinTime())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getStartWorkTime(), beforeData.getStartWorkTime())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getHealthCondition(), beforeData.getHealthCondition())) {
+                updateFlag = true;
+            }
+            if (!Objects.equals(user.getProfessionalDuty(), beforeData.getProfessionalDuty())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getSpeciality(), beforeData.getSpeciality())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getFullTimeEducationLevel(), beforeData.getFullTimeEducationLevel())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getFullTimeEducationSchoolAndMajor(), beforeData.getFullTimeEducationSchoolAndMajor())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getOnJobEducationLevel(), beforeData.getOnJobEducationLevel())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getOnJobEducationSchoolAndMajor(), beforeData.getOnJobEducationSchoolAndMajor())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getCurrentPosition(), beforeData.getCurrentPosition())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getProposedAppointmentPosition(), beforeData.getProposedAppointmentPosition())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getProposedRemovalPosition(), beforeData.getProposedRemovalPosition())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getResumeJsonArray(), beforeData.getResumeJsonArray())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getRewardAndPunishment(), beforeData.getRewardAndPunishment())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getAnnualAssessment(), beforeData.getAnnualAssessment())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getReasonForAppointmentOrRemoval(), beforeData.getReasonForAppointmentOrRemoval())) {
+                updateFlag = true;
+            }
+
+            if (!Objects.equals(user.getDeptId(), beforeData.getDeptId())) {
+                updateFlag = true;
+            }
+
+            if (user.getPostIds() == beforeData.getPostIds()) {
+                return true;
+            }
+
+            if (!areLongArraysEqual(user.getPostIds(), beforeData.getPostIds())) {
+                updateFlag = true;
+            }
+        }
+        return updateFlag;
+    }
+
+    public static boolean areLongArraysEqual(Long[] arr1, Long[] arr2) {
+
+        // 如果两个引用相同
+        if (arr1 == arr2) {
+            return true;
+        }
+
+        if ( (arr1 == null || arr1.length == 0) && (arr2 == null || arr2.length == 0)){
+            return true;
+        }
+
+        // 如果有一个为 null
+        if (arr1 == null || arr2 == null) {
+            return false;
+        }
+
+        // 如果长度不同
+        if (arr1.length != arr2.length) {
+            return false;
+        }
+
+        // 逐个比较元素
+        for (int i = 0; i < arr1.length; i++) {
+            if (!Objects.equals(arr1[i], arr2[i])) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**
@@ -620,7 +771,7 @@ public class SysUserController extends BaseController {
         user.setUpdateBy(SecurityUtils.getUsername());
         int i = userService.resetPwd(user);
         user = userService.selectUserById(user.getUserId());
-        if( i> 0){
+        if (i > 0) {
             redisCache.deleteObject(Constants.LOGIN_LOCK_KEY + user.getUserName());
         }
         return toAjax(i);
@@ -679,19 +830,18 @@ public class SysUserController extends BaseController {
     @GetMapping("/userSelectorList")
     public AjaxResult userSelectorList(SysUser user) {
         List<SysUser> list = userService.userSelectorList(user);
-        return AjaxResult.success("成功",list);
+        return AjaxResult.success("成功", list);
     }
 
     /**
      * @Auther: yangcd
      * @Date: 2023/11/2 17:50
-     * @param user
      * @Description: 查询用户信息
      */
     @GetMapping("/selectorUserList")
     public AjaxResult selectorUserList(SysUser user) {
         List<SysUser> list = userService.selectorUserList(user);
-        return AjaxResult.success("成功",list);
+        return AjaxResult.success("成功", list);
     }
 
     /**
@@ -707,17 +857,17 @@ public class SysUserController extends BaseController {
         return getDataTable(list);
     }
 
-    @GetMapping( "/info/{userId}")
+    @GetMapping("/info/{userId}")
     public AjaxResult getUserInfo(@PathVariable(value = "userId", required = false) Long userId) {
         AjaxResult ajax = AjaxResult.success();
         List<SysRole> roles = roleService.selectRoleAll();
-        if(commonConfigService.selectThreeMemberSwitch()){
-            if(SysUser.isAdmin(userId) || SysUser.isSecAdmin(userId) || SysUser.isAudAdmin(userId)){
-                ajax.put("roles", roles.stream().filter(r -> r.isAdmin() || r.isSecAdmin() || r.isAudAdmin() ).collect(Collectors.toList()));
-            }else{
+        if (commonConfigService.selectThreeMemberSwitch()) {
+            if (SysUser.isAdmin(userId) || SysUser.isSecAdmin(userId) || SysUser.isAudAdmin(userId)) {
+                ajax.put("roles", roles.stream().filter(r -> r.isAdmin() || r.isSecAdmin() || r.isAudAdmin()).collect(Collectors.toList()));
+            } else {
                 ajax.put("roles", roles.stream().filter(r -> !r.isAdmin() && !r.isSecAdmin() && !r.isAudAdmin()).collect(Collectors.toList()));
             }
-        }else {
+        } else {
             ajax.put("roles", SysUser.isAdmin(userId) ? roles : roles.stream().filter(r -> !r.isAdmin()).collect(Collectors.toList()));
         }
         ajax.put("posts", postService.selectPostAll());
@@ -738,7 +888,7 @@ public class SysUserController extends BaseController {
         }
         return ajax;
     }
-    @GetMapping( "/info/selectRewardsAndPenaltiesInfoByUserId")
+    @GetMapping("/info/selectRewardsAndPenaltiesInfoByUserId")
     public AjaxResult selectRewardsAndPenaltiesInfoByUserId(Long userId) {
         return AjaxResult.success(userService.selectRewardsAndPenaltiesInfoByUserId(userId));
     }
@@ -793,9 +943,9 @@ public class SysUserController extends BaseController {
         JSONArray deptIdList = params.getJSONArray("deptIdList");
         startPage();
         StringBuffer sb = new StringBuffer();
-        for(int i=0,len=expList.size();i<len;i++) {
+        for (int i = 0, len = expList.size(); i < len; i++) {
             JSONObject exp = expList.getJSONObject(i);
-            if(exp.containsKey("l")) {
+            if (exp.containsKey("l")) {
                 sb.append(exp.getString("l"));
             }
             String column = exp.getString("c");
@@ -803,33 +953,33 @@ public class SysUserController extends BaseController {
             String op = exp.getString("o");
             String strVal = "";
             Object value = exp.get("v");
-            if(value != null) {
-                if(value instanceof String) {
-                    strVal = (String)value;
-                } else if(value instanceof List) {
-                    List valList = (List)value;
-                    for(Object o : valList) {
-                        if(strVal.length() > 0) {
+            if (value != null) {
+                if (value instanceof String) {
+                    strVal = (String) value;
+                } else if (value instanceof List) {
+                    List valList = (List) value;
+                    for (Object o : valList) {
+                        if (strVal.length() > 0) {
                             strVal += ",";
                         }
-                        strVal += "'" + (String)o + "'";
+                        strVal += "'" + (String) o + "'";
                     }
                 }
             }
             op = op.replaceAll("\\{c\\}", column);
             op = op.replaceAll("\\{v\\}", strVal);
             sb.append(op);
-            if(exp.containsKey("r")) {
+            if (exp.containsKey("r")) {
                 sb.append(exp.getString("r"));
             }
             String lo = exp.getString("lo");
-            if(StringUtils.isNotEmpty(lo)) {
+            if (StringUtils.isNotEmpty(lo)) {
                 sb.append(lo);
             }
         }
         List<Long> deptIds = new ArrayList<>();
-        if(deptIdList != null && deptIdList.size() > 0) {
-            for(int i=0,len=deptIdList.size();i<len;i++) {
+        if (deptIdList != null && deptIdList.size() > 0) {
+            for (int i = 0, len = deptIdList.size(); i < len; i++) {
                 deptIds.add(deptIdList.getLongValue(i));
             }
         }
@@ -873,7 +1023,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/vSysUserList")
     public AjaxResult vSysUserList(VSysUser user) {
         List<VSysUser> list = userService.selectVSysUserList(user);
-        return AjaxResult.success("成功",list);
+        return AjaxResult.success("成功", list);
     }
 
     /**
@@ -885,7 +1035,7 @@ public class SysUserController extends BaseController {
     @GetMapping("/vSysUserListByRoles")
     public AjaxResult vSysUserListByRoles(VSysUser user) {
         List<VSysUser> list = userService.selectVSysUserListByRoles(user);
-        return AjaxResult.success("成功",list);
+        return AjaxResult.success("成功", list);
     }
 
     /**
@@ -894,17 +1044,17 @@ public class SysUserController extends BaseController {
      * @param response
      */
     @GetMapping("/downloadWordTpl")
-    public void downloadWordTpl(HttpServletRequest request, HttpServletResponse response){
-        try{
+    public void downloadWordTpl(HttpServletRequest request, HttpServletResponse response) {
+        try {
             ClassPathResource classPathResource = new ClassPathResource("static/word/kj-word-user-tpl.docx");
             InputStream is = classPathResource.getInputStream();
             response.addHeader("Access-Control-Allow-Origin", "*");
             response.addHeader("Access-Control-Expose-Headers", "Content-Disposition");
             String fileName = "干部任免审批表导入模板.docx";
-            response.setHeader("Content-Disposition", "attachment; filename=\""+ URLEncoder.encode(fileName,"utf-8") +"\"");
+            response.setHeader("Content-Disposition", "attachment; filename=\"" + URLEncoder.encode(fileName, "utf-8") + "\"");
             response.setContentType("application/octet-stream; charset=UTF-8");
             IOUtils.copy(is, response.getOutputStream());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
@@ -916,7 +1066,7 @@ public class SysUserController extends BaseController {
      * @return
      */
     @PostMapping("/importUserByWord")
-    public AjaxResult importUserByWord(HttpServletRequest request, HttpServletResponse response,Long deptId) {
+    public AjaxResult importUserByWord(HttpServletRequest request, HttpServletResponse response, Long deptId) {
         if (request instanceof MultipartHttpServletRequest) {
             String path = RuoYiConfig.getUploadPath() + "/importZip/";
             File folder = new File(path);
@@ -948,29 +1098,29 @@ public class SysUserController extends BaseController {
             final String userName = SecurityUtils.getUsername();
             redisCache.setCacheMapValue(importId, "totalRecord", fileList.size());
             CompletableFuture.runAsync(() -> {
-                try{
+                try {
                     WordImportContextHolder.setImportId(importId);
                     WordImportContextHolder.setUserName(userName);
                     long total = 0;
-                    Map<String,String> errFileMap = new LinkedHashMap<>();
+                    Map<String, String> errFileMap = new LinkedHashMap<>();
                     for (int i = 0; i < fileList.size(); i++) {
                         File file = fileList.get(i);
                         String fileName = file.getName();
-                        try{
+                        try {
                             WordUserVo wordUserVo = WordImportUtil.readUserByWord(file);
                             wordUserVo.setDeptId(deptId);
                             int num = userService.importWordUser(wordUserVo);
                             total += num;
-                        } catch (Exception e){
+                        } catch (Exception e) {
                             errFileMap.put(fileName, e.getMessage());
                         } finally {
-                            if(null != file && file.exists()){
+                            if (null != file && file.exists()) {
                                 file.delete();
                             }
                         }
 
                     }
-                    if(errFileMap.isEmpty()){
+                    if (errFileMap.isEmpty()) {
                         redisCache.setCacheMapValue(importId, "success", String.format("操作成功。共导入 %d 条数据", total));
                     } else {
                         StringBuilder sb = new StringBuilder();
@@ -978,12 +1128,12 @@ public class SysUserController extends BaseController {
                         sb.append("以下文件导入失败!<br/>");
                         Iterator<Map.Entry<String, String>> it = errFileMap.entrySet().iterator();
                         int i = 1;
-                        while (it.hasNext()){
+                        while (it.hasNext()) {
                             Map.Entry<String, String> entry = it.next();
                             sb.append(String.format("%d.文件名：%s。失败原因：%s<br/>", i, entry.getKey(), entry.getValue()));
                             i++;
                         }
-                        redisCache.setCacheMapValue(importId, "error",sb.toString());
+                        redisCache.setCacheMapValue(importId, "error", sb.toString());
                     }
                 } finally {
                     WordImportContextHolder.clear();
@@ -1002,18 +1152,18 @@ public class SysUserController extends BaseController {
      * @param userIds
      */
     @GetMapping("/exportUserWord")
-    public void exportUserWord(HttpServletRequest request,HttpServletResponse response, Long[] userIds) {
-        if(ObjectUtil.isEmpty(userIds)){
+    public void exportUserWord(HttpServletRequest request, HttpServletResponse response, Long[] userIds) {
+        if (ObjectUtil.isEmpty(userIds)) {
             throw new IllegalArgumentException("请选择要导出的用户");
         }
         ServletOutputStream outputStream;
-        try{
+        try {
             outputStream = response.getOutputStream();
             List<SysUser> userList = userService.selectUserListByUserIds(Arrays.asList(userIds));
-            if(ObjectUtil.isEmpty(userList)){
+            if (ObjectUtil.isEmpty(userList)) {
                 throw new IllegalArgumentException("未获取到用户信息！");
             }
-            if(userList.size() == 1){
+            if (userList.size() == 1) {
                 SysUser user = userList.get(0);
                 Long userId = user.getUserId();
                 String name = user.getName();
@@ -1023,7 +1173,7 @@ public class SysUserController extends BaseController {
                 WordImportUtil.writeUserToWord(user, outputStream);
             } else {
                 response.setContentType("application/zip");
-                response.setHeader("Content-Disposition","attachment; filename=\"" + URLEncoder.encode("用户任免审批表导出","utf-8") +".zip\"");
+                response.setHeader("Content-Disposition", "attachment; filename=\"" + URLEncoder.encode("用户任免审批表导出", "utf-8") + ".zip\"");
                 ZipOutputStream zos = new ZipOutputStream(outputStream);
                 for (int i = 0; i < userList.size(); i++) {
                     SysUser user = userList.get(i);
@@ -1038,7 +1188,7 @@ public class SysUserController extends BaseController {
                 }
                 zos.close();
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             throw new RuntimeException("用户信息导出为word异常！" + e.getMessage());
         }

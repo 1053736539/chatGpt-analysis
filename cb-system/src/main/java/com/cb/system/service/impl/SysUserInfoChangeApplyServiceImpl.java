@@ -215,4 +215,9 @@ public class SysUserInfoChangeApplyServiceImpl implements ISysUserInfoChangeAppl
     public long countPending() {
         return sysUserInfoChangeApplyMapper.countPending();
     }
+
+    @Override
+    public long countReject(Long userId) {
+        return sysUserInfoChangeApplyMapper.countReject(userId);
+    }
 }
