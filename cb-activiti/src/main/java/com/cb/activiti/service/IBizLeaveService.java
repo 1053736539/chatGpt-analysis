@@ -104,4 +104,12 @@ public interface IBizLeaveService
      * @return
      */
     List<BizLeave> selectPassedBizLeaveList(BizLeave bizLeave);
+
+
+    /**
+     * 根据关键词查询请假列表
+     * @param bizLeave 请假
+     * @return 请假集合
+     */
+    List<BizLeave> searchBizLeaveList(BizLeave bizLeave);
 }

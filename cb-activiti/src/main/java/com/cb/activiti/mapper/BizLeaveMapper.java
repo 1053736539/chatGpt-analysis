@@ -93,4 +93,13 @@ public interface BizLeaveMapper
      * @return
      */
     List<BizLeave> exportBizLeaveData(Map<String, Object> params);
+
+
+    /**
+     * 关键词查询请假列表
+     * @param bizLeave
+     * @return 请假集合
+     */
+    List<BizLeave> searchBizLeaveList(BizLeave bizLeave);
+
 }

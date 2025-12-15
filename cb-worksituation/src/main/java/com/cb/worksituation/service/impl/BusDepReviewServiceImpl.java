@@ -1,5 +1,10 @@
 package com.cb.worksituation.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.cb.common.core.domain.AjaxResult;
 import com.cb.common.core.domain.entity.SysDept;
 import com.cb.common.core.domain.model.LoginUser;
@@ -21,6 +26,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -153,93 +159,79 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService {
      */
     @Override
     public AjaxResult updateBusDepReview(BusDepReview busDepReview) {
-        if (isEdit(busDepReview.getId())) {
-            return AjaxResult.error("该评分表已进行填报，不允许修改状态");
-        }
         if ("1".equals(busDepReview.getBusStatus())) {
             List<BusDepReviewData> busDepReviewDataList = new ArrayList<>();
             BusDepReview depReview = busDepReviewMapper.selectBusDepReviewById(busDepReview.getId());
-            if ("1".equals(depReview.getDivisionDept())) {
-                for (String deptNmae : DESP_LIST_ONE) {
-                    BusDepReviewData busDepReviewData = new BusDepReviewData();
-                    busDepReviewData.setId(IdUtils.randomUUID());
-                    busDepReviewData.setBusDepReviewId(depReview.getId());
-                    busDepReviewData.setEvaluatTarget(deptNmae);
-                    busDepReviewData.setDataStatus("1");
-                    busDepReviewDataList.add(busDepReviewData);
+            List<BusDepReviewData> busDepReviewDatas = busDepReviewDataMapper.selectDataBusDepReviewDataByReviewId(busDepReview.getId());
+            if (CollectionUtils.isEmpty(busDepReviewDatas)) {
+                if ("1".equals(depReview.getDivisionDept())) {
+                    for (String deptNmae : DESP_LIST_ONE) {
+                        BusDepReviewData busDepReviewData = new BusDepReviewData();
+                        busDepReviewData.setId(IdUtils.randomUUID());
+                        busDepReviewData.setBusDepReviewId(depReview.getId());
+                        busDepReviewData.setEvaluatTarget(deptNmae);
+                        busDepReviewData.setDataStatus("1");
+                        busDepReviewDataList.add(busDepReviewData);
+                    }
+                    // 2 委机关监督检查室 1-7
+                } else if ("2".equals(depReview.getDivisionDept())) {
+                    for (String deptNmae : DESP_LIST_TWO) {
+                        BusDepReviewData busDepReviewData = new BusDepReviewData();
+                        busDepReviewData.setId(IdUtils.randomUUID());
+                        busDepReviewData.setBusDepReviewId(depReview.getId());
+                        busDepReviewData.setEvaluatTarget(deptNmae);
+                        busDepReviewData.setDataStatus("1");
+                        busDepReviewDataList.add(busDepReviewData);
+                    }
+                    // 3 委机关审查调查室
+                } else if ("3".equals(depReview.getDivisionDept())) {
+                    for (String deptNmae : DESP_LIST_THREE) {
+                        BusDepReviewData busDepReviewData = new BusDepReviewData();
+                        busDepReviewData.setId(IdUtils.randomUUID());
+                        busDepReviewData.setBusDepReviewId(depReview.getId());
+                        busDepReviewData.setEvaluatTarget(deptNmae);
+                        busDepReviewData.setDataStatus("1");
+                        busDepReviewDataList.add(busDepReviewData);
+                    }
+                    // 4 委机关综合业务部门
+                } else if ("4".equals(depReview.getDivisionDept())) {
+                    for (String deptNmae : DESP_LIST_FOUR) {
+                        BusDepReviewData busDepReviewData = new BusDepReviewData();
+                        busDepReviewData.setId(IdUtils.randomUUID());
+                        busDepReviewData.setBusDepReviewId(depReview.getId());
+                        busDepReviewData.setEvaluatTarget(deptNmae);
+                        busDepReviewData.setDataStatus("1");
+                        busDepReviewDataList.add(busDepReviewData);
+                    }
+                    // 5 开发（度假）园区
+                } else if ("5".equals(depReview.getDivisionDept())) {
+                    for (String deptNmae : DESP_LIST_FIVE) {
+                        BusDepReviewData busDepReviewData = new BusDepReviewData();
+                        busDepReviewData.setId(IdUtils.randomUUID());
+                        busDepReviewData.setBusDepReviewId(depReview.getId());
+                        busDepReviewData.setEvaluatTarget(deptNmae);
+                        busDepReviewData.setDataStatus("1");
+                        busDepReviewDataList.add(busDepReviewData);
+                    }
+                    // 6 纪检监察组
+                } else if ("6".equals(depReview.getDivisionDept())) {
+                    for (String deptNmae : DESP_LIST_SEVEV) {
+                        BusDepReviewData busDepReviewData = new BusDepReviewData();
+                        busDepReviewData.setId(IdUtils.randomUUID());
+                        busDepReviewData.setBusDepReviewId(depReview.getId());
+                        busDepReviewData.setEvaluatTarget(deptNmae);
+                        busDepReviewData.setDataStatus("1");
+                        busDepReviewDataList.add(busDepReviewData);
+                    }
                 }
-                // 2 委机关监督检查室 1-7
-            } else if ("2".equals(depReview.getDivisionDept())) {
-                for (String deptNmae : DESP_LIST_TWO) {
-                    BusDepReviewData busDepReviewData = new BusDepReviewData();
-                    busDepReviewData.setId(IdUtils.randomUUID());
-                    busDepReviewData.setBusDepReviewId(depReview.getId());
-                    busDepReviewData.setEvaluatTarget(deptNmae);
-                    busDepReviewData.setDataStatus("1");
-                    busDepReviewDataList.add(busDepReviewData);
-                }
-                // 3 委机关审查调查室
-            } else if ("3".equals(depReview.getDivisionDept())) {
-                for (String deptNmae : DESP_LIST_THREE) {
-                    BusDepReviewData busDepReviewData = new BusDepReviewData();
-                    busDepReviewData.setId(IdUtils.randomUUID());
-                    busDepReviewData.setBusDepReviewId(depReview.getId());
-                    busDepReviewData.setEvaluatTarget(deptNmae);
-                    busDepReviewData.setDataStatus("1");
-                    busDepReviewDataList.add(busDepReviewData);
-                }
-                // 4 委机关综合业务部门
-            } else if ("4".equals(depReview.getDivisionDept())) {
-                for (String deptNmae : DESP_LIST_FOUR) {
-                    BusDepReviewData busDepReviewData = new BusDepReviewData();
-                    busDepReviewData.setId(IdUtils.randomUUID());
-                    busDepReviewData.setBusDepReviewId(depReview.getId());
-                    busDepReviewData.setEvaluatTarget(deptNmae);
-                    busDepReviewData.setDataStatus("1");
-                    busDepReviewDataList.add(busDepReviewData);
-                }
-                // 5 开发（度假）园区
-            } else if ("5".equals(depReview.getDivisionDept())) {
-                for (String deptNmae : DESP_LIST_FIVE) {
-                    BusDepReviewData busDepReviewData = new BusDepReviewData();
-                    busDepReviewData.setId(IdUtils.randomUUID());
-                    busDepReviewData.setBusDepReviewId(depReview.getId());
-                    busDepReviewData.setEvaluatTarget(deptNmae);
-                    busDepReviewData.setDataStatus("1");
-                    busDepReviewDataList.add(busDepReviewData);
-                }
-                // 6 纪检监察组
-            } else if ("6".equals(depReview.getDivisionDept())) {
-                for (String deptNmae : DESP_LIST_SEVEV) {
-                    BusDepReviewData busDepReviewData = new BusDepReviewData();
-                    busDepReviewData.setId(IdUtils.randomUUID());
-                    busDepReviewData.setBusDepReviewId(depReview.getId());
-                    busDepReviewData.setEvaluatTarget(deptNmae);
-                    busDepReviewData.setDataStatus("1");
-                    busDepReviewDataList.add(busDepReviewData);
-                }
+                busDepReviewDataMapper.deleteByReviewIdAndCreator(depReview.getId());
+                busDepReviewDataMapper.insertBatch(busDepReviewDataList);
             }
-            busDepReviewDataMapper.deleteByReviewIdAndCreator(depReview.getId());
-            busDepReviewDataMapper.insertBatch(busDepReviewDataList);
         }
         busDepReview.setUpdateBy(SecurityUtils.getUsername());
         busDepReview.setUpdateTime(DateUtils.getNowDate());
         busDepReviewMapper.updateBusDepReview(busDepReview);
         return AjaxResult.success("修改成功");
-    }
-
-    private boolean isEdit(String reviewId) {
-        BusDepReviewData busDepReviewData = new BusDepReviewData();
-        busDepReviewData.setBusDepReviewId(reviewId);
-        List<BusDepReviewData> busDepReviewDataList = busDepReviewDataMapper.selectBusDepReviewDataList(busDepReviewData);
-        if (CollectionUtils.isNotEmpty(busDepReviewDataList)) {
-            for (BusDepReviewData busDepRevData : busDepReviewDataList) {
-                if (StringUtils.isNotEmpty(busDepRevData.getDataJson())) {
-                    return true;
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -250,9 +242,6 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService {
      */
     @Override
     public AjaxResult deleteBusDepReviewByIds(String[] ids) {
-        if (isEdit(ids[0])) {
-            return AjaxResult.error("该评分表已进行填报，不允许删除");
-        }
         busDepReviewMapper.deleteBusDepReviewByIds(ids);
         return AjaxResult.success("删除成功");
     }
@@ -265,9 +254,6 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService {
      */
     @Override
     public AjaxResult deleteBusDepReviewById(String id) {
-        if (isEdit(id)) {
-            return AjaxResult.error("该评分表已进行填报，不允许修改状态");
-        }
         busDepReviewMapper.deleteBusDepReviewById(id);
         return AjaxResult.success("删除成功");
     }
@@ -292,39 +278,184 @@ public class BusDepReviewServiceImpl implements IBusDepReviewService {
         LoginUser loginUser = SecurityUtils.getLoginUser();
         boolean isAdmin = loginUserAuth();
         Set<String> permittedDepts = isAdmin ? Collections.emptySet() : collectUserDeptNames(loginUser);
+
+        // ==================== 查询表头 ====================
         BusDepReviewHeader headerQuery = new BusDepReviewHeader();
         headerQuery.setBusDepReviewId(id);
         List<BusDepReviewHeader> headerList = busDepReviewHeaderMapper.selectBusDepReviewHeaderList(headerQuery);
         if (!CollectionUtils.isEmpty(headerList)) {
             headerList.forEach(header -> {
                 if (StringUtils.isNotBlank(header.getBusDepExplId())) {
-                    BusDepExpl busDepExpl = busDepExplService.selectBusDepExplById(header.getBusDepExplId());
-                    header.setBusDepExpl(busDepExpl);
-                } else {
-                    header.setBusDepExpl(null);
+                    header.setBusDepExpl(busDepExplService.selectBusDepExplById(header.getBusDepExplId()));
                 }
             });
             if (!isAdmin) {
                 headerList = headerList.stream().filter(header -> headerVisibleForUser(header, permittedDepts)).collect(Collectors.toList());
             }
+
             headerList.sort(Comparator.comparing(BusDepReviewHeader::getHeadOrder, Comparator.nullsLast(Comparator.naturalOrder())));
         }
         busDepReview.setBusDepReviewHeaderList(headerList);
 
+        // ==================== 查询数据 ====================
+        // ==================== 查询数据 ====================
         BusDepReviewData dataQuery = new BusDepReviewData();
         dataQuery.setBusDepReviewId(id);
         if (sign) {
             dataQuery.setDataStatus("2");
         }
         List<BusDepReviewData> dataList = busDepReviewDataMapper.selectBusDepReviewDataList(dataQuery);
-        // 如果数据为空-新增默认值
 
         if (!CollectionUtils.isEmpty(dataList)) {
-            dataList.sort(Comparator.comparing(BusDepReviewData::getCreateTime, Comparator.nullsLast(Comparator.naturalOrder())));
+
+            // 当前登录部门名称（非管理员时用）
+            String currentDeptName = null;
+            if (!isAdmin && SecurityUtils.getOnlineDept() != null) {
+                currentDeptName = SecurityUtils.getOnlineDept().getDeptName();
+            }
+
+            for (BusDepReviewData busDepReviewData : dataList) {
+
+                String dataJson = busDepReviewData.getDataJson();
+                if (StringUtils.isBlank(dataJson)) {
+                    continue;
+                }
+
+                JSONArray jsonArray = JSONArray.parseArray(dataJson);
+
+                // =============== 只在“第二步”里处理多部门（headCode + "List"） ===============
+                for (int i = 0; i < jsonArray.size(); i++) {
+                    JSONObject jsonObject = jsonArray.getJSONObject(i);
+                    String multDeptScore = jsonObject.getString("multDeptScore");
+
+                    // 只有 multDeptScore == 1（多部门分别打分）才需要看 xxxList
+                    if (!"1".equals(multDeptScore)) {
+                        continue;
+                    }
+
+                    String headCode = jsonObject.getString("headCode");
+                    if (StringUtils.isBlank(headCode)) {
+                        continue;
+                    }
+
+                    // 例如 headCode = jiafenx，则 dynamicKey = jiafenxList
+                    String dynamicKey = headCode + "List";
+                    String dynamicValue = jsonObject.getString(dynamicKey);
+
+                    // 不是合法 JSON 数组，直接当没有多部门明细
+                    if (!isJsonArray(dynamicValue)) {
+                        jsonObject.put("deptScoreList", null);
+                        jsonArray.set(i, jsonObject);
+                        continue;
+                    }
+
+                    JSONArray deptArr = JSONArray.parseArray(dynamicValue);
+
+                    if (isAdmin) {
+                        // ========== 管理员：保留全部部门 + 求总分 ==========
+                        jsonObject.put("deptScoreList", deptArr);
+
+                        BigDecimal total = BigDecimal.ZERO;
+                        for (int j = 0; j < deptArr.size(); j++) {
+                            JSONObject deptItem = deptArr.getJSONObject(j);
+                            BigDecimal score = deptItem.getBigDecimal("headScore");
+                            if (score != null) total = total.add(score);
+                        }
+
+                        jsonObject.put("headScore", total);
+                        jsonObject.put("totalScore", total);
+
+                        // 管理员保留完整的 jiafenxList（不改动）
+                        jsonObject.put(dynamicKey, deptArr);
+
+                    } else {
+                        // ========== 普通用户：只展示当前部门在 jiafenxList 中的记录 ==========
+                        if (StringUtils.isBlank(currentDeptName)) {
+                            // 安全兜底：没拿到部门名，就当看不到任何数据
+                            jsonObject.put("deptScoreList", null);
+                            jsonObject.put("headScore", null);
+                            jsonObject.put("totalScore", null);
+                            jsonObject.put("signAttachId", null);
+                            jsonObject.put("signFilePath", null);
+                            jsonObject.put(dynamicKey, new JSONArray());
+                            jsonArray.set(i, jsonObject);
+                            continue;
+                        }
+
+                        JSONArray filteredArr = new JSONArray();
+                        JSONObject selfDeptObj = null;
+
+                        for (int j = 0; j < deptArr.size(); j++) {
+                            JSONObject deptItem = deptArr.getJSONObject(j);
+                            if (currentDeptName.equals(deptItem.getString("deptName"))) {
+                                // 正常情况每个部门只会有一条，防御性写法允许多条
+                                filteredArr.add(deptItem);
+                                if (selfDeptObj == null) {
+                                    selfDeptObj = deptItem;
+                                }
+                            }
+                        }
+
+                        if (selfDeptObj != null) {
+                            // 1. 明细（弹窗可直接用这个对象）
+                            jsonObject.put("deptScoreList", selfDeptObj);
+
+                            // 2. 顶层分数显示当前部门的分
+                            BigDecimal selfScore = selfDeptObj.getBigDecimal("headScore");
+                            jsonObject.put("headScore", selfScore);
+                            jsonObject.put("totalScore", selfScore);
+
+                            // 3. 顶层附件也替换成当前部门的
+                            jsonObject.put("signAttachId", selfDeptObj.getString("signAttachId"));
+                            jsonObject.put("signFilePath", selfDeptObj.getString("signFilePath"));
+
+                            // 4. 关键点：把 jiafenxList 也过滤成“只包含当前部门”
+                            jsonObject.put(dynamicKey, filteredArr);
+
+                        } else {
+                            // 当前部门在 jiafenxList 里还没有记录：视为未评分，不展示别的部门信息
+                            jsonObject.put("deptScoreList", null);
+                            jsonObject.put("headScore", null);
+                            jsonObject.put("totalScore", null);
+                            jsonObject.put("signAttachId", null);
+                            jsonObject.put("signFilePath", null);
+
+                            // 返回给前端的 jiafenxList 置为空数组，避免看到其他部门
+                            jsonObject.put(dynamicKey, new JSONArray());
+                        }
+                    }
+
+                    jsonArray.set(i, jsonObject);
+                }
+
+                // 写回处理后的 dataJson
+                busDepReviewData.setDataJson(jsonArray.toJSONString());
+            }
         }
         busDepReview.setBusDepReviewDataList(dataList);
         return busDepReview;
     }
+
+    public static boolean isJsonArray(String input) {
+        if (StringUtils.isBlank(input)) {
+            return false;
+        }
+        try {
+            JSONArray.parseArray(input);
+            return true;
+        } catch (JSONException e) {
+            return false;
+        }
+    }
+
+    private static JSONObject deepCopyJsonObject(JSONObject original) {
+        if (original == null) return null;
+
+        // 通过序列化和反序列化实现深拷贝
+        String jsonStr = JSON.toJSONString(original, SerializerFeature.DisableCircularReferenceDetect);
+        return JSON.parseObject(jsonStr);
+    }
+
 
     @Override
     public List<BusDepReview> selectBusDepReviewListForCurrentUser(BusDepReview busDepReview) {

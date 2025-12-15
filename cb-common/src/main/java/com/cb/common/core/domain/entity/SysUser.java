@@ -179,6 +179,46 @@ public class SysUser extends BaseEntity {
     /**其他标签*/
     private String otherLabel;
 
+
+    /**
+     * 查询类型：1-人员信息；2-简历；3-家庭成员信息
+     */
+    private String queryType;
+
+    /**
+     * 查询关键字
+     */
+    private String queryKeywords;
+
+    @Transient
+    private Integer pageType;
+
+    public Integer getPageType() {
+        return pageType;
+    }
+
+    public void setPageType(Integer pageType) {
+        this.pageType = pageType;
+    }
+
+    public String getQueryType() {
+        return queryType;
+    }
+
+    public void setQueryType(String queryType) {
+        this.queryType = queryType;
+    }
+
+    public String getQueryKeywords() {
+        return queryKeywords;
+    }
+
+    public void setQueryKeywords(String queryKeywords) {
+        this.queryKeywords = queryKeywords;
+    }
+
+
+
     public String getReserveUser() {
         return reserveUser;
     }
@@ -469,6 +509,31 @@ public class SysUser extends BaseEntity {
      * @return
      */
     private String dutyRankType;
+
+    @Excel(name = "公务员登记时间")
+    private String civilServantRegisterTime;
+
+    @Excel(name = "统计所在单位信息")
+    private String statisticalRelationUnit;
+
+    @Excel(name = "是否有两年以上基层工作经历")
+    private String hasTwoYearsGrassrootsWork;
+
+    public String getCivilServantRegisterTime() {
+        return civilServantRegisterTime;
+    }
+
+    public void setCivilServantRegisterTime(String civilServantRegisterTime) {
+        this.civilServantRegisterTime = civilServantRegisterTime;
+    }
+
+    public String getHasTwoYearsGrassrootsWork() {
+        return hasTwoYearsGrassrootsWork;
+    }
+
+    public void setHasTwoYearsGrassrootsWork(String hasTwoYearsGrassrootsWork) {
+        this.hasTwoYearsGrassrootsWork = hasTwoYearsGrassrootsWork;
+    }
 
     public String getDutyRankType() {
         return dutyRankType;
@@ -1337,6 +1402,15 @@ public class SysUser extends BaseEntity {
         this.familyMemberJsonArray = familyMemberJsonArray;
     }
 
+
+    public String getStatisticalRelationUnit() {
+        return statisticalRelationUnit;
+    }
+
+    public void setStatisticalRelationUnit(String statisticalRelationUnit) {
+        this.statisticalRelationUnit = statisticalRelationUnit;
+    }
+
     @Override
     public String toString() {
         return new ToStringBuilder(this, ToStringStyle.MULTI_LINE_STYLE)
@@ -1360,6 +1434,9 @@ public class SysUser extends BaseEntity {
                 .append("updateTime", getUpdateTime())
                 .append("remark", getRemark())
                 .append("dept", getDept())
+                .append("queryType", getQueryType())
+                .append("queryKeywords", getQueryKeywords())
+                .append("pageType", getPageType())
                 .append("userType", getUserType())
                 .append("personnelStatus", getPersonnelStatus())
                 .append("lendingUnits", getLendingUnits())
@@ -1368,6 +1445,9 @@ public class SysUser extends BaseEntity {
                 .append("isHostingWork", getIsHostingWork())
                 .append("sysUserResumeInfoList", getSysUserResumeInfoList())
                 .append("sysUserWorkUnitAndPositionInfoList", getSysUserWorkUnitAndPositionInfoList())
+                .append("civilServantRegisterTime", getCivilServantRegisterTime())
+                .append("hasTwoYearsGrassrootsWork", getHasTwoYearsGrassrootsWork())
+                .append("statisticalRelationUnit", getStatisticalRelationUnit())
                 .toString();
     }
 }

@@ -20,6 +20,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <result property="updateTime"    column="UPDATE_TIME"    />
         <result property="subtotalQuanScore"    column="SUBTOTAL_QUAN_SCORE"    />
         <result property="bonusSubtotal"    column="BONUS_SUBTOTAL"    />
+        <result property="deductPoints"    column="DEDUCT_POINTS"    />
     </resultMap>
 
     <sql id="selectBusDepReviewDataVo">
@@ -37,7 +38,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                UPDATE_BY,
                UPDATE_TIME,
                SUBTOTAL_QUAN_SCORE,
-               BONUS_SUBTOTAL
+               BONUS_SUBTOTAL,
+               DEDUCT_POINTS
         from BUS_DEP_REVIEW_DATA
     </sql>
 
@@ -56,8 +58,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null "> and UPDATE_TIME = #{updateTime}</if>
             <if test="subtotalQuanScore != null and subtotalQuanScore != ''"> and SUBTOTAL_QUAN_SCORE = #{subtotalQuanScore}</if>
             <if test="bonusSubtotal != null and bonusSubtotal != ''"> and BONUS_SUBTOTAL = #{bonusSubtotal}</if>
+            <if test="deductPoints != null and deductPoints != ''"> and DEDUCT_POINTS = #{deductPoints}</if>
         </where>
-    order by REVIEW_SCORE
+        ORDER BY COALESCE(REVIEW_SCORE, -1) DESC
+    </select>
+
+    <select id="selectDataBusDepReviewDataByReviewId" parameterType="BusDepReviewData" resultMap="BusDepReviewDataResult">
+        <include refid="selectBusDepReviewDataVo"/>
+        <where>
+            <if test="reviewId != null  and reviewId != ''"> and BUS_DEP_REVIEW_ID = #{reviewId}</if>
+        </where>
+        ORDER BY COALESCE(REVIEW_SCORE, -1) DESC
     </select>
 
     <select id="selectBusDepReviewDataById" parameterType="String" resultMap="BusDepReviewDataResult">
@@ -66,7 +77,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </select>
 
     <select id="selectBusDepReviewMemberUnits" parameterType="String" resultMap="BusDepReviewDataResult">
-        SELECT ID,EVALUAT_TARGET, REVIEW_SCORE,DATA_JSON,SUBTOTAL_QUAN_SCORE,BONUS_SUBTOTAL FROM BUS_DEP_REVIEW_DATA
+        SELECT ID,EVALUAT_TARGET, REVIEW_SCORE,DATA_JSON,SUBTOTAL_QUAN_SCORE,BONUS_SUBTOTAL,DEDUCT_POINTS FROM BUS_DEP_REVIEW_DATA
         WHERE BUS_DEP_REVIEW_ID=#{busDepReviewId}
         <if test="evaluatTargets != null and !evaluatTargets.isEmpty()">
             AND EVALUAT_TARGET IN
@@ -94,6 +105,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">UPDATE_TIME,</if>
             <if test="subtotalQuanScore != null">SUBTOTAL_QUAN_SCORE,</if>
             <if test="bonusSubtotal != null">BONUS_SUBTOTAL,</if>
+            <if test="deductPoints != null">DEDUCT_POINTS,</if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null and id != ''">#{id},</if>
@@ -111,6 +123,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">#{updateTime},</if>
             <if test="subtotalQuanScore != null">#{subtotalQuanScore},</if>
             <if test="bonusSubtotal != null">#{bonusSubtotal},</if>
+            <if test="deductPoints != null">#{deductPoints},</if>
          </trim>
     </insert>
 
@@ -132,6 +145,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                             UPDATE_TIME,
                             SUBTOTAL_QUAN_SCORE,
                             BONUS_SUBTOTAL,
+                            DEDUCT_POINTS
                     </trim>
         values
         <foreach collection="entities" item="entity" separator=",">
@@ -151,6 +165,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                                     #{entity.updateTime},
                                     #{entity.subtotalQuanScore},
                                     #{entity.bonusSubtotal},
+                                    #{entity.deductPoints},
                             </trim>
         </foreach>
     </insert>
@@ -172,6 +187,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="updateTime != null">UPDATE_TIME = #{updateTime},</if>
             <if test="subtotalQuanScore != null">SUBTOTAL_QUAN_SCORE = #{subtotalQuanScore},</if>
             <if test="bonusSubtotal != null">BONUS_SUBTOTAL = #{bonusSubtotal},</if>
+            <if test="deductPoints != null">DEDUCT_POINTS = #{deductPoints},</if>
         </trim>
         where ID = #{id}
     </update>

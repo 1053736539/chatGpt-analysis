@@ -4,6 +4,7 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.extra.pinyin.PinyinUtil;
 import com.cb.activiti.domain.BizLeave;
 import com.cb.activiti.domain.BizLeaveVo;
+import com.cb.activiti.domain.DeptUserTreeSelect;
 import com.cb.activiti.enums.UserLevelEnum;
 import com.cb.activiti.service.IBizLeaveService;
 import com.cb.activiti.service.IProcessService;
@@ -540,6 +541,54 @@ public class BizLeaveController extends BaseController
         }
         return getDataTable(functionUsers);
     }
+
+    /**
+     * 下一步办理人树
+     */
+    @GetMapping("/nextHandlerTreeselect")
+    public AjaxResult nextHandlerTreeselect(SysDept dept)
+    {
+        List<SysDept> depts = deptService.selectDeptList(dept);
+        List<SysUser> users = userService.selectUserList(new SysUser());
+        Map<Long, List<SysUser>> usersByDept = users.stream()
+                .filter(user -> Objects.nonNull(user.getDeptId()))
+                .filter(Objects::nonNull)
+                .collect(Collectors.groupingBy(SysUser::getDeptId));
+
+        List<SysDept> deptTree = deptService.buildDeptTree(depts);
+        List<DeptUserTreeSelect> tree = deptTree.stream()
+                .map(item -> buildDeptUserTree(item, usersByDept))
+                .collect(Collectors.toList());
+        return AjaxResult.success(tree);
+    }
+
+    private DeptUserTreeSelect buildDeptUserTree(SysDept dept, Map<Long, List<SysUser>> usersByDept)
+    {
+        DeptUserTreeSelect node = new DeptUserTreeSelect(dept);
+        List<DeptUserTreeSelect> children = new ArrayList<>();
+        if (StringUtils.isNotNull(dept.getChildren()))
+        {
+            children.addAll(dept.getChildren().stream()
+                    .map(child -> buildDeptUserTree(child, usersByDept))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList()));
+        }
+
+        List<SysUser> deptUsers = usersByDept.get(dept.getDeptId());
+        if (StringUtils.isNotEmpty(deptUsers))
+        {
+            node.setUserList(deptUsers.stream()
+                    .map(DeptUserTreeSelect::new)
+                    .collect(Collectors.toList()));
+        }
+        if (StringUtils.isEmpty(children) && StringUtils.isEmpty(deptUsers))
+        {
+            return null;
+        }
+        node.setChildren(children);
+        return node;
+    }
+
 
 
 }

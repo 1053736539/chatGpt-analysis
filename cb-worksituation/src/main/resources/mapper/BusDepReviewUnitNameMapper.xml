@@ -25,7 +25,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
                , bdrmu.MEMBER_ORDER as bdrmuMEMBER_ORDER
         FROM BUS_DEP_REVIEW_UNIT_NAME bdrun
                  LEFT JOIN BUS_DEP_REVIEW_MEMBER_UNIT bdrmu ON bdrun.ID  =bdrmu.BUS_DEP_REVIEW_UNIT_NAME_ID
-        order by bdrmu.MEMBER_ORDER
+        order by bdrmu.MEMBER_ORDER desc
     </select>
 
     <select id="selectBusDepReviewUnitNameList" parameterType="BusDepReviewUnitName" resultMap="BusDepReviewUnitNameResult">

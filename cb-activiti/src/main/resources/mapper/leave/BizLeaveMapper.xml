@@ -103,7 +103,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     <select id="listByTypeOrHospital" parameterType="BizLeave" resultMap="BizLeaveResult">
         <include refid="selectBizLeaveVo"/>
         <where>
-             and (type = 2 or sick_hospitalization_flag =1)
+             and (type = 2 or type = 6 or sick_hospitalization_flag =1)
             <if test="type !=null  and type !=''"> and type= #{type}</if>
             <if test="title != null  and title != ''"> and title = #{title}</if>
             <if test="reason != null  and reason != ''"> and reason = #{reason}</if>
@@ -354,5 +354,22 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         <if test="limit != null and limit != ''">
             limit #{limit}
         </if>
+    </select>
+
+
+    <select id="searchBizLeaveList" parameterType="BizLeave" resultMap="BizLeaveResult">
+        <include refid="selectBizLeaveVo"/>
+        <where>
+            <if test="searchKeywords != null and searchKeywords != ''">
+                and (
+                title like '%' || #{searchKeywords} || '%'
+                or reason like '%' || #{searchKeywords} || '%'
+                or apply_user_name like '%' || #{searchKeywords} || '%'
+                or cast(type as varchar(50)) like '%' || #{searchKeywords} || '%'
+                )
+            </if>
+            <if test="delFlag != null and delFlag != ''"> and del_flag = #{delFlag}</if>
+        </where>
+        order by id desc
     </select>
 </mapper>

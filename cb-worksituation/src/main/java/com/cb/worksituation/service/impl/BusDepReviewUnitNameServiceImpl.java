@@ -49,10 +49,10 @@ public class BusDepReviewUnitNameServiceImpl implements IBusDepReviewUnitNameSer
                 BigDecimal avgScore = new BigDecimal(0);
                 for (BusDepReviewMemberUnit busDepReviewMemberUnit : busDepReviewMemberUnits) {
                     List<BusDepReviewData> busDepReviewDatas = busDepReviewDataList.stream().filter(busDepReviewData -> busDepReviewData.getEvaluatTarget().equals(busDepReviewMemberUnit.getMemberUnit())).collect(Collectors.toList());
-                    if (!CollectionUtils.isEmpty(busDepReviewDatas)){
+                    if (!CollectionUtils.isEmpty(busDepReviewDatas)) {
                         BigDecimal reviewScore = busDepReviewDatas.get(0).getReviewScore();
                         busDepReviewMemberUnit.setScore(reviewScore);
-                        total = total.add(reviewScore);
+                        total = total.add(reviewScore == null ? BigDecimal.ZERO : reviewScore);
                     }
                 }
                 busDepReviewUnitName.setTotal(total);
@@ -74,6 +74,7 @@ public class BusDepReviewUnitNameServiceImpl implements IBusDepReviewUnitNameSer
             for (BusDepReviewData busDepReviewData : busDepReviewDataList) {
                 BusDepReviewData updatedBusDepReviewData = new BusDepReviewData();
                 updatedBusDepReviewData.setId(busDepReviewData.getId());
+                updatedBusDepReviewData.setUpdateTime(new Date());
                 String evaluatTarget = busDepReviewData.getEvaluatTarget();
                 if (firstEvaluatTarget.contains(evaluatTarget)) {
                     updatedBusDepReviewData.setBusUnitScore(new BigDecimal("5"));

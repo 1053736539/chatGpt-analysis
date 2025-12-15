@@ -4,6 +4,12 @@
 		"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.cb.system.mapper.SysUserInfoStatisticsMapper">
 
+	<resultMap id="EduCountMap" type="java.util.HashMap">
+		<result column="label" property="label"/>
+		<result column="value" property="value"/>
+	</resultMap>
+
+
 	<!--门人员性别（男/女）人员统计-->
 	<select id="selectSexCount" resultType="java.util.Map">
 		select count(user_id) totalCount,
@@ -21,7 +27,7 @@
 		end) womanCount
 		from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
-		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		where u.user_type='00' and u.del_flag='0'
 		<if test="deptId != null and deptId != 0">
 			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
 		</if>
@@ -50,28 +56,57 @@
 
 	<!--年龄阶段统计-->
 	<select id="selectAgeCount" resultType="java.util.Map">
-		select ageTemp,count(*) as total from (
-		select TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) as age,
-		case
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 0 and 20 then '1-20'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 20 and 25 then '20-25'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 25 and 30 then '25-30'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 30 and 35 then '30-35'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 35 and 40 then '35-40'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 40 and 45 then '40-45'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 45 and 50 then '45-50'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 50 and 55 then '50-55'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 55 and 60 then '55-60'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  between 60 and 65 then '60-65'
-		when TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE())  > 65 then '65+'
-		end as ageTemp
-		from sys_user u
-		left join sys_dept d on u.dept_id = d.dept_id
-		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		SELECT
+		c.ageTemp,
+		IFNULL(t.total, 0) AS total
+		FROM (
+		SELECT '0-20'   AS ageTemp
+		UNION ALL SELECT '21-30'
+		UNION ALL SELECT '31-40'
+		UNION ALL SELECT '41-50'
+		UNION ALL SELECT '51-60'
+		UNION ALL SELECT '61-70'
+		UNION ALL SELECT '71-80'
+		UNION ALL SELECT '80以上'
+		) c
+		LEFT JOIN (
+		SELECT
+		CASE
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 0  AND 20 THEN '0-20'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 21 AND 30 THEN '21-30'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 31 AND 40 THEN '31-40'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 41 AND 50 THEN '41-50'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 51 AND 60 THEN '51-60'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 61 AND 70 THEN '61-70'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 71 AND 80 THEN '71-80'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) > 80 THEN '80以上'
+		END AS ageTemp,
+		COUNT(*) AS total
+		FROM sys_user u
+		LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+		WHERE u.user_type = '00'
+		AND u.del_flag = '0'
 		<if test="deptId != null and deptId != 0">
-			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+			AND (u.dept_id = #{deptId}
+			OR u.dept_id IN (
+			SELECT t.dept_id
+			FROM sys_dept t
+			WHERE find_in_set(#{deptId}, ancestors)
+			))
 		</if>
-		)t group by ageTemp order by t.ageTemp
+		GROUP BY
+		CASE
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 0  AND 20 THEN '0-20'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 21 AND 30 THEN '21-30'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 31 AND 40 THEN '31-40'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 41 AND 50 THEN '41-50'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 51 AND 60 THEN '51-60'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 61 AND 70 THEN '61-70'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) BETWEEN 71 AND 80 THEN '71-80'
+		WHEN TIMESTAMPDIFF(YEAR, fun_str_format_date(u.birthday), CURDATE()) > 80 THEN '80以上'
+		END
+		) t ON c.ageTemp = t.ageTemp
+		ORDER BY c.ageTemp
 	</select>
 
 	<!--职级统计-->
@@ -120,37 +155,94 @@
 
 	</select>
 
-	<!--编制类型统计（1-行政，2-参公，3-事业）-->
-	<select id="selectIdentityTypeCount" resultType="java.util.Map">
+	<!--编制类型统计（1-行政，2-参公，3-事业 4-企业 5-合同  6-工勤）-->
+<!--	<select id="selectIdentityTypeCount" resultType="java.util.Map">-->
+<!--		SELECT-->
+<!--		sum(if(u.identity_type = '1', 1, 0))  AS xz,-->
+<!--		sum(if(u.identity_type = '2', 1, 0)) AS cg,-->
+<!--		sum(if(u.identity_type = '3', 1, 0)) AS sy,-->
+<!--		sum(if(u.personnel_status = '2', 1, 0)) AS jd-->
+<!--		FROM sys_user u-->
+<!--		left join sys_dept d on u.dept_id = d.dept_id-->
+<!--		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')-->
+<!--		<if test="deptId != null and deptId != 0">-->
+<!--			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))-->
+<!--		</if>-->
+<!--	</select>-->
+
+	<!--编制类型统计（1-行政，2-参公，3-事业，4-企业，5-合同，6-工勤）-->
+	<select id="selectIdentityTypeCount" resultMap="NationCountMap">
 		SELECT
-		sum(if(u.identity_type = '1', 1, 0))  AS xz,
-		sum(if(u.identity_type = '2', 1, 0)) AS cg,
-		sum(if(u.identity_type = '3', 1, 0)) AS sy,
-		sum(if(u.personnel_status = '2', 1, 0)) AS jd
+		CASE u.identity_type
+		WHEN '1' THEN '行政'
+		WHEN '2' THEN '参公'
+		WHEN '3' THEN '事业'
+		WHEN '4' THEN '企业'
+		WHEN '5' THEN '合同'
+		WHEN '6' THEN '工勤'
+		ELSE '其他'
+		END AS name,
+		COUNT(*) AS value
 		FROM sys_user u
-		left join sys_dept d on u.dept_id = d.dept_id
-		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+		WHERE u.user_type='00' AND u.del_flag='0'
 		<if test="deptId != null and deptId != 0">
-			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
 		</if>
+		<if test="identityType != null and identityType != ''">
+			AND u.identity_type = #{identityType}
+		</if>
+		GROUP BY CASE u.identity_type
+		WHEN '1' THEN '行政'
+		WHEN '2' THEN '参公'
+		WHEN '3' THEN '事业'
+		WHEN '4' THEN '企业'
+		WHEN '5' THEN '合同'
+		WHEN '6' THEN '工勤'
+		ELSE '其他'
+		END
 	</select>
 
 	<!--统计学历（）-->
-	<select id="selectEduCount" resultType="java.util.Map">
+	<select id="selectEduCount" resultMap="EduCountMap">
 		SELECT
-		sum(if(e.education = '研究生', 1, 0))  AS yjs,
-		sum(if(e.education = '大学', 1, 0)) AS dx,
-		sum(if(e.education = '本科', 1, 0)) AS bk,
-		sum(if(e.education = '专科', 1, 0)) AS zk,
-		sum(if(e.education = '高中', 1, 0)) AS gz,
-		sum(if(e.education = '中专', 1, 0)) AS zz
-		FROM sys_user_education_and_degree_info e
-		left join sys_user u on u.user_id = e.user_id
-		left join sys_dept d on u.dept_id = d.dept_id
-		where u.user_type='00' and u.del_flag='0' and u.personnel_status in ('1','2')
+		c.label,
+		IFNULL(t.value, 0) AS value
+		FROM (
+		SELECT '大学' AS label
+		UNION ALL SELECT '研究生'
+		UNION ALL SELECT '博士研究生'
+		UNION ALL SELECT '其他'
+		) c
+		LEFT JOIN (
+		SELECT
+		CASE
+		WHEN REGEXP_LIKE(u.on_job_education_level, '(大学|本科|学士|专科|大专)') = 1 THEN '大学'
+		WHEN REGEXP_LIKE(u.on_job_education_level, '(研究生|硕士)') = 1 THEN '研究生'
+		WHEN REGEXP_LIKE(u.on_job_education_level, '(博士|博士研究生)') = 1 THEN '博士研究生'
+		ELSE '其他'
+		END AS label,
+		COUNT(*) AS value
+		FROM sys_user u
+		LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+		WHERE u.user_type = '00'
+		AND u.del_flag = '0'
 		<if test="deptId != null and deptId != 0">
-			and (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+			AND (u.dept_id = #{deptId}
+			OR u.dept_id IN (
+			SELECT t.dept_id
+			FROM sys_dept t
+			WHERE find_in_set(#{deptId}, ancestors)
+			))
 		</if>
+		GROUP BY
+		CASE
+		WHEN REGEXP_LIKE(u.on_job_education_level, '(大学|本科|学士|专科|大专)') = 1 THEN '大学'
+		WHEN REGEXP_LIKE(u.on_job_education_level, '(研究生|硕士)') = 1 THEN '研究生'
+		WHEN REGEXP_LIKE(u.on_job_education_level, '(博士|博士研究生)') = 1 THEN '博士研究生'
+		ELSE '其他'
+		END
+		) t ON c.label = t.label
 	</select>
 
 	<!--现任领导职务年限统计-->
@@ -1799,6 +1891,29 @@
 		 FROM "sys_user" su
 		 WHERE  FIND_IN_SET('20',su."ability_label" )   AND su."ability_label" IS NOT NULL  AND su.del_flag = '0'
 		 ORDER  BY id ASC
+	</select>
+
+
+	<resultMap id="NationCountMap" type="java.util.HashMap">
+		<result column="name" property="name"/>
+		<result column="value" property="value"/>
+	</resultMap>
+
+	<!--民族统计-->
+	<select  id="selectNationCount" resultMap="NationCountMap">
+		SELECT
+		CASE WHEN u.nation IS NULL OR u.nation = '' THEN '其他' ELSE u.nation END AS name,
+		COUNT(*) AS value
+		FROM sys_user u
+		LEFT JOIN sys_dept d ON u.dept_id = d.dept_id
+		WHERE u.user_type='00' AND u.del_flag='0'
+		<if test="deptId != null and deptId != 0">
+			AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors) ))
+		</if>
+		<if test="nation != null and nation != ''">
+			AND u.nation = #{nation}
+		</if>
+		GROUP BY CASE WHEN u.nation IS NULL OR u.nation = '' THEN '其他' ELSE u.nation END
 	</select>
 
 </mapper>

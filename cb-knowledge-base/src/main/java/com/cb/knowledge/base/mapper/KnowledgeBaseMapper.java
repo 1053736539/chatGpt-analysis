@@ -121,4 +121,11 @@ public interface KnowledgeBaseMapper {
      * @version 1.0
      */
     List<String> selectFilePaths();
+
+    /**
+     * @description 关键字检索知识库
+     * @param data
+     * @return List<KnowledgeBase>
+     */
+    List<KnowledgeBase> searchKnowledgeListByKeywords(KnowledgeBase data);
 }

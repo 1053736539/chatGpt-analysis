@@ -40,7 +40,7 @@ public interface SysUserInfoStatisticsMapper {
      * 编制类型统计
      * @param deptId
      */
-    public List<Map<String, Object>> selectIdentityTypeCount(@Param("deptId") Long deptId);
+    public List<Map<String, Object>> selectIdentityTypeCount(@Param("deptId") Long deptId, @Param("identityType") String identityType);
 
     /**
      * 学历统计
@@ -194,4 +194,10 @@ public interface SysUserInfoStatisticsMapper {
      * @return
      */
     List<Map<String, Object>> selectAbilityLabelCount();
+
+
+    List<Map<String, Object>> selectNationCount(
+            @Param("deptId") Long deptId,
+            @Param("nation") String nation
+    );
 }

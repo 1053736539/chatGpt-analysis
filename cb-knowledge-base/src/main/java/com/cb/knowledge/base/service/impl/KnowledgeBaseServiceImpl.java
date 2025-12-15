@@ -160,6 +160,8 @@ public class KnowledgeBaseServiceImpl implements IKnowledgeBaseService {
         return Collections.emptyList();
     }
 
+
+
     private void updatePathMap(KnowledgeBase... knowledgeBases) {
         for (KnowledgeBase knowledgeBase : knowledgeBases) {
             Integer id = knowledgeBase.getId();
@@ -195,5 +197,10 @@ public class KnowledgeBaseServiceImpl implements IKnowledgeBaseService {
             logger.error("文件解析失败，{}", e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public List<KnowledgeBase> searchDataByKeywords(KnowledgeBase knowledgeBase) {
+        return knowledgeBaseMapper.searchKnowledgeListByKeywords(knowledgeBase);
     }
 }

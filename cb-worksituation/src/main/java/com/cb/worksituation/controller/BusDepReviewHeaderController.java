@@ -122,11 +122,6 @@ public class BusDepReviewHeaderController extends BaseController {
                 busDepReviewHeader.setHeadName("定性评价得分（30分）");
             }
 
-            if ("5".equals(busDepReviewHeader.getHeadType())) {
-                busDepReviewHeader.setHeadCode("deduct_points");
-                busDepReviewHeader.setHeadName("扣分");
-            }
-
             if ("6".equals(busDepReviewHeader.getHeadType())) {
                 busDepReviewHeader.setHeadCode("business_collaboration_unit");
                 busDepReviewHeader.setHeadName("党建业务协作单元加分");

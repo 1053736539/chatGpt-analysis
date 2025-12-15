@@ -181,31 +181,68 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
             for (int i = 0; i < jsonArray.size(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 String multDeptScore = jsonObject.getString("multDeptScore");
-                if (StringUtils.isNotBlank(multDeptScore) && multDeptScore.equals("1")) {
-                    String headCode = jsonObject.getString(jsonObject.getString("headCode") + "List");
-                    if (isJsonArray(headCode)) {
-                        JSONArray headCodeArray = JSONArray.parseArray(headCode);
-                        for (int j = 0; j < headCodeArray.size(); j++) {
-                            JSONObject jsonArrayJSONObject = jsonArray.getJSONObject(j);
-                            if (Objects.equals(SecurityUtils.getOnlineDept().getDeptName(), jsonArrayJSONObject.getString("deptName"))) {
-                                headCodeArray.remove(j);
-                                break;
+
+                // ❶ 这次操作的部门名：优先用外层 busDepReviewData.deptName，其次当前登录部门
+                String currentDeptName = busDepReviewData.getDeptName();
+                if (StringUtils.isBlank(currentDeptName) && SecurityUtils.getOnlineDept() != null) {
+                    currentDeptName = SecurityUtils.getOnlineDept().getDeptName();
+                }
+
+                // 如果还拿不到，至少不要用 jsonObject 里面旧的 deptName
+                if (StringUtils.isNotBlank(currentDeptName)) {
+                    // 这次是谁打分，就强制覆盖掉顶层的 deptName
+                    jsonObject.put("deptName", currentDeptName);
+                }
+
+                // ❷ 多部门分别打分（multDeptScore == 1）的处理
+                if ("1".equals(multDeptScore)) {
+
+                    String listKey = jsonObject.getString("headCode") + "List";
+                    String headCodeListStr = jsonObject.getString(listKey);
+
+                    if (isJsonArray(headCodeListStr)) {
+                        JSONArray headCodeArray = JSONArray.parseArray(headCodeListStr);
+
+                        // 用 currentDeptName 去匹配本部门的记录（注意：此时 currentDeptName 已经是“当前部门”，不是旧值）
+                        if (StringUtils.isNotBlank(currentDeptName)) {
+                            for (int j = 0; j < headCodeArray.size(); j++) {
+                                JSONObject jsonArrayJSONObject = headCodeArray.getJSONObject(j);
+                                if (Objects.equals(currentDeptName, jsonArrayJSONObject.getString("deptName"))) {
+                                    // 当前部门重新打分时，先删掉旧记录
+                                    if (!Objects.equals(jsonObject.getString("headScore"), jsonObject.getString("totalScore"))) {
+                                        headCodeArray.remove(j);
+                                    }
+                                    break;
+                                }
                             }
                         }
-                        JSONObject copyObject = deepCopyJsonObject(jsonObject);
-                        copyObject.put("deptName", SecurityUtils.getOnlineDept().getDeptName());
-                        copyObject.remove(jsonObject.getString("headCode") + "List");
-                        headCodeArray.add(copyObject);
-                        jsonObject.put(jsonObject.getString("headCode") + "List", headCodeArray);
+
+                        // 如果本次有分数（headScore/totalScore 不一致的这套逻辑你原来就是这么写的，我保持不动）
+                        if (!Objects.equals(jsonObject.getString("headScore"), jsonObject.getString("totalScore"))) {
+                            JSONObject copyObject = deepCopyJsonObject(jsonObject);
+                            // 这里 deptName 已经在上面被强制覆盖过了，为了安全再兜底一次
+                            if (StringUtils.isBlank(copyObject.getString("deptName")) && StringUtils.isNotBlank(currentDeptName)) {
+                                copyObject.put("deptName", currentDeptName);
+                            }
+                            copyObject.remove(listKey);
+                            headCodeArray.add(copyObject);
+                            jsonObject.put(listKey, headCodeArray);
+                        }
+
                     } else {
+                        // 第一次打分：初始化 headCodeList，只放当前部门一条
                         JSONArray headCodeArray = new JSONArray();
                         JSONObject copyObject = deepCopyJsonObject(jsonObject);
-                        copyObject.put("deptName", SecurityUtils.getOnlineDept().getDeptName());
-                        copyObject.remove(jsonObject.getString("headCode") + "List");
+                        if (StringUtils.isNotBlank(currentDeptName)) {
+                            copyObject.put("deptName", currentDeptName);
+                        }
+                        copyObject.remove(listKey);
                         headCodeArray.add(copyObject);
-                        jsonObject.put(jsonObject.getString("headCode") + "List", headCodeArray);
+                        jsonObject.put(listKey, headCodeArray);
                     }
                 }
+
+                jsonArray.set(i, jsonObject);
             }
             busDepReviewData.setDataJson(jsonArray.toString());
         }
@@ -293,17 +330,22 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
 
         // 用前端数据覆盖（前端数据优先）
         for (String key : frontendObj.keySet()) {
-            merged.put(key, frontendObj.get(key));
+            // 只覆盖当前打分和签批文件以及依据文件
+            if ("signFilePath".equals(key) || "headScore".equals(key) || "signAttachId".equals(key) || "filePath".equals(key) || "attachId".equals(key) || "totalScore".equals(key)) {
+                merged.put(key, frontendObj.get(key));
+            }
         }
 
         return merged;
     }
 
     @Override
-    public int submitGrading(BusDepReviewData busDepReviewData) {
+    public int submitGrading( BusDepReviewData busDepReviewData) {
         saveBusDepReviewData(busDepReviewData);
         busDepReviewData.setUpdateBy(SecurityUtils.getUsername());
-        String dataJson = busDepReviewData.getDataJson();
+        // 查询
+        BusDepReviewData depReviewData = busDepReviewDataMapper.selectBusDepReviewDataById(busDepReviewData.getId());
+        String dataJson = depReviewData.getDataJson();
         if (!StringUtils.isBlank(dataJson)) {
             // 对一对多进行求和
             JSONArray jsonArray = JSONArray.parseArray(dataJson);
@@ -343,6 +385,8 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
                     subtotalQuanScore = jsonObject.getBigDecimal("headScore").add(subtotalQuanScore);
                 } else if (StringUtils.isNotBlank(headType) && headType.equals("4")) {
                     bonusSubtotal = jsonObject.getBigDecimal("headScore").add(bonusSubtotal);
+                } else if (StringUtils.isNotBlank(headType) && headType.equals("5")) {
+                    deductPoints = deductPoints.add(jsonObject.getBigDecimal("headScore"));
                 }
                 String headCode = jsonObject.getString("headCode");
 
@@ -350,9 +394,6 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
                     qualitativeEvaluationScore = qualitativeEvaluationScore.add(jsonObject.getBigDecimal("headScore"));
                 }
 
-                if (StringUtils.isNotBlank(headCode) && headCode.equals("deduct_points")) {
-                    deductPoints = deductPoints.add(jsonObject.getBigDecimal("headScore"));
-                }
             }
 
             for (int i = 0; i < jsonArray.size(); i++) {
@@ -365,14 +406,15 @@ public class BusDepReviewDataServiceImpl implements IBusDepReviewDataService {
                     jsonObject.put("headScore", bonusSubtotal);
                 }
             }
-            busDepReviewData.setDataJson(jsonArray.toString());
-            busDepReviewData.setSubtotalQuanScore(subtotalQuanScore.toString());
-            busDepReviewData.setBonusSubtotal(bonusSubtotal.toString());
+            depReviewData.setDataJson(jsonArray.toString());
+            depReviewData.setSubtotalQuanScore(subtotalQuanScore.toString());
+            depReviewData.setBonusSubtotal(bonusSubtotal.toString());
+            depReviewData.setDeductPoints(deductPoints.toString());
             // reviewScore
-            busDepReviewData.setReviewScore(subtotalQuanScore.add(bonusSubtotal).add(qualitativeEvaluationScore).subtract(deductPoints));
+            depReviewData.setReviewScore(subtotalQuanScore.add(bonusSubtotal).add(qualitativeEvaluationScore).subtract(deductPoints));
         }
-        busDepReviewData.setUpdateTime(DateUtils.getNowDate());
-        return busDepReviewDataMapper.updateBusDepReviewData(busDepReviewData);
+        depReviewData.setUpdateTime(DateUtils.getNowDate());
+        return busDepReviewDataMapper.updateBusDepReviewData(depReviewData);
     }
 
     /**

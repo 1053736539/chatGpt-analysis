@@ -67,4 +67,10 @@ public class KnowledgeBase extends BaseEntity {
     @Transient
     private String fileTypeName;
 
+    @Transient
+    private String searchKeywords;
+
+    @Transient
+    private Integer pageType;
+
 }

@@ -103,6 +103,10 @@
 		<result property="userDuty"  column="user_duty" />
 		<result property="userRank"  column="user_rank" />
 		<result property="dutyRankType"  column="duty_rank_type" />
+
+		<result property="statisticalRelationUnit"       column="statistical_relation_unit"       />
+		<result property="civilServantRegisterTime"       column="civil_servant_register_time"       />
+		<result property="hasTwoYearsGrassrootsWork"       column="has_two_years_grassroots_work"       />
 		<!--  	市纪委新增字段 结束	-->
 
 		<association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />
@@ -304,7 +308,7 @@
 	    u.secret_level,u.sequence,u.ability_label,u.other_label,u.recruit_lot,
 	   u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 	   u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
-	   u.family_member_json_array,u.position_short,u.advantages,u.disadvantages,u.reserve_user,u.user_duty,u.user_rank,u.duty_rank_type,
+	   u.family_member_json_array,u.position_short,u.advantages,u.disadvantages,u.reserve_user,u.user_duty,u.user_rank,u.duty_rank_type,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		d.dept_id, d.dept_code, d.parent_id, d.dept_name, d.order_num, d.leader, d.status as dept_status,
 		r.role_id, r.role_name, r.role_key, r.role_sort, r.data_scope, r.status as role_status
 		from sys_user u
@@ -333,7 +337,7 @@
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.is_hosting_work,u.secret_level,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
-		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
+		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.advantages,u.disadvantages
 
 		from sys_user u
@@ -369,7 +373,7 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.advantages,u.disadvantages
@@ -569,11 +573,11 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.position_short,u.advantages,u.disadvantages,u.reserve_user,
-		u.user_duty,u.user_rank,u.duty_rank_type
+		u.user_duty,u.user_rank,u.duty_rank_type,u.statistical_relation_unit,u.civil_servant_register_time
 		from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
 		where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2)  and u.identity_type !='7'
@@ -581,12 +585,16 @@
 <!--			AND u.name like concat('%', #{name}, '%')-->
 <!--		</if>-->
 		<if test="name != null and name != ''">
+			<!-- 普通模糊：%name%（中文用） -->
+			<bind name="nameLike" value="'%' + name + '%'" />
+			<!-- 顺序模糊：%y%l%（拼音简拼/全拼用） -->
+			<bind name="nameSequentialLike" value="'%' + name.toLowerCase().replaceAll('','%') + '%'" />
+
 			AND (
-			u.name like concat('%', #{name}, '%')
-			<if test="params.namePinyin != null and params.namePinyin != ''">
-				OR lower(u.user_name) like concat('%', #{params.namePinyin}, '%')
-				OR lower(u.user_name) like #{params.namePinyinFuzzy}
-			</if>
+			-- 中文姓名模糊
+			u.name like #{nameLike}
+			-- 拼音顺序模糊（user_name 里存全拼或简拼）
+			OR lower(u.user_name) like #{nameSequentialLike}
 			)
 		</if>
 		<if test="userName != null and userName != ''">
@@ -751,6 +759,69 @@
 			u.user_id = e.user_id and e.professional_name like concat('%', #{params.professionalName}, '%')
 			)
 		</if>
+		<if test="queryKeywords != null and queryKeywords != ''">
+			<bind name="likeKeywords" value="'%' + queryKeywords + '%'" />
+			<choose>
+				<when test="queryType == 1">
+					AND (
+					u.nick_name                         LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.nation                         LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.native_place                   LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.birth_place                    LIKE #{likeKeywords, jdbcType=VARCHAR}
+
+					OR CAST(DECODE(u.sex, '0','男','1','女',u.sex) AS VARCHAR(10))
+					LIKE #{likeKeywords, jdbcType=VARCHAR}
+
+					OR u.birthday                       LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.party_join_time                LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.start_work_time                LIKE #{likeKeywords, jdbcType=VARCHAR}
+
+					OR u.health_condition               LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.professional_duty              LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.speciality                     LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.full_time_education_level      LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.full_time_education_school_and_major LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.on_job_education_level         LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.on_job_education_school_and_major LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.work_post                      LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.proposed_appointment_position  LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.proposed_removal_position      LIKE #{likeKeywords, jdbcType=VARCHAR}
+					)
+				</when>
+				<when test="queryType == 2">
+					AND u.resume_json_array like '%' || #{queryKeywords} || '%'
+				</when>
+				<when test="queryType == 3">
+					AND u.family_member_json_array like '%' || #{queryKeywords} || '%'
+				</when>
+				<otherwise>
+					AND (
+					u.nick_name                         LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.nation                         LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.native_place                   LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.birth_place                    LIKE #{likeKeywords, jdbcType=VARCHAR}
+
+					OR CAST(DECODE(u.sex, '0','男','1','女',u.sex) AS VARCHAR(10))
+					LIKE #{likeKeywords, jdbcType=VARCHAR}
+
+					OR u.birthday                       LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.party_join_time                LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.start_work_time                LIKE #{likeKeywords, jdbcType=VARCHAR}
+
+					OR u.health_condition               LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.professional_duty              LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.speciality                     LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.full_time_education_level      LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.full_time_education_school_and_major LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.on_job_education_level         LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.on_job_education_school_and_major LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.work_post                      LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.proposed_appointment_position  LIKE #{likeKeywords, jdbcType=VARCHAR}
+					OR u.proposed_removal_position      LIKE #{likeKeywords, jdbcType=VARCHAR}
+					)
+				</otherwise>
+			</choose>
+		</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}
 		order by d."order_num" ASC, u.sequence ASC,ifnull(case when u.work_post_code ='' then null else u.work_post_code end,u.work_title_code ) asc nulls last
@@ -769,7 +840,7 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.advantages,u.disadvantages,u.reserve_user
@@ -964,7 +1035,7 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array, u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.position_short,u.advantages,u.disadvantages,u.reserve_user,
@@ -1155,7 +1226,7 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array, u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.position_short,u.advantages,u.disadvantages,u.reserve_user
@@ -1335,7 +1406,7 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		sr.role_name, u.sequence,u.ability_label,u.advantages,u.disadvantages
 		from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
@@ -1510,7 +1581,7 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.advantages,u.disadvantages
@@ -1686,7 +1757,7 @@
 		d.dept_name, d.leader,u.name,u.native_place,u.birth_place,u.second_party,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
-		u.grow_place,u.level,u.qualifications,u.treatment,u.secret_level,
+		u.grow_place,u.level,u.qualifications,u.treatment,u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array,u.advantages,u.disadvantages
@@ -1907,6 +1978,9 @@
 		<if test="retirementTime != null and retirementTime != ''">retirement_time,</if>
 		<if test="signImg != null and signImg != ''">sign_img,</if>
 		<if test="isHostingWork != null and isHostingWork != ''">is_hosting_work,</if>
+		<if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">civil_servant_register_time,</if>
+		<if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">statistical_relation_unit,</if>
+		<if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">has_two_years_grassroots_work,</if>
 		<!--	统计局项目新增字段 结束	-->
 		<!--	市纪委新增字段 开始	-->
 		<if test="professionalDuty != null and professionalDuty != ''">professional_duty,</if>
@@ -1993,6 +2067,9 @@
 		<if test="retirementTime != null and retirementTime != ''">#{retirementTime},</if>
 		<if test="signImg != null and signImg != ''">#{signImg},</if>
 		<if test="isHostingWork != null and isHostingWork != ''">#{isHostingWork},</if>
+		<if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">#{civilServantRegisterTime},</if>
+		<if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">#{statisticalRelationUnit},</if>
+		<if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">#{hasTwoYearsGrassrootsWork},</if>
 		<!--	统计局项目新增字段 结束	-->
 		<!--	市纪委新增字段 开始	-->
 		<if test="professionalDuty != null and professionalDuty != ''">#{professionalDuty},</if>
@@ -2126,6 +2203,9 @@
 			<if test="retirementTime != null and retirementTime != ''">retirement_time = #{retirementTime},</if>
 			<if test="signImg != null and signImg != ''">sign_img = #{signImg},</if>
 			<if test="isHostingWork != null and isHostingWork != ''">is_hosting_work = #{isHostingWork},</if>
+			<if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">civil_servant_register_time = #{civilServantRegisterTime},</if>
+			<if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">statistical_relation_unit = #{statisticalRelationUnit},</if>
+			<if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">has_two_years_grassroots_work = #{hasTwoYearsGrassrootsWork},</if>
 			<!--	统计局项目新增字段 结束	-->
 			<!--	市纪委新增字段 开始	-->
 			<if test="professionalDuty != null and professionalDuty != ''">professional_duty = #{professionalDuty},</if>
@@ -2823,7 +2903,7 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level, u.statistical_relation_unit, u.has_two_years_grassroots_work,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.advantages,u.disadvantages,u.reserve_user,u.position_short
@@ -2872,7 +2952,7 @@
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree,  u.lending_units,u.retirement_time,u.sign_img,u.work_title_code,u.work_post_code,u.is_hosting_work,
-		u.secret_level,
+		u.secret_level, u.statistical_relation_unit, u.has_two_years_grassroots_work,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array, u.sequence,u.ability_label,u.other_label,u.recruit_lot,u.position_short,u.advantages,u.disadvantages

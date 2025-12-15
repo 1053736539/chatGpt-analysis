@@ -75,6 +75,12 @@ public class BusDepReviewData extends BaseEntity {
 
 
     /**
+     * 扣分小计
+     */
+    private String deductPoints;
+
+
+    /**
      * 文件路径
      */
     @Excel(name = "文件路径")
@@ -87,4 +93,5 @@ public class BusDepReviewData extends BaseEntity {
     @Excel(name = "文件索引id")
     private String attachId;
 
+    private String deptName;
 }

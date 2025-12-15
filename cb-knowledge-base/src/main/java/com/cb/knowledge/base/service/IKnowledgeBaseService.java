@@ -65,4 +65,12 @@ public interface IKnowledgeBaseService {
      * @version 1.0
      */
     List<File> exportKnowLedgeBases();
+
+
+    /**
+     * @description 关键字检索知识库
+     * @param knowledgeBase
+     * @return
+     */
+    List<KnowledgeBase> searchDataByKeywords(KnowledgeBase knowledgeBase);
 }

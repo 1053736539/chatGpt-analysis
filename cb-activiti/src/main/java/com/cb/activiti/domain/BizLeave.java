@@ -210,6 +210,28 @@ public class BizLeave extends ProcessEntity
 
     private  String inspectionTeamHeadOpinions;
 
+    private String searchKeywords;
+
+    private Integer pageType;
+
+
+    public String getSearchKeywords() {
+        return searchKeywords;
+    }
+
+    public void setSearchKeywords(String searchKeywords) {
+        this.searchKeywords = searchKeywords;
+    }
+
+    public Integer getPageType() {
+        return pageType;
+    }
+
+    public void setPageType(Integer pageType) {
+        this.pageType = pageType;
+    }
+
+
     public String getInspectionTeamHeadOpinions() {
         return inspectionTeamHeadOpinions;
     }

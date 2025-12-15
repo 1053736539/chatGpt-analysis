@@ -73,8 +73,8 @@ public class SysUserInfoStatisticsServiceImpl implements ISysUserInfoStatisticsS
      * @return
      */
     @Override
-    public List<Map<String, Object>> selectIdentityTypeCount(Long deptId) {
-        return userInfoStatisticsMapper.selectIdentityTypeCount(deptId);
+    public List<Map<String, Object>> selectIdentityTypeCount(Long deptId, String identityType) {
+        return userInfoStatisticsMapper.selectIdentityTypeCount(deptId, identityType);
     }
 
     /***
@@ -350,6 +350,17 @@ public class SysUserInfoStatisticsServiceImpl implements ISysUserInfoStatisticsS
     @Override
     public List<Map<String, Object>> selectAbilityLabelCount() {
         return userInfoStatisticsMapper.selectAbilityLabelCount();
+    }
+
+    /**
+     * 民族统计
+     * @param deptId
+     * @param nation
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> selectNationCount(Long deptId, String nation) {
+        return userInfoStatisticsMapper.selectNationCount(deptId, nation);
     }
 
 

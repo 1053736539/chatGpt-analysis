@@ -24,9 +24,11 @@ import com.cb.leave.domain.LeaveTypes;
 import com.cb.leave.mapper.LeaveBalancesMapper;
 import com.cb.leave.service.ILeaveBalancesService;
 import com.cb.leave.service.ILeaveTypesService;
+import com.cb.system.mapper.SysUserMapper;
 import com.cb.system.service.ISysUserService;
 import lombok.AllArgsConstructor;
 import org.apache.poi.util.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.cb.activiti.mapper.BizLeaveMapper;
 import com.cb.activiti.service.IBizLeaveService;
@@ -54,6 +56,9 @@ public class BizLeaveServiceImpl implements IBizLeaveService
     private ILeaveBalancesService leaveBalancesService;
 
     private LeaveBalancesMapper leaveBalancesMapper;
+
+    @Autowired
+    private SysUserMapper userMapper;
 
     /**
      * 查询请假
@@ -227,6 +232,7 @@ public class BizLeaveServiceImpl implements IBizLeaveService
         return bizLeaveMapper.selectPassedBizLeaveList(bizLeave);
     }
 
+
     /**
      * 修改请假
      *
@@ -323,10 +329,28 @@ public class BizLeaveServiceImpl implements IBizLeaveService
                     e.printStackTrace();
                 }
                 String createBy = item.getApplyUserId();
+                SysUser applyUser = userMapper.selectUserByUserName(createBy);
+                item.setApplyUser(applyUser);
+            });
+        }
+        return list;
+    }
+
+
+    @Override
+    public List<BizLeave> searchBizLeaveList(BizLeave bizLeave) {
+        if (!SecurityUtils.isAdmin(SecurityUtils.getLoginUser().getUser().getUserId()) && !SecurityUtils.hasRole("organization_admin")) {
+            bizLeave.setApplyUserId(SecurityUtils.getUsername());
+        }
+        List<BizLeave> list = bizLeaveMapper.searchBizLeaveList(bizLeave);
+        if (!CollectionUtils.isEmpty(list)) {
+            list.forEach(item -> {
+                String createBy = item.getApplyUserId();
                 SysUser applyUser = userService.selectUserByUserName(createBy);
                 item.setApplyUser(applyUser);
             });
         }
         return list;
     }
+
 }

@@ -238,4 +238,22 @@
     <select id="selectFilePaths" resultType="java.lang.String">
         select file_path from knowledge_base
     </select>
+
+
+    <select id="searchKnowledgeListByKeywords" parameterType="com.cb.knowledge.base.domain.entity.KnowledgeBase" resultMap="knowledgeResult">
+        <include refid="selectKnowledgeVo"/>
+        <where>
+            kb.del_flag = '0'
+            <if test="searchKeywords != null and searchKeywords != ''">
+                and (
+                kb.file_name like '%' || #{searchKeywords} || '%'
+                or kb.file_desc like '%' || #{searchKeywords} || '%'
+                or kb.file_suffix like '%' || #{searchKeywords} || '%'
+                or kb.file_tags like '%' || #{searchKeywords} || '%'
+                or dtt.dict_name like '%' || #{searchKeywords} || '%'
+                )
+            </if>
+        </where>
+        order by kb.id desc
+    </select>
 </mapper>
