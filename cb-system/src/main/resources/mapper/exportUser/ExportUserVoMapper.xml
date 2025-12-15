@@ -27,7 +27,13 @@
         left join v_user_education_and_degree_guomin ueadg on ueadg.user_id = u.user_id
         where u.del_flag = '0' and u.user_type = '00' and u.personnel_status in(1,2)
         <if test="name != null and name != ''">
-            AND u.name like concat('%', #{name}, '%')
+            AND (
+            u.name like concat('%', #{name}, '%')
+            <if test="params.namePinyin != null and params.namePinyin != ''">
+                OR lower(u.user_name) like concat('%', #{params.namePinyin}, '%')
+                OR lower(u.user_name) like #{params.namePinyinFuzzy}
+            </if>
+            )
         </if>
         <if test="userName != null and userName != ''">
             AND u.user_name like concat('%', #{userName}, '%')
@@ -36,6 +42,12 @@
             AND
             <foreach item="item" collection="abilityLabelIds" open="(" close=")" separator=" and ">
                 find_in_set( #{item},u."ability_label")
+            </foreach>
+        </if>
+        <if test="reserveUsers != null and reserveUsers.length>0">
+            AND u.reserve_user  in
+            <foreach item="item" collection="reserveUsers" open="(" close=")" separator=" , ">
+                #{item}
             </foreach>
         </if>
         <if test="isSelectedStudent != null  and isSelectedStudent != ''"> AND u.is_selected_student = #{isSelectedStudent}</if>
@@ -93,6 +105,12 @@
         </if>
         <if test="personnelStatus != null and personnelStatus != ''">
             AND u.personnel_status=#{personnelStatus}
+        </if>
+        <if test="lendingUnits != null and lendingUnits != ''">
+            AND u.lending_units=#{lendingUnits}
+        </if>
+        <if test="retirementTime != null and retirementTime != ''"><!-- 退休时间 -->
+            AND u.retirement_time = #{retirementTime}
         </if>
         <if test="params.beginbirthday != null and params.beginbirthday != ''"><!-- 开始时间检索 -->
             AND u.birthday &gt;= #{params.beginbirthday}

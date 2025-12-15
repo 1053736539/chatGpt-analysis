@@ -28,7 +28,7 @@ import java.util.*;
 public abstract class ExportHandler implements Conditions, ExportSql {
     private final static String UPDATE_TABLE_DML = "UPDATE {} SET {} WHERE {};\n";
 
-    private final static String INSERT_TABLE_DML = "INSERT INTO {} ({}) VALUES ({});\n";
+    private final static String INSERT_TABLE_DML = "INSERT OR REPLACE INTO {} ({}) VALUES ({});\n";
 
     // 数据库文件
     public static final String DB_NAME = "gbgl.db";
