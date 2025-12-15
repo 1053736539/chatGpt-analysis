@@ -41,10 +41,11 @@
 		<result property="politicalIdentity"       column="political_identity"       />
 		<result property="partyJoinTime"       column="party_join_time"       />
 		<result property="secondParty"       column="second_party"       />
-		<result property="thirdParty"       column="third_party"       />
-		<result property="startWorkTime"       column="start_work_time"       />
-		<result property="healthCondition"       column="health_condition"       />
-		<result property="speciality"       column="speciality"       />
+                <result property="thirdParty"       column="third_party"       />
+                <result property="startWorkTime"       column="start_work_time"       />
+                <result property="civilServantRegisterTime"       column="civil_servant_register_time"       />
+                <result property="healthCondition"       column="health_condition"       />
+                <result property="speciality"       column="speciality"       />
 		<result property="idcard"       column="idcard"       />
 		<result property="manageType"       column="manage_type"       />
 		<result property="staffType"       column="staff_type"       />
@@ -67,14 +68,16 @@
 		<result property="treatment"       column="treatment"       />
 		<result property="officeTel"       column="office_tel"       />
 		<result property="isMainLeader"       column="is_main_leader"       />
-		<result property="joinOrgTime"       column="join_org_time"       />
-		<result property="grassrootsWorkTime"       column="grassroots_work_time"       />
-		<result property="sectionChiefTime"       column="section_chief_time"       />
-		<result property="joinDeptTime"       column="join_dept_time"       />
-		<result property="maritalStatus"       column="marital_status"       />
-		<result property="isVeterans"       column="is_veterans"       />
-		<result property="education"       column="education"       />
-		<result property="degree"       column="degree"       />
+                <result property="joinOrgTime"       column="join_org_time"       />
+                <result property="grassrootsWorkTime"       column="grassroots_work_time"       />
+                <result property="sectionChiefTime"       column="section_chief_time"       />
+                <result property="joinDeptTime"       column="join_dept_time"       />
+                <result property="statisticalRelationUnit"       column="statistical_relation_unit"       />
+                <result property="hasTwoYearsGrassrootsWork"       column="has_two_years_grassroots_work"       />
+                <result property="maritalStatus"       column="marital_status"       />
+                <result property="isVeterans"       column="is_veterans"       />
+                <result property="education"       column="education"       />
+                <result property="degree"       column="degree"       />
 		<result property="personnelStatus"  column="personnel_status" />
 		<result property="lendingUnits"  column="lending_units" />
 		<result property="retirementTime"  column="retirement_time" />
@@ -295,12 +298,12 @@
 	<sql id="selectUserVo">
 		select u.user_id, u.dept_id, u.user_name, u.nick_name, u.email, u.avatar, u.phonenumber, u.password, u.sex, u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark, u.user_type,
 		u.name, u.birthday, u.nation, u.native_place, u.birth_place, u.political_identity, u.party_join_time,
-		u.second_party, u.third_party, u.start_work_time, u.health_condition, u.speciality, u.idcard, u.manage_type,
-		u.staff_type, u.identity_type, u.work_post, u.work_post_code, u.work_post_time, u.same_work_post_time,
-		u.work_title, u.work_title_code, u.work_title_time, u.same_work_title_time, u.is_enrollment,
-		u.enrollment_time, u.is_selected_student, u.selected_student_time, u.grow_place, u.level, u.qualifications,
-		u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
-		u.marital_status, u.is_veterans, u.education, u.degree,u.personnel_status,u.lending_units,u.retirement_time,u.retirement_time,u.sign_img,u.is_hosting_work,
+                u.second_party, u.third_party, u.start_work_time, u.civil_servant_register_time, u.health_condition, u.speciality, u.idcard, u.manage_type,
+                u.staff_type, u.identity_type, u.work_post, u.work_post_code, u.work_post_time, u.same_work_post_time,
+                u.work_title, u.work_title_code, u.work_title_time, u.same_work_title_time, u.is_enrollment,
+                u.enrollment_time, u.is_selected_student, u.selected_student_time, u.grow_place, u.level, u.qualifications,
+                u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time, u.statistical_relation_unit, u.has_two_years_grassroots_work,
+                u.marital_status, u.is_veterans, u.education, u.degree,u.personnel_status,u.lending_units,u.retirement_time,u.retirement_time,u.sign_img,u.is_hosting_work,
 	    u.secret_level,u.sequence,u.ability_label,u.other_label,u.recruit_lot,
 	   u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 	   u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
@@ -328,10 +331,10 @@
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type, u.personnel_status,
 		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
-		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
-		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
-		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
-		u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.is_hosting_work,u.secret_level,
+                u.third_party,u.start_work_time,u.civil_servant_register_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
+                u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
+                u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time, u.statistical_relation_unit, u.has_two_years_grassroots_work,
+                u.marital_status, u.is_veterans, u.education, u.degree, u.lending_units,u.retirement_time,u.sign_img,u.is_hosting_work,u.secret_level,
 		u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 		u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 		u.family_member_json_array,u.sequence,u.ability_label,u.other_label,u.advantages,u.disadvantages
@@ -1868,10 +1871,11 @@
 		<if test="politicalIdentity != null and politicalIdentity != ''">political_identity,</if>
 		<if test="partyJoinTime != null and partyJoinTime != ''">party_join_time,</if>
 		<if test="secondParty != null and secondParty != ''">second_party,</if>
-		<if test="thirdParty != null and thirdParty != ''">third_party,</if>
-		<if test="startWorkTime != null and startWorkTime != ''">start_work_time,</if>
-		<if test="healthCondition != null and healthCondition != ''">health_condition,</if>
-		<if test="speciality != null and speciality != ''">speciality,</if>
+                <if test="thirdParty != null and thirdParty != ''">third_party,</if>
+                <if test="startWorkTime != null and startWorkTime != ''">start_work_time,</if>
+                <if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">civil_servant_register_time,</if>
+                <if test="healthCondition != null and healthCondition != ''">health_condition,</if>
+                <if test="speciality != null and speciality != ''">speciality,</if>
 		<if test="idcard != null and idcard != ''">idcard,</if>
 		<if test="manageType != null and manageType != ''">manage_type,</if>
 		<if test="staffType != null and staffType != ''">staff_type,</if>
@@ -1895,10 +1899,12 @@
 		<if test="officeTel != null and officeTel != ''">office_tel,</if>
 		<if test="isMainLeader != null and isMainLeader != ''">is_main_leader,</if>
 		<if test="joinOrgTime != null and joinOrgTime != ''">join_org_time,</if>
-		<if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">grassroots_work_time,</if>
-		<if test="sectionChiefTime != null and sectionChiefTime != ''">section_chief_time,</if>
-		<if test="joinDeptTime != null and joinDeptTime != ''">join_dept_time,</if>
-		<if test="maritalStatus != null and maritalStatus != ''">marital_status,</if>
+                <if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">grassroots_work_time,</if>
+                <if test="sectionChiefTime != null and sectionChiefTime != ''">section_chief_time,</if>
+                <if test="joinDeptTime != null and joinDeptTime != ''">join_dept_time,</if>
+                <if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">statistical_relation_unit,</if>
+                <if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">has_two_years_grassroots_work,</if>
+                <if test="maritalStatus != null and maritalStatus != ''">marital_status,</if>
 		<if test="isVeterans != null and isVeterans != ''">is_veterans,</if>
 		<if test="education != null and education != ''">education,</if>
 		<if test="degree != null and degree != ''">is_veterans,</if>
@@ -1954,10 +1960,11 @@
 		<if test="politicalIdentity != null and politicalIdentity != ''">#{politicalIdentity},</if>
 		<if test="partyJoinTime != null and partyJoinTime != ''">#{partyJoinTime},</if>
 		<if test="secondParty != null and secondParty != ''">#{secondParty},</if>
-		<if test="thirdParty != null and thirdParty != ''">#{thirdParty},</if>
-		<if test="startWorkTime != null and startWorkTime != ''">#{startWorkTime},</if>
-		<if test="healthCondition != null and healthCondition != ''">#{healthCondition},</if>
-		<if test="speciality != null and speciality != ''">#{speciality},</if>
+                <if test="thirdParty != null and thirdParty != ''">#{thirdParty},</if>
+                <if test="startWorkTime != null and startWorkTime != ''">#{startWorkTime},</if>
+                <if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">#{civilServantRegisterTime},</if>
+                <if test="healthCondition != null and healthCondition != ''">#{healthCondition},</if>
+                <if test="speciality != null and speciality != ''">#{speciality},</if>
 		<if test="idcard != null and idcard != ''">#{idcard},</if>
 		<if test="manageType != null and manageType != ''">#{manageType},</if>
 		<if test="staffType != null and staffType != ''">#{staffType},</if>
@@ -1981,10 +1988,12 @@
 		<if test="officeTel != null and officeTel != ''">#{officeTel},</if>
 		<if test="isMainLeader != null and isMainLeader != ''">#{isMainLeader},</if>
 		<if test="joinOrgTime != null and joinOrgTime != ''">#{joinOrgTime},</if>
-		<if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">#{grassrootsWorkTime},</if>
-		<if test="sectionChiefTime != null and sectionChiefTime != ''">#{sectionChiefTime},</if>
-		<if test="joinDeptTime != null and joinDeptTime != ''">#{joinDeptTime},</if>
-		<if test="maritalStatus != null and maritalStatus != ''">#{maritalStatus},</if>
+                <if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">#{grassrootsWorkTime},</if>
+                <if test="sectionChiefTime != null and sectionChiefTime != ''">#{sectionChiefTime},</if>
+                <if test="joinDeptTime != null and joinDeptTime != ''">#{joinDeptTime},</if>
+                <if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">#{statisticalRelationUnit},</if>
+                <if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">#{hasTwoYearsGrassrootsWork},</if>
+                <if test="maritalStatus != null and maritalStatus != ''">#{maritalStatus},</if>
 		<if test="isVeterans != null and isVeterans != ''">#{isVeterans},</if>
 		<if test="education != null and education != ''">#{education},</if>
 		<if test="degree != null and degree != ''">#{degree},</if>
@@ -2087,10 +2096,11 @@
 			<if test="politicalIdentity != null and politicalIdentity != ''">political_identity = #{politicalIdentity},</if>
 			<if test="partyJoinTime != null and partyJoinTime != ''">party_join_time = #{partyJoinTime},</if>
 			<if test="secondParty != null and secondParty != ''">second_party = #{secondParty},</if>
-			<if test="thirdParty != null and thirdParty != ''">third_party = #{thirdParty},</if>
-			<if test="startWorkTime != null and startWorkTime != ''">start_work_time = #{startWorkTime},</if>
-			<if test="healthCondition != null and healthCondition != ''">health_condition = #{healthCondition},</if>
-			<if test="speciality != null and speciality != ''">speciality = #{speciality},</if>
+                        <if test="thirdParty != null and thirdParty != ''">third_party = #{thirdParty},</if>
+                        <if test="startWorkTime != null and startWorkTime != ''">start_work_time = #{startWorkTime},</if>
+                        <if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">civil_servant_register_time = #{civilServantRegisterTime},</if>
+                        <if test="healthCondition != null and healthCondition != ''">health_condition = #{healthCondition},</if>
+                        <if test="speciality != null and speciality != ''">speciality = #{speciality},</if>
 			<if test="idcard != null and idcard != ''">idcard = #{idcard},</if>
 			<if test="manageType != null and manageType != ''">manage_type = #{manageType},</if>
 			<if test="staffType != null and staffType != ''">staff_type = #{staffType},</if>
@@ -2114,10 +2124,12 @@
 			<if test="officeTel != null and officeTel != ''">office_tel = #{officeTel},</if>
 			<if test="isMainLeader != null and isMainLeader != ''">is_main_leader = #{isMainLeader},</if>
 			<if test="joinOrgTime != null and joinOrgTime != ''">join_org_time = #{joinOrgTime},</if>
-			<if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">grassroots_work_time = #{grassrootsWorkTime},</if>
-			<if test="sectionChiefTime != null and sectionChiefTime != ''">section_chief_time = #{sectionChiefTime},</if>
-			<if test="joinDeptTime != null and joinDeptTime != ''">join_dept_time = #{joinDeptTime},</if>
-			<if test="maritalStatus != null and maritalStatus != ''">marital_status = #{maritalStatus},</if>
+                        <if test="grassrootsWorkTime != null and grassrootsWorkTime != ''">grassroots_work_time = #{grassrootsWorkTime},</if>
+                        <if test="sectionChiefTime != null and sectionChiefTime != ''">section_chief_time = #{sectionChiefTime},</if>
+                        <if test="joinDeptTime != null and joinDeptTime != ''">join_dept_time = #{joinDeptTime},</if>
+                        <if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">statistical_relation_unit = #{statisticalRelationUnit},</if>
+                        <if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">has_two_years_grassroots_work = #{hasTwoYearsGrassrootsWork},</if>
+                        <if test="maritalStatus != null and maritalStatus != ''">marital_status = #{maritalStatus},</if>
 			<if test="isVeterans != null and isVeterans != ''">is_veterans = #{isVeterans},</if>
 			<if test="education != null and education != ''">education = #{education},</if>
 			<if test="degree != null and degree != ''">degree = #{degree},</if>

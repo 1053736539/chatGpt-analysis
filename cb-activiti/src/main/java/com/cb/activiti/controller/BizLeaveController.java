@@ -12,6 +12,7 @@ import com.cb.common.annotation.Log;
 import com.cb.common.annotation.RepeatSubmit;
 import com.cb.common.core.controller.BaseController;
 import com.cb.common.core.domain.AjaxResult;
+import com.cb.common.core.domain.DeptUserTreeSelect;
 import com.cb.common.core.domain.entity.SysDept;
 import com.cb.common.core.domain.entity.SysUser;
 import com.cb.common.core.domain.model.LoginUser;
@@ -82,6 +83,53 @@ public class BizLeaveController extends BaseController
     private ILeaveTypesService leaveTypesService;
     private  ISysUserService userService;
     private ISysDeptService deptService;
+
+    /**
+     * 下一步办理人树
+     */
+    @GetMapping("/nextHandlerTreeselect")
+    public AjaxResult nextHandlerTreeselect(SysDept dept)
+    {
+        List<SysDept> depts = deptService.selectDeptList(dept);
+        List<SysUser> users = userService.selectUserList(new SysUser());
+        Map<Long, List<SysUser>> usersByDept = users.stream()
+                .filter(user -> Objects.nonNull(user.getDeptId()))
+                .collect(Collectors.groupingBy(SysUser::getDeptId));
+
+        List<SysDept> deptTree = deptService.buildDeptTree(depts);
+        List<DeptUserTreeSelect> tree = deptTree.stream()
+                .map(item -> buildDeptUserTree(item, usersByDept))
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+        return AjaxResult.success(tree);
+    }
+
+    private DeptUserTreeSelect buildDeptUserTree(SysDept dept, Map<Long, List<SysUser>> usersByDept)
+    {
+        DeptUserTreeSelect node = new DeptUserTreeSelect(dept);
+        List<DeptUserTreeSelect> children = new ArrayList<>();
+        if (StringUtils.isNotNull(dept.getChildren()))
+        {
+            children.addAll(dept.getChildren().stream()
+                    .map(child -> buildDeptUserTree(child, usersByDept))
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList()));
+        }
+
+        List<SysUser> deptUsers = usersByDept.get(dept.getDeptId());
+        if (StringUtils.isNotEmpty(deptUsers))
+        {
+            node.setUserList(deptUsers.stream()
+                    .map(DeptUserTreeSelect::new)
+                    .collect(Collectors.toList()));
+        }
+        if (StringUtils.isEmpty(children) && StringUtils.isEmpty(deptUsers))
+        {
+            return null;
+        }
+        node.setChildren(children);
+        return node;
+    }
 
     /**
      * 查询请假列表

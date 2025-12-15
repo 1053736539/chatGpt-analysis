@@ -74,8 +74,9 @@ public class SysUserInfoStatisticsController {
      * @return
      */
     @GetMapping(value = {"/selectIdentityTypeCount", "/selectIdentityTypeCount/{deptId}"} )
-    public AjaxResult selectIdentityTypeCount(@PathVariable(value = "deptId", required = false) Long deptId) {
-        List<Map<String, Object>> selectIdentityTypeCount = userInfoStatisticsService.selectIdentityTypeCount(deptId);
+    public AjaxResult selectIdentityTypeCount(@PathVariable(value = "deptId", required = false) Long deptId,
+                                              @RequestParam(value = "identityType", required = false) String identityType) {
+        List<Map<String, Object>> selectIdentityTypeCount = userInfoStatisticsService.selectIdentityTypeCount(deptId, identityType);
         return AjaxResult.success(selectIdentityTypeCount);
     }
 
@@ -140,5 +141,19 @@ public class SysUserInfoStatisticsController {
     public  AjaxResult selectAbilityLabelCount(){
         List<Map<String, Object>> selectAbilityLabelCount = userInfoStatisticsService.selectAbilityLabelCount();
         return AjaxResult.success(selectAbilityLabelCount);
+    }
+
+    /**
+     * 民族统计
+     * @param deptId
+     * @param nation
+     * @return
+     */
+    @GetMapping(value = {"/selectNationCount", "/selectNationCount/{deptId}"})
+    public AjaxResult selectNationCount(@PathVariable(value = "deptId", required = false) Long deptId,
+                                        @RequestParam(value = "nation", required = false) String nation) {
+
+        List<Map<String, Object>> nationCountList = userInfoStatisticsService.selectNationCount(deptId, nation);
+        return AjaxResult.success(nationCountList);
     }
 }

@@ -42,7 +42,7 @@ public interface ISysUserInfoStatisticsService {
      * @param deptId
      * @return
      */
-    public List<Map<String, Object>> selectIdentityTypeCount(Long deptId);
+    public List<Map<String, Object>> selectIdentityTypeCount(Long deptId, String identityType);
 
     /**
      * 现任职务领导年限统计
@@ -197,6 +197,14 @@ public interface ISysUserInfoStatisticsService {
      * @return
      */
     public List<Map<String, Object>> selectFcjUpSybEducationDistributionNum();
+
+    /**
+     * 民族统计
+     * @param deptId
+     * @param nation
+     * @return
+     */
+    List<Map<String, Object>> selectNationCount(Long deptId, String nation);
 
     List<Map<String, Object>> selectAbilityLabelCount();
 }

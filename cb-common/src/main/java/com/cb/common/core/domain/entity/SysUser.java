@@ -287,6 +287,9 @@ public class SysUser extends BaseEntity {
     @Excel(name = "参加工作时间")
     private String startWorkTime;
 
+    @Excel(name = "公务员登记时间")
+    private String civilServantRegisterTime;
+
     @Excel(name = "健康状况")
     private String healthCondition;
 
@@ -328,6 +331,12 @@ public class SysUser extends BaseEntity {
 
     @Excel(name = "任同级职级时间")
     private String sameWorkTitleTime;
+
+    @Excel(name = "统计所在单位信息")
+    private String statisticalRelationUnit;
+
+    @Excel(name = "是否有两年以上基层工作经历")
+    private String hasTwoYearsGrassrootsWork;
 
     @Excel(name = "是否考录")
     private String isEnrollment;
@@ -816,6 +825,14 @@ public class SysUser extends BaseEntity {
         this.startWorkTime = startWorkTime;
     }
 
+    public String getCivilServantRegisterTime() {
+        return civilServantRegisterTime;
+    }
+
+    public void setCivilServantRegisterTime(String civilServantRegisterTime) {
+        this.civilServantRegisterTime = civilServantRegisterTime;
+    }
+
     public String getHealthCondition() {
         return healthCondition;
     }
@@ -990,6 +1007,22 @@ public class SysUser extends BaseEntity {
 
     public void setSameWorkTitleTime(String sameWorkTitleTime) {
         this.sameWorkTitleTime = sameWorkTitleTime;
+    }
+
+    public String getStatisticalRelationUnit() {
+        return statisticalRelationUnit;
+    }
+
+    public void setStatisticalRelationUnit(String statisticalRelationUnit) {
+        this.statisticalRelationUnit = statisticalRelationUnit;
+    }
+
+    public String getHasTwoYearsGrassrootsWork() {
+        return hasTwoYearsGrassrootsWork;
+    }
+
+    public void setHasTwoYearsGrassrootsWork(String hasTwoYearsGrassrootsWork) {
+        this.hasTwoYearsGrassrootsWork = hasTwoYearsGrassrootsWork;
     }
 
     public String getOfficeTel() {
@@ -1361,9 +1394,12 @@ public class SysUser extends BaseEntity {
                 .append("remark", getRemark())
                 .append("dept", getDept())
                 .append("userType", getUserType())
+                .append("civilServantRegisterTime", getCivilServantRegisterTime())
                 .append("personnelStatus", getPersonnelStatus())
                 .append("lendingUnits", getLendingUnits())
                 .append("retirementTime",getRetirementTime())
+                .append("statisticalRelationUnit", getStatisticalRelationUnit())
+                .append("hasTwoYearsGrassrootsWork", getHasTwoYearsGrassrootsWork())
                 .append("signImg",getSignImg())
                 .append("isHostingWork", getIsHostingWork())
                 .append("sysUserResumeInfoList", getSysUserResumeInfoList())

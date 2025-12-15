@@ -492,6 +492,9 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Override
     public String checkIdcardUnique(String idcard, Long userId) {
+        if (StringUtils.isEmpty(idcard)) {
+            return UserConstants.UNIQUE;
+        }
         int count = userMapper.checkIdcardUnique(idcard, userId);
         if (count > 0) {
             return UserConstants.NOT_UNIQUE;
