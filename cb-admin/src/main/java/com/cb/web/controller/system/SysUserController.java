@@ -21,8 +21,10 @@ import com.cb.common.utils.DateUtils;
 import com.cb.common.utils.SecurityUtils;
 import com.cb.common.utils.ServletUtils;
 import com.cb.common.utils.StringUtils;
+import com.cb.common.utils.file.FileUploadUtils;
 import com.cb.common.utils.poi.ExcelUtil;
 import com.cb.common.utils.uuid.IdUtils;
+import com.cb.filemanage.domain.BizAttach;
 import com.cb.framework.web.service.TokenService;
 import com.cb.leave.service.ILeaveBalancesService;
 import com.cb.oa.domain.SysUserOut;
@@ -51,10 +53,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -67,6 +71,9 @@ import java.util.zip.ZipOutputStream;
 @RestController
 @RequestMapping("/system/user")
 public class SysUserController extends BaseController {
+
+    private static final String WORD_IMPORT_PREVIEW_PREFIX = "word:import:preview:";
+
     @Autowired
     private ISysUserService userService;
 
@@ -1253,4 +1260,73 @@ public class SysUserController extends BaseController {
     public AjaxResult delete() {
         return toAjax(userService.completelyDeleteAllUserByIds());
     }
+
+
+    /**
+     * 解析word内容用于预览
+     */
+    @PostMapping("/previewImportUserWord")
+    public AjaxResult previewImportUserWord(@RequestParam(value = "file", required = false) MultipartFile file,
+                                            @RequestParam(value = "filePath", required = false) String filePath,
+                                            @RequestParam(value = "userId", required = false) Long userId) {
+//        if (userId == null) {
+//            return AjaxResult.error("请选择需要更新的用户");
+//        }
+        if ((file == null || file.isEmpty()) && StringUtils.isBlank(filePath)) {
+            return AjaxResult.error("未检测到文件，请选择文件！");
+        }
+        File sourceFile = null;
+        boolean deleteAfterRead = false;
+        try {
+            if (file != null && !file.isEmpty()) {
+                sourceFile = File.createTempFile("word-import-", ".docx");
+                file.transferTo(sourceFile);
+                deleteAfterRead = true;
+            } else {
+                String localPath = RuoYiConfig.getProfile();
+                String relativePath = filePath;
+                if (filePath.startsWith(Constants.RESOURCE_PREFIX)) {
+                    relativePath = StringUtils.substringAfter(filePath, Constants.RESOURCE_PREFIX);
+                }
+                if (!relativePath.startsWith("/")) {
+                    relativePath = "/" + relativePath;
+                }
+                sourceFile = new File(localPath + relativePath);
+                if (!sourceFile.exists() || !sourceFile.isFile()) {
+                    return AjaxResult.error("文件不存在或不可读");
+                }
+            }
+            WordUserVo wordUserVo = WordImportUtil.readUserByWord(sourceFile);
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("data", wordUserVo);
+            return ajax;
+        } catch (Exception e) {
+            return AjaxResult.error("word解析失败：" + e.getMessage());
+        } finally {
+            if (deleteAfterRead && sourceFile != null && sourceFile.exists()) {
+                sourceFile.delete();
+            }
+        }
+    }
+
+    @Log(title = "业务文件上传", businessType = BusinessType.INSERT)
+    @PostMapping("/fileUpload")
+    public AjaxResult uploadFile(MultipartFile file, String folderId) {
+        try {
+            // 上传文件路径
+            String filePath = RuoYiConfig.getUploadPath();
+            Map<String, String> map = FileUploadUtils.originalUpload(filePath, file);
+            String originName =map.get("oldName");
+            String relativePath =map.get("path");
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("fileName", originName);
+            ajax.put("url", relativePath);
+            return ajax;
+        } catch (Exception e) {
+            return AjaxResult.error(e.getMessage());
+        }
+    }
+
+
+
 }

@@ -14,8 +14,7 @@ import java.util.List;
  *
  * @author ruoyi
  */
-public interface ISysUserService
-{
+public interface ISysUserService {
     /**
      * 根据条件分页查询用户列表
      *
@@ -23,6 +22,7 @@ public interface ISysUserService
      * @return 用户信息集合信息
      */
     public List<SysUser> selectUserList(SysUser user);
+
     public List<SysUser> selectAllUserList();
 
     /**
@@ -35,13 +35,13 @@ public interface ISysUserService
 
     /**
      * 获取联络员用户列表
+     *
      * @param user
      * @return
      */
     public List<SysUser> selectLiaisonInfoList(SysUser user);
 
     /**
-     *
      * @param user
      * @return
      */
@@ -58,6 +58,7 @@ public interface ISysUserService
 
     /**
      * 根据登录用户名拼接字符串获取用于显示的用户名拼接字符串
+     *
      * @param loginNames
      * @return
      */
@@ -68,6 +69,7 @@ public interface ISysUserService
     String getUserIdStrByLoginNameList(List<String> loginNameList);
 
     String getNameStrByUserIdList(List<Long> userIdList);
+
     List<SysUser> selectUserListByUserIds(List<Long> userIdList);
 
     /**
@@ -85,7 +87,7 @@ public interface ISysUserService
      * @param deptName 部门
      * @return 用户对象信息
      */
-    public SysUser selectUserByUserNameAndDeptName(String userName,String deptName);
+    public SysUser selectUserByUserNameAndDeptName(String userName, String deptName);
 
     /**
      * 通过用户ID查询用户
@@ -94,6 +96,7 @@ public interface ISysUserService
      * @return 用户对象信息
      */
     public SysUser selectUserById(Long userId);
+
     public SysUser selectUserByUserId(Long userId);
 
     /**
@@ -166,6 +169,7 @@ public interface ISysUserService
      * @return 结果
      */
     public int updateUser(SysUser user);
+
     public int updateUserByUserId(Long userId, String positionShort);
 
     public int encryptMobile(SysUser user);
@@ -190,7 +194,7 @@ public interface ISysUserService
      * 修改用户头像
      *
      * @param userName 用户名
-     * @param avatar 头像地址
+     * @param avatar   头像地址
      * @return 结果
      */
     public boolean updateUserAvatar(String userName, String avatar);
@@ -231,29 +235,34 @@ public interface ISysUserService
     /**
      * 导入用户数据
      *
-     * @param userList 用户数据列表
+     * @param userList        用户数据列表
      * @param isUpdateSupport 是否更新支持，如果已存在，则进行更新数据
-     * @param operName 操作用户
+     * @param operName        操作用户
      * @return 结果
      */
     public String importUser(List<SysUser> userList, Boolean isUpdateSupport, String operName);
 
     public String importUser2(List<ImportUserVo> userList, Boolean isUpdateSupport, String operName);
+
     public String importUser3(List<SysUserShiYeVo> userList, Boolean isUpdateSupport, String operName);
-     public String importUser4(List<SysUserHeTongVo> userList, Boolean updateSupport, String operName);
+
+    public String importUser4(List<SysUserHeTongVo> userList, Boolean updateSupport, String operName);
 
     public int permissionSet(SysUser user);
 
-    public SysUser selectUserByUserNameAndPassword(String userName,String password);
+    public SysUser selectUserByUserNameAndPassword(String userName, String password);
 
 
-    public int updateDeptId(Long userId,Long deptId);
+    public int updateDeptId(Long userId, Long deptId);
 
     public List<SysUser> userSelectorList(SysUser user);
+
     public List<SysUser> selectorUserList(SysUser user);
 
     public List<VSysUser> selectVSysUserList(VSysUser user);
+
     public List<VSysUser> selectAllVSysUserList();
+
     public List<VSysUser> selectVSysUserListByRoles(VSysUser user);
 
     public List<SysUserTechnicalPositionInfo> selectTechnicalPositionInfoByUserId(Long userId);
@@ -297,7 +306,7 @@ public interface ISysUserService
 
     public List<SysUserGrassrootsWorkInfo> selectGrassrootsWorkInfoByUserId(Long userId);
 
-    public List<Long> selectUserIdsByIdentityTypeAndPost(List<Long> deptIds,List<String> types);
+    public List<Long> selectUserIdsByIdentityTypeAndPost(List<Long> deptIds, List<String> types);
 
     public List<SysUser> selectUserListByCondition(String condition, List<Long> deptIds);
 
@@ -308,6 +317,7 @@ public interface ISysUserService
 
     /**
      * 根据姓名查询用户列表
+     *
      * @param user
      * @return
      */
@@ -317,6 +327,7 @@ public interface ISysUserService
 
     /**
      * 查询部门的主要负责人
+     *
      * @param deptId
      * @return
      */
@@ -324,6 +335,7 @@ public interface ISysUserService
 
     /**
      * 查询部门的分管领导
+     *
      * @param deptId
      * @return
      */
@@ -331,6 +343,7 @@ public interface ISysUserService
 
     /**
      * 根据有指定角色key的用户列表
+     *
      * @param roleKey
      * @return
      */
@@ -338,6 +351,7 @@ public interface ISysUserService
 
     /**
      * 导入word用户
+     *
      * @param wordUserVo
      * @return
      */
@@ -345,6 +359,7 @@ public interface ISysUserService
 
     /**
      * 批量修改用户部门
+     *
      * @param user
      * @return
      */
@@ -352,6 +367,7 @@ public interface ISysUserService
 
     /**
      * 根据用户标签ID查询用户列表
+     *
      * @param user
      * @return
      */
@@ -359,10 +375,11 @@ public interface ISysUserService
 
     /**
      * 根据用户姓名查询用户信息
+     *
      * @param nickName
      * @return
      */
-    List<SysUser>  selectUserByNickName(String nickName);
+    List<SysUser> selectUserByNickName(String nickName);
 
 
     List<SysUser> selectUserByNickNameAndDeptId(String nickName, Long deptId);
@@ -375,6 +392,7 @@ public interface ISysUserService
 
     /**
      * 恢复用户信息
+     *
      * @param userIds
      * @return
      */
@@ -382,6 +400,7 @@ public interface ISysUserService
 
     /**
      * 彻底删除用户数据
+     *
      * @param userIds
      * @return
      */
@@ -389,6 +408,7 @@ public interface ISysUserService
 
     /**
      * 恢复所有删除的数据
+     *
      * @param user
      * @return
      */
@@ -396,13 +416,15 @@ public interface ISysUserService
 
     /**
      * 彻底删除所有用户数据
+     *
      * @param user
      * @return
      */
-    public  int completelyDeleteAllUserByIds();
+    public int completelyDeleteAllUserByIds();
 
     /**
      * 储备干部设置
+     *
      * @param user
      * @return
      */
@@ -410,8 +432,25 @@ public interface ISysUserService
 
     /**
      * 修改申请记录通过后更新用户信息
+     *
      * @param user
      */
     public int updateByUserInfoApply(SysUser user);
 
+    /**
+     * 根据部门ID查询用户列表
+     *
+     * @param deptId
+     * @param queryMode  查询模式 contain 包含当前部门以及子部门用户
+     * @return
+     */
+    List<SysUser> selectUserByDeptId(Long deptId, String queryMode);
+
+    /**
+     * 通过word数据更新用户信息
+     * @param userId 用户id
+     * @param wordUserVo word解析数据
+     * @return 结果
+     */
+    int updateUserFromWord(Long userId, WordUserVo wordUserVo);
 }

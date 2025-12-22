@@ -13,8 +13,7 @@ import java.util.Map;
  *
  * @author ruoyi
  */
-public interface ISysDeptService
-{
+public interface ISysDeptService {
     /**
      * 查询部门管理数据
      *
@@ -121,9 +120,19 @@ public interface ISysDeptService
 
     /**
      * 获取部门基础信息用于考核方案
+     *
      * @return
      */
-    public Map<String,List<SysDeptBasicInfoVo>> getDeptList4PersonnelType();
+    public Map<String, List<SysDeptBasicInfoVo>> getDeptList4PersonnelType();
 
     SysDept selectDeptByDeptName(String deptName);
+
+    /**
+     * 查询部门树列表 带层级
+     *
+     * @param rootDeptId
+     * @param maxLevel
+     * @return
+     */
+    List<SysDept> selectDeptTreeList(Long rootDeptId, int maxLevel);
 }

@@ -159,5 +159,16 @@ public class SysUserInfoStatisticsController {
     }
 
 
+    /**
+     * 职务统计
+     *
+     * @return
+     */
+    @GetMapping(value = {"/selectPostLevelCount", "/selectPostLevelCount/{deptId}"})
+    public AjaxResult selectPostLevelCount(@PathVariable(value = "deptId", required = false) Long deptId) {
+        List<Map<String, Object>> postLevelCount = userInfoStatisticsService.selectPostLevelCount(deptId);
+        return AjaxResult.success(postLevelCount);
+    }
+
 
 }

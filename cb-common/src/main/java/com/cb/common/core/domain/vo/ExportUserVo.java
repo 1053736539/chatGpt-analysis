@@ -121,6 +121,9 @@ public class ExportUserVo extends BaseEntity implements Serializable {
     //@Excel(name = "人员类别")
     private String staffType;
 
+    @Excel(name = "人才类型")
+    private String talentType;
+
     @Excel(name = "编制",sort = 15, readConverterExp = "1=行政,2=参公,3=事业,4=企业", width = 5) //dictType = "preparation_type"
     private String identityType;
 
@@ -797,6 +800,14 @@ public class ExportUserVo extends BaseEntity implements Serializable {
 
     public void setPersonnelStatus(String personnelStatus) {
         this.personnelStatus = personnelStatus;
+    }
+
+    public String getTalentType() {
+        return talentType;
+    }
+
+    public void setTalentType(String talentType) {
+        this.talentType = talentType;
     }
 
 }

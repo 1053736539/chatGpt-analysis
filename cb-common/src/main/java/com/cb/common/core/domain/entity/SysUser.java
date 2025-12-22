@@ -519,6 +519,18 @@ public class SysUser extends BaseEntity {
     @Excel(name = "是否有两年以上基层工作经历")
     private String hasTwoYearsGrassrootsWork;
 
+    @Excel(name = "人才类型")
+    private String talentType;
+
+    public String getTalentType() {
+        return talentType;
+    }
+
+    public void setTalentType(String talentType) {
+        this.talentType = talentType;
+    }
+
+
     public String getCivilServantRegisterTime() {
         return civilServantRegisterTime;
     }

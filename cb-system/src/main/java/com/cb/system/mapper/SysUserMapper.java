@@ -12,8 +12,7 @@ import java.util.Map;
  *
  * @author ruoyi
  */
-public interface SysUserMapper
-{
+public interface SysUserMapper {
     /**
      * 根据条件分页查询用户列表
      *
@@ -21,6 +20,7 @@ public interface SysUserMapper
      * @return 用户信息集合信息
      */
     public List<SysUser> selectUserList(SysUser sysUser);
+
     public List<SysUser> selectAllUserList();
 
     /**
@@ -33,6 +33,7 @@ public interface SysUserMapper
 
     /**
      * 获取联络员用户列表
+     *
      * @param user
      * @return
      */
@@ -40,13 +41,16 @@ public interface SysUserMapper
 
     /**
      * 查询领导
+     *
      * @param sysUser
      * @return
      */
     public List<SysUser> listCadre(SysUser sysUser);
 
     public List<SysUser> selectUserListByIdentityType(SysUser sysUser);
+
     public List<SysUser> archivesUserList(SysUser sysUser);
+
     public List<SysUser> selectRetireesUserList(SysUser sysUser);
 
     public List<SysUser> selectUserListByLoginNames(@Param("loginNames") String[] loginNames);
@@ -60,6 +64,7 @@ public interface SysUserMapper
      * @return 用户对象信息
      */
     public SysUser selectUserByUserName(String userName);
+
     @Deprecated
     public SysUser selectUserByIdcard(String idcard);
 
@@ -72,6 +77,7 @@ public interface SysUserMapper
      * @return 用户对象信息
      */
     public SysUser selectUserById(Long userId);
+
     public SysUser selectUserByUserId(Long userId);
 
     /**
@@ -94,7 +100,7 @@ public interface SysUserMapper
      * 修改用户头像
      *
      * @param userName 用户名
-     * @param avatar 头像地址
+     * @param avatar   头像地址
      * @return 结果
      */
     public int updateUserAvatar(@Param("userName") String userName, @Param("avatar") String avatar);
@@ -157,17 +163,20 @@ public interface SysUserMapper
     public SysUser checkEmailUnique(String email);
 
 
-    public SysUser selectUserByUserNameAndPassword(@Param("userName") String userName,@Param("password") String password);
+    public SysUser selectUserByUserNameAndPassword(@Param("userName") String userName, @Param("password") String password);
 
     List<SysUser> selectUserListByRoleKey(String roleKey);
 
-    public int updateDeptId(@Param("userId") Long userId,@Param("deptId") Long deptId);
+    public int updateDeptId(@Param("userId") Long userId, @Param("deptId") Long deptId);
 
     public List<SysUser> userSelectorList(SysUser sysUser);
+
     public List<SysUser> selectorUserList(SysUser sysUser);
 
     public List<VSysUser> selectVSysUserList(VSysUser user);
+
     public List<VSysUser> selectAllVSysUserList();
+
     public List<VSysUser> selectVSysUserListByRoles(VSysUser user);
 
     /**
@@ -443,9 +452,9 @@ public interface SysUserMapper
     public List<SysUserGrassrootsWorkInfo> selectGrassrootsWorkInfoByUserId(Long userId);
 
 
-    public List<Long> selectUserIdsByIdentityTypeAndPost(@Param("deptIds")List<Long> deptIds,@Param("types") List<String> types);
+    public List<Long> selectUserIdsByIdentityTypeAndPost(@Param("deptIds") List<Long> deptIds, @Param("types") List<String> types);
 
-    public List<SysUser> selectUserListByCondition(@Param("condition")String condition, @Param("deptIds")List<Long> deptIds);
+    public List<SysUser> selectUserListByCondition(@Param("condition") String condition, @Param("deptIds") List<Long> deptIds);
 
     public List<SysUser> selectAll();
 
@@ -478,6 +487,7 @@ public interface SysUserMapper
 
     /**
      * 根据姓名查询用户列表
+     *
      * @param user
      * @return
      */
@@ -485,6 +495,7 @@ public interface SysUserMapper
 
     /**
      * 根据姓名列表查询用户列表
+     *
      * @param userNames
      * @return
      */
@@ -492,6 +503,7 @@ public interface SysUserMapper
 
     /**
      * 查询部门的主要负责人
+     *
      * @param deptId
      * @return
      */
@@ -499,6 +511,7 @@ public interface SysUserMapper
 
     /**
      * 查询部门下的用户
+     *
      * @param deptId
      * @return
      */
@@ -506,6 +519,7 @@ public interface SysUserMapper
 
     /**
      * 查询部门分管领导的userId
+     *
      * @param deptId
      * @return
      */
@@ -513,6 +527,7 @@ public interface SysUserMapper
 
     /**
      * 根据角色key查询用户列表
+     *
      * @param roleKey
      * @return
      */
@@ -520,6 +535,7 @@ public interface SysUserMapper
 
     /**
      * 批量修改用户部门
+     *
      * @param userIds
      * @param deptId
      * @return
@@ -528,6 +544,7 @@ public interface SysUserMapper
 
     /**
      * 根据用户登录名和部门查询用户信息
+     *
      * @param userName
      * @param deptName
      * @return
@@ -536,6 +553,7 @@ public interface SysUserMapper
 
     /**
      * 查询干部标签用户信息列表
+     *
      * @param user
      * @return
      */
@@ -543,7 +561,7 @@ public interface SysUserMapper
 
     List<SysUser> selectUserByNickName(@Param("nickName") String nickName);
 
-    List<SysUser> selectUserByNickNameAndDeptId(@Param("nickName")String nickName, @Param("deptId") Long deptId);
+    List<SysUser> selectUserByNickNameAndDeptId(@Param("nickName") String nickName, @Param("deptId") Long deptId);
 
     List<SysUser> selectMainLeaderList(SysUser user);
 
@@ -556,6 +574,7 @@ public interface SysUserMapper
 
     /**
      * 查询人员头像
+     *
      * @param params
      * @return
      */
@@ -563,6 +582,7 @@ public interface SysUserMapper
 
     /**
      * 查询已删除的用户列表
+     *
      * @param user
      * @return
      */
@@ -570,6 +590,7 @@ public interface SysUserMapper
 
     /**
      * 恢复用户信息
+     *
      * @param userIds
      * @return
      */
@@ -577,6 +598,7 @@ public interface SysUserMapper
 
     /**
      * 彻底删除用户信息
+     *
      * @param userIds
      * @return
      */
@@ -584,6 +606,7 @@ public interface SysUserMapper
 
     /**
      * 还原所有删除的用户数据
+     *
      * @param user
      * @return
      */
@@ -591,8 +614,18 @@ public interface SysUserMapper
 
     /**
      * 彻底删除所有用户数据
+     *
      * @param user
      * @return
      */
-    public  int completelyDeleteAllUser();
+    public int completelyDeleteAllUser();
+
+    /**
+     * 根据部门ID查询用户列表
+     *
+     * @param deptId
+     * @param mode   查询模式  contain 包含当前部门以及子部门用户
+     * @return
+     */
+    List<SysUser> selectUserByDeptId(@Param("deptId") Long deptId, @Param("mode") String mode);
 }

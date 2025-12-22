@@ -5,6 +5,7 @@ import com.cb.common.config.RuoYiConfig;
 import com.cb.common.core.controller.BaseController;
 import com.cb.common.core.domain.AjaxResult;
 import com.cb.common.core.domain.entity.SysDept;
+import com.cb.common.core.domain.entity.SysUser;
 import com.cb.common.core.domain.entity.SysUserAbilityLabel;
 import com.cb.common.core.domain.vo.ExportUserAppointInfo;
 import com.cb.common.core.domain.vo.ExportUserVo;
@@ -12,6 +13,7 @@ import com.cb.common.core.domain.vo.GwyIdentityTypeVo;
 import com.cb.common.core.domain.vo.VSysUser;
 import com.cb.common.core.page.TableDataInfo;
 import com.cb.common.utils.StringUtils;
+import com.cb.common.utils.bean.BeanUtils;
 import com.cb.common.utils.poi.ExcelExpUtil;
 import com.cb.common.utils.poi.ExcelUtil;
 import com.cb.common.utils.poi.JFreeChartToFileUtil;
@@ -93,6 +95,41 @@ public class ExportUserVoController  extends BaseController {
         ExcelExpUtil<ExportUserVo> util = new ExcelExpUtil<ExportUserVo>(ExportUserVo.class);
         return util.exportExcelSupportFreeze(response, list, "用户名册",3,1,3,1);//冻结三列，第一行
     }
+
+    /**
+     * 基于系统用户列表查询的用户名册导出
+     * @param sysUser
+     * @return
+     */
+    @PreAuthorize("@ss.hasPermi('system:userRoster:export')")
+    @GetMapping("/exportUserRosterByUserList")
+    public AjaxResult exportUserRosterByUserList(HttpServletResponse response, SysUser sysUser) throws IOException {
+        List<SysUser> users = userService.selectUserList(sysUser);
+        List<ExportUserVo> list = users.stream().map(item -> {
+            ExportUserVo vo = new ExportUserVo();
+            BeanUtils.copyProperties(item, vo);
+            return vo;
+        }).collect(Collectors.toList());
+//        干部标签转换为中文
+        SysUserAbilityLabel abilityLabel= new SysUserAbilityLabel();
+        List<SysUserAbilityLabel> abilityLabelList=abilityLabelService.selectAbilityLabelList(abilityLabel);
+        Map<Integer, String> labelMap = abilityLabelList.stream()
+                .collect(Collectors.toMap(
+                        SysUserAbilityLabel::getId,
+                        SysUserAbilityLabel::getAbilityLabel
+                ));
+        for (ExportUserVo exportUserVo: list){
+            if(StringUtils.isNotBlank(exportUserVo.getAbilityLabel())){
+                String userAbilityLabel= Arrays.stream((exportUserVo.getAbilityLabel()).split(","))
+                        .map(code -> labelMap.getOrDefault(Integer.valueOf(code), code))
+                        .collect(Collectors.joining("/"));
+                exportUserVo.setAbilityLabel(userAbilityLabel);
+            }
+        }
+        ExcelExpUtil<ExportUserVo> util = new ExcelExpUtil<ExportUserVo>(ExportUserVo.class);
+        return util.exportExcelSupportFreeze(response, list, "用户名册",3,1,3,1);//冻结三列，第一行
+    }
+
     /**
      * 用户名册导出查询列表
      * @param userRoster

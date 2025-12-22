@@ -153,10 +153,10 @@ public class WordImportUtil {
                 String extension = picture.suggestFileExtension();
                 try (InputStream is = new ByteArrayInputStream(picture.getData())) {
                     BufferedImage image = ImageIO.read(is);
-                    rst.setHeadImage(image);
+                    rst.setHeadImage(null);
                     rst.setHeadImageExtension(extension);
-//                    String headImage = FileUploadUtils.saveHeadImage(image, extension);
-//                    rst.setHeadImage(headImage);
+                    String headImage = FileUploadUtils.saveHeadImage(image, extension);
+                    rst.setHeadImageUrl(headImage);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -535,14 +535,26 @@ public class WordImportUtil {
         // 设置头像
         model.put("headImage", null);
         String avatar = sysUser.getAvatar();
-        if(StringUtils.isNotBlank(avatar) && avatar.startsWith("/profile/avatar")){
-            String localPath = RuoYiConfig.getProfile();
-            String downloadPath = localPath + StringUtils.substringAfter(avatar, Constants.RESOURCE_PREFIX);
-            File file = new File(downloadPath);
-            if(file.exists() && file.isFile()){
-                String suffix = FileUtil.getSuffix(downloadPath);
-                model.put("headImage", new PictureRenderData(140,190, '.' + suffix, new FileInputStream(file)));
+        if(StringUtils.isNotBlank(avatar)){
+//            String localPath = RuoYiConfig.getProfile();
+//            String downloadPath = localPath + StringUtils.substringAfter(avatar, Constants.RESOURCE_PREFIX);
+//            File file = new File(downloadPath);
+//            if(file.exists() && file.isFile()){
+//                String suffix = FileUtil.getSuffix(downloadPath);
+//                model.put("headImage", new PictureRenderData(140,190, '.' + suffix, new FileInputStream(file)));
+//            }
+            String realPath = avatar;
+            // 如果是 RuoYi 的资源路径，转成本地路径
+            if (avatar.startsWith(Constants.RESOURCE_PREFIX)) {
+                realPath = RuoYiConfig.getProfile()
+                        + StringUtils.substringAfter(avatar, Constants.RESOURCE_PREFIX);
             }
+            File file = new File(realPath);
+            if (file.exists() && file.isFile()) {
+                String suffix = FileUtil.getSuffix(realPath);
+                model.put("headImage", new PictureRenderData(140, 190, "." + suffix, new FileInputStream(file)));
+            }
+
         }
         ConfigureBuilder configureBuilder = Configure.builder().useSpringEL()
                 .bind("familyMemberInfoList", new FamilyMemberTablePolicy())

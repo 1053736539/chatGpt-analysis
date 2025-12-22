@@ -208,4 +208,11 @@ public interface ISysUserInfoStatisticsService {
      * @return
      */
     List<Map<String, Object>> selectNationCount(Long deptId, String nation);
+
+    /**
+     * 职务统计
+     *
+     * @return
+     */
+    List<Map<String, Object>> selectPostLevelCount(Long deptId);
 }

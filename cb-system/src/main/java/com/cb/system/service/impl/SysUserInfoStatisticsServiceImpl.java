@@ -363,5 +363,15 @@ public class SysUserInfoStatisticsServiceImpl implements ISysUserInfoStatisticsS
         return userInfoStatisticsMapper.selectNationCount(deptId, nation);
     }
 
+    /**
+     * 职务统计
+     *
+     * @return
+     */
+    @Override
+    public List<Map<String, Object>> selectPostLevelCount(Long deptId) {
+        return userInfoStatisticsMapper.selectPostLevelCount(deptId);
+    }
+
 
 }

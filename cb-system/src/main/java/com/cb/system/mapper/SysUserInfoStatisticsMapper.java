@@ -200,4 +200,6 @@ public interface SysUserInfoStatisticsMapper {
             @Param("deptId") Long deptId,
             @Param("nation") String nation
     );
+
+    List<Map<String, Object>> selectPostLevelCount(@Param("deptId") Long deptId);
 }

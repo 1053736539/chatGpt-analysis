@@ -86,7 +86,7 @@ public class UserInfoExport extends ExportHandler implements ExportSql {
             .append("'grassrootsWorkInfos' TEXT,").append("'secondmentWorkInfos' TEXT,").append("'advantages' TEXT,")
             .append("'disadvantages' TEXT,").append("'remark' TEXT,").append("'params' TEXT,").append("'createBy' TEXT,")
             .append("'createTime' TEXT,").append("'updateBy' TEXT,").append("'updateTime' TEXT,")
-            .append("'reserveUser' TEXT,").append("'md5' TEXT")
+            .append("'reserveUser' TEXT,").append("'md5' TEXT,").append("'statisticalRelationUnit' TEXT,").append("'civilServantRegisterTime' TEXT,").append("'talentType' TEXT,").append("'hasTwoYearsGrassrootsWork' TEXT")
             .append(")");
     }
 

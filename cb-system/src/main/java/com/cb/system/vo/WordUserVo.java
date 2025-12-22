@@ -41,6 +41,7 @@ public class WordUserVo implements Serializable {
 
     private BufferedImage headImage;//头像
     private String headImageExtension;//头像类型，后缀名
+    private String headImageUrl;
     private List<FamilyMemberInfo> familyMemberInfoList;//家庭成员集合
 
     private Long deptId;//导入时指定的部门id

@@ -1899,6 +1899,12 @@
 		<result column="value" property="value"/>
 	</resultMap>
 
+	<resultMap id="PostLevelCountMap" type="java.util.HashMap">
+		<result column="label" property="label"/>
+		<result column="value" property="value"/>
+		<result column="dictValue" property="dictValue"/>
+	</resultMap>
+
 	<!--民族统计-->
 	<select  id="selectNationCount" resultMap="NationCountMap">
 		SELECT
@@ -1914,6 +1920,29 @@
 			AND u.nation = #{nation}
 		</if>
 		GROUP BY CASE WHEN u.nation IS NULL OR u.nation = '' THEN '其他' ELSE u.nation END
+	</select>
+
+	<!--职务统计-->
+	<select id="selectPostLevelCount" resultMap="PostLevelCountMap">
+		SELECT
+		d.dict_label   AS label,
+		IFNULL(t.total, 0) AS value,
+		d.dict_value   AS dictValue
+		FROM sys_dict_data d
+		LEFT JOIN (
+		SELECT work_post AS dict_value, COUNT(*) AS total
+		FROM sys_user
+		WHERE user_type = '00'
+		AND del_flag = '0'
+		<if test="deptId != null and deptId != 0">
+			AND (dept_id = #{deptId} OR dept_id IN (
+			SELECT t.dept_id FROM sys_dept t WHERE find_in_set(#{deptId}, ancestors)
+			))
+		</if>
+		GROUP BY work_post
+		) t ON d.dict_value = t.dict_value
+		WHERE d.dict_type = 'current_post_level'
+		ORDER BY d.dict_sort ASC
 	</select>
 
 </mapper>

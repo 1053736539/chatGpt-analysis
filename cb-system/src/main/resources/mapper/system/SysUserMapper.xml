@@ -107,6 +107,7 @@
 		<result property="statisticalRelationUnit"       column="statistical_relation_unit"       />
 		<result property="civilServantRegisterTime"       column="civil_servant_register_time"       />
 		<result property="hasTwoYearsGrassrootsWork"       column="has_two_years_grassroots_work"       />
+		<result property="talentType"       column="talent_type"       />
 		<!--  	市纪委新增字段 结束	-->
 
 		<association property="dept"    column="dept_id" javaType="SysDept" resultMap="deptResult" />
@@ -305,7 +306,7 @@
 		u.enrollment_time, u.is_selected_student, u.selected_student_time, u.grow_place, u.level, u.qualifications,
 		u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
 		u.marital_status, u.is_veterans, u.education, u.degree,u.personnel_status,u.lending_units,u.retirement_time,u.retirement_time,u.sign_img,u.is_hosting_work,
-	    u.secret_level,u.sequence,u.ability_label,u.other_label,u.recruit_lot,
+	    u.secret_level,u.sequence,u.ability_label,u.other_label,u.recruit_lot, u.talent_type,
 	   u.professional_duty, u.full_time_education_level, u.full_time_education_school_and_major, u.on_job_education_level, u.on_job_education_school_and_major, u.current_position,
 	   u.proposed_appointment_position, u.proposed_removal_position, u.resume_json_array, u.reward_and_punishment, u.annual_assessment, u.reason_for_appointment_or_removal,
 	   u.family_member_json_array,u.position_short,u.advantages,u.disadvantages,u.reserve_user,u.user_duty,u.user_rank,u.duty_rank_type,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
@@ -331,7 +332,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type, u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -368,7 +369,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -458,6 +459,9 @@
 		</if>
 		<if test="degree != null and degree != ''">
 			AND u.degree=#{degree}
+		</if>
+		<if test="talentType != null  and talentType != ''">
+			AND u.talent_type = #{talentType}
 		</if>
 		<if test="personnelStatus != null and personnelStatus != ''">
 			AND u.personnel_status=#{personnelStatus}
@@ -568,7 +572,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -646,6 +650,9 @@
 		</if>
 		<if test="nation != null and nation == 1">
 			AND u.nation= '汉族'
+		</if>
+		<if test="talentType != null  and talentType != ''">
+			AND u.talent_type = #{talentType}
 		</if>
 		<if test="nation != null and nation == 2">
 			AND u.nation is not null AND u.nation != '汉族'
@@ -835,7 +842,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -923,6 +930,9 @@
 		</if>
 		<if test="isHostingWork != null and isHostingWork != ''">
 			AND u.is_hosting_work=#{isHostingWork}
+		</if>
+		<if test="talentType != null  and talentType != ''">
+			AND u.talent_type = #{talentType}
 		</if>
 		<if test="lendingUnits != null and lendingUnits != ''">
 			AND u.lending_units=#{lendingUnits}
@@ -1030,7 +1040,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -1092,6 +1102,9 @@
 		</if>
 		<if test="nation != null and nation == 1">
 			AND u.nation= '汉族'
+		</if>
+		<if test="talentType != null  and talentType != ''">
+			AND u.talent_type = #{talentType}
 		</if>
 		<if test="nation != null and nation == 2">
 			AND u.nation is not null AND u.nation != '汉族'
@@ -1221,7 +1234,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -1277,6 +1290,7 @@
 		<if test="nation != null and nation == 2">
 			AND u.nation is not null AND u.nation != '汉族'
 		</if>
+		<if test="talentType != null  and talentType != ''"> AND u.talent_type = #{talentType}</if>
 		<if test="grassrootsWorkTime != null and grassrootsWorkTime == 1">
 			AND u.grassroots_work_time >= 2
 		</if>
@@ -1401,7 +1415,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -1454,6 +1468,7 @@
 		<if test="nation != null and nation == 1">
 			AND u.nation= '汉族'
 		</if>
+		<if test="talentType != null  and talentType != ''"> AND u.talent_type = #{talentType}</if>
 		<if test="nation != null and nation == 2">
 			AND u.nation is not null AND u.nation != '汉族'
 		</if>
@@ -1576,7 +1591,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type, u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -1651,6 +1666,7 @@
 		<if test="degree != null and degree != ''">
 			AND u.degree=#{degree}
 		</if>
+		<if test="talentType != null  and talentType != ''"> AND u.talent_type = #{talentType}</if>
 		<if test="personnelStatus != null and personnelStatus != ''">
 			AND u.personnel_status=#{personnelStatus}
 		</if>
@@ -1754,7 +1770,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,
-		d.dept_name, d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name, d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment,u.secret_level,u.has_two_years_grassroots_work, u.statistical_relation_unit,u.civil_servant_register_time,
@@ -1794,6 +1810,7 @@
 		<if test="identityType != null and identityType != 1">
 			AND u.identity_type in ('2','3')
 		</if>
+		<if test="talentType != null  and talentType != ''"> AND u.talent_type = #{talentType}</if>
 		<!-- 数据范围过滤 -->
 		${params.dataScope}
 	</select>
@@ -1981,6 +1998,7 @@
 		<if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">civil_servant_register_time,</if>
 		<if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">statistical_relation_unit,</if>
 		<if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">has_two_years_grassroots_work,</if>
+		<if test="talentType != null and talentType != ''">talent_type,</if>
 		<!--	统计局项目新增字段 结束	-->
 		<!--	市纪委新增字段 开始	-->
 		<if test="professionalDuty != null and professionalDuty != ''">professional_duty,</if>
@@ -2070,6 +2088,7 @@
 		<if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">#{civilServantRegisterTime},</if>
 		<if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">#{statisticalRelationUnit},</if>
 		<if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">#{hasTwoYearsGrassrootsWork},</if>
+		<if test="talentType != null and talentType != ''">#{talentType},</if>
 		<!--	统计局项目新增字段 结束	-->
 		<!--	市纪委新增字段 开始	-->
 		<if test="professionalDuty != null and professionalDuty != ''">#{professionalDuty},</if>
@@ -2112,6 +2131,7 @@
 		<if test="userType != null and userType != ''">user_type,</if>
 		<if test="personnelStatus != null and personnelStatus != ''">personnel_satus,</if>
 		<if test="lendingUnits != null and lendingUnits != ''">lending_units,</if>
+		<if test="talentType != null and talentType != ''">talent_type,</if>
 		<if test="retirementTime != null and retirementTime != ''">retirement_time,</if>
 		<if test="signImg != null and signImg != ''">sign_img,</if>
 		create_time
@@ -2127,6 +2147,7 @@
 		<if test="password != null and password != ''">#{password},</if>
 		<if test="status != null and status != ''">#{status},</if>
 		<if test="createBy != null and createBy != ''">#{createBy},</if>
+		<if test="talentType != null and talentType != ''">#{talentType},</if>
 		<if test="remark != null and remark != ''">#{remark},</if>
 		<if test="userType != null and userType != ''">#{userType},</if>
 		<if test="personnelStatus != null and personnelStatus != ''">#{personnelStatus},</if>
@@ -2206,6 +2227,7 @@
 			<if test="civilServantRegisterTime != null and civilServantRegisterTime != ''">civil_servant_register_time = #{civilServantRegisterTime},</if>
 			<if test="statisticalRelationUnit != null and statisticalRelationUnit != ''">statistical_relation_unit = #{statisticalRelationUnit},</if>
 			<if test="hasTwoYearsGrassrootsWork != null and hasTwoYearsGrassrootsWork != ''">has_two_years_grassroots_work = #{hasTwoYearsGrassrootsWork},</if>
+			<if test="talentType != null and talentType != ''">talent_type = #{talentType},</if>
 			<!--	统计局项目新增字段 结束	-->
 			<!--	市纪委新增字段 开始	-->
 			<if test="professionalDuty != null and professionalDuty != ''">professional_duty = #{professionalDuty},</if>
@@ -2318,7 +2340,7 @@
 
 	<select id="userSelectorList" resultMap="SysUserResult">
 		select u.user_id, u.dept_id , u.nick_name , u.user_name ,d.dept_name, u.name,
-		       u.work_post, u.work_title
+		       u.work_post, u.work_title,u.identity_type
 		from sys_user u
 		left join sys_dept d on u.dept_id = d.dept_id
 		where u.del_flag = '0' and user_type = '00'
@@ -2652,7 +2674,7 @@
 	<select id="selectUserListByCondition" parameterType="String" resultMap="SysUserResult">
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
-		u.nation, u.political_identity, u.party_join_time,  u.staff_type,
+		u.nation, u.political_identity, u.party_join_time,  u.staff_type,u.talent_type,
 		d.dept_name,d.dept_code, d.leader,u.name,u.native_place,u.birth_place,u.second_party,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
@@ -2898,7 +2920,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.update_by, u.update_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -2947,7 +2969,7 @@
 		select u.user_id, u.dept_id, u.nick_name, u.user_name, u.email, u.avatar, u.phonenumber, u.password, u.sex,
 		u.status, u.del_flag, u.login_ip, u.login_date, u.create_by, u.create_time, u.remark,u.user_type, u.birthday,
 		u.nation, u.political_identity, u.party_join_time, u.staff_type,u.personnel_status,
-		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,
+		d.dept_name,d.leader,u.name,u.native_place,u.birth_place,u.second_party,u.talent_type,
 		u.third_party,u.start_work_time,u.health_condition,u.speciality,u.idcard,u.manage_type,u.identity_type,u.work_post,
 		u.work_post_time,u.work_title,u.work_title_time,u.is_enrollment,u.enrollment_time,u.is_selected_student,u.selected_student_time,
 		u.grow_place,u.level,u.qualifications,u.treatment, u.office_tel, u.is_main_leader, u.join_org_time, u.grassroots_work_time, u.section_chief_time, u.join_dept_time,
@@ -3011,6 +3033,9 @@
 		</if>
 		<if test="workTitle != null and workTitle != ''">
 			AND u.work_title=#{workTitle}
+		</if>
+		<if test="talentType != null  and talentType != ''">
+			AND u.talent_type = #{talentType}
 		</if>
 		<if test="education != null and education != ''">
 			AND u.education=#{education}
@@ -3146,4 +3171,20 @@
 		delete from sys_user   where del_flag = '2'
 	</delete>
 
+	<select id="selectUserByDeptId" resultMap="SysUserResult">
+        select u.*
+        from sys_user u
+        <where>
+            <choose>
+                <when test="mode=='contain'">
+                    AND (u.dept_id = #{deptId} OR u.dept_id IN ( SELECT t.dept_id FROM sys_dept t WHERE
+                    find_in_set(#{deptId}, ancestors) ))
+                </when>
+                <otherwise>
+                    and u.dept_id = #{deptId}
+                </otherwise>
+            </choose>
+            and u.del_flag = '0'
+        </where>
+    </select>
 </mapper>

@@ -121,13 +121,13 @@ public class SysUserServiceImpl implements ISysUserService {
             user.setPhonenumber(encipherService.sm4EncryptEcb(phonenumber));
         }
         String str = "";
-        if(user.getAbilityLabelIds()!=null && user.getAbilityLabelIds().length>0){
+        if (user.getAbilityLabelIds() != null && user.getAbilityLabelIds().length > 0) {
             for (String AbilityLabel1 : user.getAbilityLabelIds()) {
                 str = str + AbilityLabel1 + ',';
             }
-            user.setAbilityLabel(str.substring(0, str.length()-1));
+            user.setAbilityLabel(str.substring(0, str.length() - 1));
         }
-        if(StringUtils.isNotBlank(user.getName())){
+        if (StringUtils.isNotBlank(user.getName())) {
             user.setDeptId(null);
         }
         return userMapper.selectUserList(user);
@@ -144,7 +144,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public List<SysUser> selectUserListByAdmin(SysUser user) {
         String phonenumber = user.getPhonenumber();
         if (StringUtils.isNotBlank(phonenumber)) {
-            user.setPhonenumber(encipherService.sm4EncryptEcb( phonenumber));
+            user.setPhonenumber(encipherService.sm4EncryptEcb(phonenumber));
         }
 //        if(StringUtils.isNotBlank(user.getName())){
 //            user.setDeptId(null);
@@ -160,7 +160,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public List<SysUser> selectDeleteUserListByAdmin(SysUser user) {
         String phonenumber = user.getPhonenumber();
         if (StringUtils.isNotBlank(phonenumber)) {
-            user.setPhonenumber(encipherService.sm4EncryptEcb( phonenumber));
+            user.setPhonenumber(encipherService.sm4EncryptEcb(phonenumber));
         }
 //        if(StringUtils.isNotBlank(user.getName())){
 //            user.setDeptId(null);
@@ -202,7 +202,6 @@ public class SysUserServiceImpl implements ISysUserService {
     private boolean containsChinese(String value) {
         return value.codePoints().anyMatch(codePoint -> codePoint >= 0x4E00 && codePoint <= 0x9FA5);
     }
-
 
 
     @Override
@@ -257,11 +256,11 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Override
     public int completelyDeleteAllUserByIds() {
-        SysUser user =new SysUser();
-        List<SysUser> list= userMapper.selectDeleteUserListByAdmin(user);
+        SysUser user = new SysUser();
+        List<SysUser> list = userMapper.selectDeleteUserListByAdmin(user);
         Long userId;
-        for (SysUser user1:list){
-             userId= user1.getUserId();
+        for (SysUser user1 : list) {
+            userId = user1.getUserId();
             checkUserAllowed(new SysUser(userId));
             // 删除用户与角色关联
             userRoleMapper.deleteUserRoleByUserId(userId);
@@ -417,7 +416,7 @@ public class SysUserServiceImpl implements ISysUserService {
     @Override
     @EncryptMethod(businessType = EODType.DECRYPT)
     public SysUser selectUserByUserNameAndDeptName(String userName, String deptName) {
-        return userMapper.selectUserByUserNameAndDeptName(userName,deptName);
+        return userMapper.selectUserByUserNameAndDeptName(userName, deptName);
     }
 
     /**
@@ -431,6 +430,7 @@ public class SysUserServiceImpl implements ISysUserService {
     public SysUser selectUserById(Long userId) {
         return userMapper.selectUserById(userId);
     }
+
     @Override
     @EncryptMethod(businessType = EODType.DECRYPT)
     public SysUser selectUserByUserId(Long userId) {
@@ -574,10 +574,11 @@ public class SysUserServiceImpl implements ISysUserService {
         user.setUserType("00");
         user.setStatus("0");
         user.setDelFlag("0");
-        if(StringUtils.isBlank(user.getCreateBy())){
+        if (StringUtils.isBlank(user.getCreateBy())) {
             try {
                 user.setCreateBy(SecurityUtils.getUsername());
-            } catch (Exception e){}
+            } catch (Exception e) {
+            }
         }
         String password = user.getPassword();
         if (StringUtils.isEmpty(password)) {
@@ -759,7 +760,7 @@ public class SysUserServiceImpl implements ISysUserService {
         return i;
     }
 
-//    public int updateUserByUserId(Long userId, String positionShort);
+    //    public int updateUserByUserId(Long userId, String positionShort);
     @Override
     public int updateUserByUserId(Long userId, String positionShort) {
         return userMapper.updateUserByUserId(userId, positionShort);
@@ -1218,8 +1219,8 @@ public class SysUserServiceImpl implements ISysUserService {
                 //民族
                 val = userVo.getNation();
                 if (StringUtils.isNotEmpty(val) && !val.contains("族")) {
-                    user.setNation(val+"族");
-                }else {
+                    user.setNation(val + "族");
+                } else {
                     user.setNation(val);
                 }
                 //编制类型 :3-事业
@@ -1227,7 +1228,7 @@ public class SysUserServiceImpl implements ISysUserService {
                 //编制类型
                 val = userVo.getIdentityType().trim();
                 if (StringUtils.isNotEmpty(val)) {
-                    if(identityTypeDataMap.containsKey(val)) {
+                    if (identityTypeDataMap.containsKey(val)) {
                         dictData = identityTypeDataMap.get(val);
                         user.setIdentityType(dictData.getDictValue());
                     }
@@ -1247,23 +1248,23 @@ public class SysUserServiceImpl implements ISysUserService {
                 }
                 //学历，学位
                 val = userVo.getFullTimeEducationLevel();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setFullTimeEducationLevel(val);
                 }
                 val = userVo.getFullTimeEducationSchoolAndMajor();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setFullTimeEducationSchoolAndMajor(val);
                 }
                 //在职学历
                 val = userVo.getOnJobEducationLevel();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setOnJobEducationLevel(val);
                 }
                 val = userVo.getOnJobEducationSchoolAndMajor();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setOnJobEducationSchoolAndMajor(val);
                 }
-                    //职级信息
+                //职级信息
                 val = userVo.getWorkTitle();
                 if (StringUtils.isNotEmpty(val)) {
                     user.setWorkTitle(val);
@@ -1271,28 +1272,28 @@ public class SysUserServiceImpl implements ISysUserService {
                 }
                 //聘用时间=职级时间
                 val = userVo.getWorkTitleTime().trim();
-                if(StringUtils.isNotEmpty(val)){
-                    user.setWorkTitleTime(DateUtils.dateStdFormat(val,true,"yyyy-MM-dd"));
+                if (StringUtils.isNotEmpty(val)) {
+                    user.setWorkTitleTime(DateUtils.dateStdFormat(val, true, "yyyy-MM-dd"));
                 }
                 //性别
                 val = userVo.getSex();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setSex(val);
                 }
                 //出生年月
                 val = userVo.getBirthday().trim();
-                if(StringUtils.isNotEmpty(val)){
-                    user.setBirthday(DateUtils.dateStdFormat(val,true,"yyyy-MM-dd"));
+                if (StringUtils.isNotEmpty(val)) {
+                    user.setBirthday(DateUtils.dateStdFormat(val, true, "yyyy-MM-dd"));
                 }
                 //入党年月
                 val = userVo.getPartyJoinTime().trim();
-                if(StringUtils.isNotEmpty(val)){
-                    user.setPartyJoinTime(DateUtils.dateStdFormat(val,true,"yyyy-MM-dd"));
+                if (StringUtils.isNotEmpty(val)) {
+                    user.setPartyJoinTime(DateUtils.dateStdFormat(val, true, "yyyy-MM-dd"));
                 }
                 //工作年月
                 val = userVo.getStartWorkTime().trim();
-                if(StringUtils.isNotEmpty(val)){
-                    user.setStartWorkTime(DateUtils.dateStdFormat(val,true,"yyyy-MM-dd"));
+                if (StringUtils.isNotEmpty(val)) {
+                    user.setStartWorkTime(DateUtils.dateStdFormat(val, true, "yyyy-MM-dd"));
                 }
 
                 // 验证是否存在这个用户
@@ -1301,7 +1302,8 @@ public class SysUserServiceImpl implements ISysUserService {
                 if (StringUtils.isNotEmpty(nickName)) {
                     user.setNickName(nickName);
                     StringUtils.getPingYin(nickName);
-                    String userName = StringUtils.getPingYin(nickName);;
+                    String userName = StringUtils.getPingYin(nickName);
+                    ;
                     user.setUserName(userName);
                     u = selectUserByUserName(userName);
                 }
@@ -1384,13 +1386,13 @@ public class SysUserServiceImpl implements ISysUserService {
                 }
                 //政治面貌
                 val = userVo.getPoliticalIdentity();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setPoliticalIdentity(val);
                 }
                 //民族
                 val = user.getNation();
                 if (StringUtils.isNotEmpty(val) && !val.contains("族")) {
-                    user.setNation(val+"族");
+                    user.setNation(val + "族");
                 }
                 //编制类型 :5-合同
 //                user.setIdentityType("5");
@@ -1413,33 +1415,33 @@ public class SysUserServiceImpl implements ISysUserService {
                 }
                 //学历，学位
                 val = userVo.getFullTimeEducationLevel();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setFullTimeEducationLevel(val);
                 }
                 //学校
                 String school = userVo.getFullTimeEducationSchool();
                 //专业
-                String major= userVo.getMajor();
-                if(StringUtils.isNotEmpty(school)&&StringUtils.isNotEmpty(major)){
-                    user.setFullTimeEducationSchoolAndMajor(school+"（"+major+"）");
+                String major = userVo.getMajor();
+                if (StringUtils.isNotEmpty(school) && StringUtils.isNotEmpty(major)) {
+                    user.setFullTimeEducationSchoolAndMajor(school + "（" + major + "）");
                 }
                 //性别
                 val = userVo.getSex();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setSex(val);
                 }
                 //出生年月
                 val = userVo.getBirthday().trim();
-                if(StringUtils.isNotEmpty(val)){
-                        user.setBirthday(DateUtils.dateStdFormat(val,true,"yyyy-MM-dd"));
-                    }
+                if (StringUtils.isNotEmpty(val)) {
+                    user.setBirthday(DateUtils.dateStdFormat(val, true, "yyyy-MM-dd"));
+                }
                 //工作年月
                 val = userVo.getStartWorkTime().trim();
-                if(StringUtils.isNotEmpty(val)){
-                        user.setStartWorkTime(DateUtils.dateStdFormat(val,true,"yyyy-MM-dd"));
-                    }
+                if (StringUtils.isNotEmpty(val)) {
+                    user.setStartWorkTime(DateUtils.dateStdFormat(val, true, "yyyy-MM-dd"));
+                }
                 val = userVo.getRemarkHeTong();
-                if(StringUtils.isNotEmpty(val)){
+                if (StringUtils.isNotEmpty(val)) {
                     user.setRemark(val);
                 }
                 // 验证是否存在这个用户
@@ -1450,7 +1452,8 @@ public class SysUserServiceImpl implements ISysUserService {
                     u = selectUserByMobile(mobile);
                     mobile = encipherService.sm4EncryptEcb(mobile);
                     if (u == null) {
-                        u = selectUserByMobile(mobile);;
+                        u = selectUserByMobile(mobile);
+                        ;
                     }
                     user.setPhonenumber(mobile);
                 }
@@ -1458,7 +1461,8 @@ public class SysUserServiceImpl implements ISysUserService {
                 if (StringUtils.isNotEmpty(nickName)) {
                     user.setNickName(nickName);
                     StringUtils.getPingYin(nickName);
-                    String userName = StringUtils.getPingYin(nickName);;
+                    String userName = StringUtils.getPingYin(nickName);
+                    ;
                     user.setUserName(userName);
                     u = selectUserByUserName(userName);
                 }
@@ -2324,7 +2328,7 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Override
     public List<SysUser> listUserByRoleKey(String roleKey) {
-        if(StringUtils.isBlank(roleKey)){
+        if (StringUtils.isBlank(roleKey)) {
             return Collections.emptyList();
         }
         return userMapper.listUserByRoleKey(roleKey);
@@ -2332,7 +2336,7 @@ public class SysUserServiceImpl implements ISysUserService {
 
     @Override
     public int importWordUser(WordUserVo wordUserVo) {
-        if(StringUtils.isBlank(wordUserVo.getName())){
+        if (StringUtils.isBlank(wordUserVo.getName())) {
             throw new RuntimeException("未获取到用户名称");
         }
         String importId = WordImportContextHolder.getImportId();
@@ -2341,10 +2345,10 @@ public class SysUserServiceImpl implements ISysUserService {
         SysUser user = WordImportUtil.convertWordUserVo(wordUserVo);
         user.setCreateBy(userName);
         int i = insertUser(user);
-        if(null != importId){
+        if (null != importId) {
             int iNum = i;
             Integer cacheNum = redisCache.getCacheMapValue(importId, "totalInserted");
-            if(null != cacheNum ){
+            if (null != cacheNum) {
                 iNum = cacheNum + iNum;
             }
             redisCache.setCacheMapValue(importId, "totalInserted", iNum);
@@ -2366,13 +2370,13 @@ public class SysUserServiceImpl implements ISysUserService {
     }
 
     @Override
-    public  List<SysUser> selectUserByNickName(String nickName) {
+    public List<SysUser> selectUserByNickName(String nickName) {
         return userMapper.selectUserByNickName(nickName);
     }
 
     @Override
     public List<SysUser> selectUserByNickNameAndDeptId(String nickName, Long deptId) {
-        return userMapper.selectUserByNickNameAndDeptId(nickName,deptId);
+        return userMapper.selectUserByNickNameAndDeptId(nickName, deptId);
     }
 
     @Override
@@ -2390,12 +2394,12 @@ public class SysUserServiceImpl implements ISysUserService {
         Long userId = user.getUserId();
         SysUserInfoChangeLog infoChangeLog = sysUserInfoChangeLogService.selectSysUserInfoChangeLogById(userId);
         boolean logExist = true;
-        if(null == infoChangeLog){
+        if (null == infoChangeLog) {
             infoChangeLog = new SysUserInfoChangeLog();
             infoChangeLog.setUserId(userId);
             logExist = false;
         }
-        if(StringUtils.isBlank(infoChangeLog.getInitData())){
+        if (StringUtils.isBlank(infoChangeLog.getInitData())) {
             List<UserDeptPost> userDeptPostList = userDeptPostService.selectByUserId(userId);
             SysUser sysUser = selectUserById(userId);
             sysUser.setUserDeptPostList(userDeptPostList);
@@ -2412,11 +2416,58 @@ public class SysUserServiceImpl implements ISysUserService {
         sysUser.setUserDeptPostList(userDeptPostList);
         infoChangeLog.setLastData(JSON.toJSONString(sysUser));
         //日志是否已存在，存在则更新，不存在则新增
-        if(logExist){
+        if (logExist) {
             sysUserInfoChangeLogService.updateSysUserInfoChangeLog(infoChangeLog);
         } else {
             sysUserInfoChangeLogService.insertSysUserInfoChangeLog(infoChangeLog);
         }
         return result;
+    }
+
+    @Override
+    public List<SysUser> selectUserByDeptId(Long deptId, String queryMode) {
+        if (null == deptId) {
+            return Collections.emptyList();
+        }
+        return userMapper.selectUserByDeptId(deptId, queryMode);
+    }
+
+    @Override
+    public int updateUserFromWord(Long userId, WordUserVo wordUserVo) {
+        if (userId == null) {
+            throw new RuntimeException("未获取到用户ID");
+        }
+        if (wordUserVo == null) {
+            throw new RuntimeException("未获取到导入数据");
+        }
+        SysUser existUser = selectUserById(userId);
+        if (existUser == null) {
+            throw new RuntimeException("未找到用户信息");
+        }
+        if (wordUserVo.getDeptId() == null) {
+            wordUserVo.setDeptId(existUser.getDeptId());
+        }
+        SysUser user = WordImportUtil.convertWordUserVo(wordUserVo);
+        user.setUserId(userId);
+        if (StringUtils.isBlank(user.getUserName())) {
+            user.setUserName(existUser.getUserName());
+        }
+        if (StringUtils.isBlank(user.getNickName())) {
+            user.setNickName(existUser.getNickName());
+        }
+        List<UserDeptPost> deptPostList = user.getUserDeptPostList();
+        if (CollectionUtils.isEmpty(deptPostList)) {
+            List<UserDeptPost> existDeptPosts = userDeptPostService.selectByUserId(userId);
+            if (!CollectionUtils.isEmpty(existDeptPosts)) {
+                deptPostList = existDeptPosts;
+            } else if (user.getDeptId() != null) {
+                UserDeptPost deptPost = new UserDeptPost();
+                deptPost.setDeptId(user.getDeptId());
+                deptPostList = Collections.singletonList(deptPost);
+            }
+            user.setUserDeptPostList(deptPostList);
+        }
+        user.setUpdateBy(SecurityUtils.getUsername());
+        return updateUser(user);
     }
 }
